@@ -410,7 +410,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             if(animTime==7) {
                 preformRightClawAttack();
             }
-            if(animTime>=9) {
+            if(animTime>=15) {
                 animTime=0;
                 this.mob.setAnimationState(0);
                 this.resetAttackCooldown();
@@ -424,7 +424,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             if(animTime==15) {
                 preformSlamAttack();
             }
-            if(animTime>=19) {
+            if(animTime>=17) {
                 animTime=0;
                 this.mob.setAnimationState(0);
                 this.resetAttackCooldown();
@@ -432,6 +432,14 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             }
 
         }
+        //    "minecraft:vindicator",
+        //    "minecraft:vex",
+        //    "minecraft:illusioner",
+        //    "minecraft:wither",
+        //    "minecraft_piglin",
+        //    "minecraft_piglin_brute"
+        //    "minecraft:villager"
+        //other victims
 
 
         protected void preformSlamAttack () {
@@ -507,12 +515,15 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 case 21:
                     event.getController().setAnimation(new AnimationBuilder().playOnce("animation.lobster.rightclaw"));
                     break;
+
                 case 22:
                     event.getController().setAnimation(new AnimationBuilder().playOnce("animation.lobster.leftclaw"));
                     break;
+
                 case 23:
                     event.getController().setAnimation(new AnimationBuilder().playOnce("animation.lobster.slam"));
                     break;
+
                 default:
                     if (!(event.getLimbSwingAmount() > -0.06F && event.getLimbSwingAmount() < 0.06F)) {
                         event.getController().setAnimation(new AnimationBuilder().loop("animation.lobster.walk"));
@@ -532,7 +543,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     @Override
     public void registerControllers(AnimationData data) {
         data.setResetSpeedInTicks(1);
-        AnimationController<EntityCrayfish> controller = new AnimationController<>(this, "controller", 1, this::predicate);
+        AnimationController<EntityCrayfish> controller = new AnimationController<>(this, "controller", 2, this::predicate);
         data.addAnimationController(controller);
     }
 
