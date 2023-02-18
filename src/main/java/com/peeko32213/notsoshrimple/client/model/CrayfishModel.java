@@ -12,11 +12,13 @@ import java.util.Map;
 
 public class CrayfishModel extends AnimatedGeoModel<EntityCrayfish>
 {    public static final Map<Integer, ResourceLocation> TEXTURES = Util.make(Maps.newHashMap(), (hashMap) -> {
-    hashMap.put(0, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster.png"));
-    hashMap.put(1, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_red.png"));
-    hashMap.put(2, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_blue.png"));
-    hashMap.put(3, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_peppermint.png"));
-    hashMap.put(4, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_black.png"));
+    hashMap.put(0, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_brown.png"));
+    hashMap.put(1, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_frost.png"));
+    hashMap.put(2, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_blood.png"));
+    hashMap.put(3, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_red.png"));
+    hashMap.put(4, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_orange.png"));
+    hashMap.put(3, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_yellow.png"));
+    hashMap.put(4, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_blue.png"));
 });
 
     @Override
