@@ -1,0 +1,68 @@
+{
+  "crayfish_idle": {
+    "category": "neutral",
+    "sounds": [
+      {
+        "name": "notsoshrimple:crayfish_idle_0"
+      },
+      {
+        "name": "notsoshrimple:crayfish_idle_1"
+      },
+      {
+        "name": "notsoshrimple:crayfish_idle_2"
+      },
+      {
+        "name": "notsoshrimple:crayfish_idle_3"
+      }
+    ],
+    "subtitle": "notsoshrimple.sound.subtitle.crayfish_idle"
+  },
+  "crayfish_attack": {
+    "category": "neutral",
+    "sounds": [
+      {
+        "name": "notsoshrimple:crayfish_attack_0"
+      },
+      {
+        "name": "notsoshrimple:crayfish_attack_1"
+      }
+    ],
+    "subtitle": "notsoshrimple.sound.subtitle.crayfish_attack"
+  },
+  "crayfish_hurt": {
+    "category": "neutral",
+    "sounds": [
+      {
+        "name": "notsoshrimple:crayfish_hurt_0"
+      },
+      {
+        "name": "notsoshrimple:crayfish_hurt_1"
+      }
+    ],
+    "subtitle": "notsoshrimple.sound.subtitle.crayfish_hurt"
+  },
+  "crayfish_death": {
+    "category": "neutral",
+    "sounds": [
+      {
+        "name": "notsoshrimple:crayfish_death_0"
+      },
+      {
+        "name": "notsoshrimple:crayfish_death_1"
+      }
+    ],
+    "subtitle": "notsoshrimple.sound.subtitle.crayfish_death"
+  },
+  "crayfish_scuttle": {
+    "category": "neutral",
+    "sounds": [
+      {
+        "name": "notsoshrimple:crayfish_scuttling_0"
+      },
+      {
+        "name": "notsoshrimple:crayfish_scuttling_1"
+      }
+    ],
+    "subtitle": "notsoshrimple.sound.subtitle.scuttling_scuttle"
+  }
+}

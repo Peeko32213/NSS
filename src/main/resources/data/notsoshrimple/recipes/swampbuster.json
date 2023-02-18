@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CC ",
+    "II ",
+    " S "
+  ],
+  "key": {
+    "C": {
+      "item": "notsoshrimple:claw"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "notsoshrimple:swampbuster"
+  }
+}

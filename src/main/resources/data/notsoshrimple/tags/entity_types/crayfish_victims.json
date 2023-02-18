@@ -1,0 +1,10 @@
+{
+  "values": [
+    "minecraft:villager",
+    "minecraft:pillager",
+    "minecraft:evoker",
+    "minecraft:iron_golem",
+    "minecraft:snow_golem",
+    "minecraft:ravager"
+  ]
+}

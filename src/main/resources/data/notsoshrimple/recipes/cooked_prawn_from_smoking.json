@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smoking",
+  "ingredient": {
+    "item": "notsoshrimple:raw_prawn"
+  },
+  "result": "notsoshrimple:cooked_prawn",
+  "experience": 0.35,
+  "cookingtime": 200
+}
