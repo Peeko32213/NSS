@@ -407,10 +407,10 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
         protected void tickRightClawAttack () {
             animTime++;
-            if(animTime==7) {
+            if(animTime==16) {
                 preformRightClawAttack();
             }
-            if(animTime>=15) {
+            if(animTime>=21) {
                 animTime=0;
                 this.mob.setAnimationState(0);
                 this.resetAttackCooldown();
@@ -444,19 +444,22 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
         protected void preformSlamAttack () {
             Vec3 pos = mob.position();
+            this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0f));
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
-            HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),30.0f, 2.5f, mob, pos,  15.0F, -Math.PI/6, Math.PI/6, -1.0f, 3.0f);
+            HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),30.0f, 2.5f, mob, pos,  20.0F, -Math.PI/6, Math.PI/6, -1.0f, 3.0f);
         }
 
 
         protected void preformLeftClawAttack () {
             Vec3 pos = mob.position();
+            this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0f));
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
             HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),25.0f, 1.0f, mob, pos,  8.0F, -Math.PI/2, Math.PI/2, -1.0f, 3.0f);
         }
 
         protected void preformRightClawAttack () {
             Vec3 pos = mob.position();
+            this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0f));
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
             HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),15.0f, 1.0f, mob, pos,  6.0F, -Math.PI/2, Math.PI/2, -1.0f, 3.0f);
         }
