@@ -3,6 +3,7 @@ package com.peeko32213.notsoshrimple.core.registry;
 import com.peeko32213.notsoshrimple.NotSoShrimple;
 import com.peeko32213.notsoshrimple.common.entity.EntityCrayfish;
 import com.peeko32213.notsoshrimple.common.entity.EntityManeaterShell;
+import com.peeko32213.notsoshrimple.common.entity.EntityToxicWater;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
@@ -26,6 +27,10 @@ public class NSSEntities {
     public static final RegistryObject<EntityType<EntityManeaterShell>> MANEATER = ENTITIES.register("maneater",
             () -> EntityType.Builder.of(EntityManeaterShell::new, MobCategory.MONSTER).sized(5.0F, 6.5F)
                     .build(new ResourceLocation(NotSoShrimple.MODID, "maneater").toString()));
+
+    public static final RegistryObject<EntityType<EntityToxicWater>> TOXICWATER = ENTITIES.register("toxicwater",
+            () -> EntityType.Builder.of(EntityToxicWater::new, MobCategory.MISC).sized(5.0F, 6.5F)
+                    .build(new ResourceLocation(NotSoShrimple.MODID, "toxicwater").toString()));
 
     public static boolean rollSpawn(int rolls, RandomSource random, MobSpawnType reason){
         if(reason == MobSpawnType.SPAWNER){

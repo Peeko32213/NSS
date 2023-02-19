@@ -430,8 +430,22 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 this.resetAttackCooldown();
                 this.ticksUntilNextPathRecalculation = 0;
             }
-
         }
+
+        /*protected void tickPiss (){
+            animTime++
+            this.mob.getNavigation().stop();
+            if (animTime==11) {
+                piss();
+            }
+            if(animTime>=20) {
+                animTime=0;
+                this.mob.setAnimationState(0);
+                this.resetAttackCooldown();
+                this.ticksUntilNextPathRecalculation = 0;
+            }
+        }*/
+
         //    "minecraft:vindicator",
         //    "minecraft:vex",
         //    "minecraft:illusioner",
@@ -441,6 +455,26 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         //    "minecraft:villager"
         //other victims
 
+        /*protected void piss() {
+            Vec3 pos = mob.position();
+            this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
+            this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
+            Vec3 aim = this.mob.getLookAngle();
+            double a = Math.PI/10;
+
+            EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level, 4.0f);
+            urine.setOwner(this.mob);
+            double x = pos.x + aim.x + 0.75*(aim.x-aim.z);
+            double z = pos.z + aim.z + 0.75*(aim.z+aim.x);
+            double y = pos.y + 2 + 0.075*(aim.y);
+            urine.setPos(x, y, z);
+            //flame.setPos(pos);
+            urine.xPower=aim.x*0.04 + 0.005*(aim.x-aim.z);
+            urine.yPower=aim.y*0.04 - 0.025 + 0.03;
+            urine.zPower=aim.z*0.04 + 0.005*(aim.z+aim.x);
+            this.mob.level.addFreshEntity(urine);
+            //System.out.println("added flame to:" + x + y + z );
+        }*/
 
         protected void preformSlamAttack () {
             Vec3 pos = mob.position();
