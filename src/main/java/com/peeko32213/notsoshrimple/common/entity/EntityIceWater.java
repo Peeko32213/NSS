@@ -25,7 +25,7 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
-public class EntityToxicWater extends AbstractHurtingProjectile implements IAnimatable {
+public class EntityIceWater extends AbstractHurtingProjectile implements IAnimatable {
 
     private LivingEntity owner;
     private int lifeTime;
@@ -34,7 +34,7 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
     public int maxLifeTime = 15;
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
-    public EntityToxicWater(EntityType<? extends Projectile> p_37248_, Level p_37249_) {
+    public EntityIceWater(EntityType<? extends Projectile> p_37248_, Level p_37249_) {
         super((EntityType<? extends AbstractHurtingProjectile>) p_37248_, p_37249_);
     }
 
@@ -75,7 +75,7 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
 
     @Override
     protected ParticleOptions getTrailParticle() {
-        return ParticleTypes.BUBBLE;
+        return ParticleTypes.SNOWFLAKE;
     }
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
@@ -87,7 +87,7 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
     @Override
     public void registerControllers(AnimationData data) {
         data.setResetSpeedInTicks(1);
-        AnimationController<EntityToxicWater> controller = new AnimationController<>(this, "controller", 1, this::predicate);
+        AnimationController<EntityIceWater> controller = new AnimationController<>(this, "controller", 1, this::predicate);
         data.addAnimationController(controller);
     }
 
