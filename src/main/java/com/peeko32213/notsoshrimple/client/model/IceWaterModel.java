@@ -22,6 +22,6 @@ public class IceWaterModel extends AnimatedGeoModel<EntityIceWater> {
 
     @Override
     public ResourceLocation getAnimationResource(EntityIceWater animatable) {
-        return null;
+        return new ResourceLocation(NotSoShrimple.MODID, "animations/piss.animation.json");
     }
 }

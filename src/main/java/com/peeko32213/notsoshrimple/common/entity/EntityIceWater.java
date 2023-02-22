@@ -9,6 +9,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
@@ -25,17 +26,24 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
-public class EntityIceWater extends AbstractHurtingProjectile implements IAnimatable {
+public class EntityIceWater extends AbstractArrow implements IAnimatable {
 
     private LivingEntity owner;
     private int lifeTime;
-    private static ParticleOptions particle = ParticleTypes.FLAME;
+    private static ParticleOptions particle = ParticleTypes.BUBBLE;
+    public boolean isOnFire() {
+        return false;
+    }
+    //@Override
+    protected float getInertia() {
+        return 0.95F;
+    }
     public float damage = 15.0f;
-    public int maxLifeTime = 15;
+    public int maxLifeTime = 1500;
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     public EntityIceWater(EntityType<? extends Projectile> p_37248_, Level p_37249_) {
-        super((EntityType<? extends AbstractHurtingProjectile>) p_37248_, p_37249_);
+        super((EntityType<? extends AbstractArrow>) p_37248_, p_37249_);
     }
 
     @Override
@@ -47,6 +55,10 @@ public class EntityIceWater extends AbstractHurtingProjectile implements IAnimat
 
     }
 
+    private ParticleOptions getTrailParticle() {
+        return ParticleTypes.BUBBLE;
+    }
+
     @Override
     public void tick() {
         lifeTime++;
@@ -54,6 +66,7 @@ public class EntityIceWater extends AbstractHurtingProjectile implements IAnimat
             lifeTime=0;
             this.discard();
         }
+        this.level.addParticle(this.getTrailParticle(), 0,  0.5D, 0, 0.0D, 0.0D, 0.0D);
         super.tick();
     }
 
@@ -62,20 +75,19 @@ public class EntityIceWater extends AbstractHurtingProjectile implements IAnimat
         super.onHitEntity(p_37216_);
         Entity entity1 = this.getOwner();
         Entity entity = p_37216_.getEntity();
-        DamageSource damagesource;
         if (entity1 instanceof LivingEntity) {
             ((LivingEntity)entity1).setLastHurtMob(entity);
             p_37216_.getEntity().hurt(DamageSource.mobAttack((LivingEntity) entity1), damage);
             if (entity instanceof LivingEntity) {
-                ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 2, 300));
+                ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 2, 200));
             }
         }
 
     }
 
     @Override
-    protected ParticleOptions getTrailParticle() {
-        return ParticleTypes.SNOWFLAKE;
+    protected ItemStack getPickupItem() {
+        return ItemStack.EMPTY;
     }
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {

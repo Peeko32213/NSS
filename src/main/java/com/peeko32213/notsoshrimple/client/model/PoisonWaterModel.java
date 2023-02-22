@@ -21,6 +21,6 @@ public class PoisonWaterModel extends AnimatedGeoModel<EntityToxicWater> {
 
     @Override
     public ResourceLocation getAnimationResource(EntityToxicWater animatable) {
-        return null;
+        return new ResourceLocation(NotSoShrimple.MODID, "animations/piss.animation.json");
     }
 }
