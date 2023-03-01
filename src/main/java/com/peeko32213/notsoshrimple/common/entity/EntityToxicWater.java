@@ -2,6 +2,7 @@ package com.peeko32213.notsoshrimple.common.entity;
 
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -17,6 +18,7 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -38,7 +40,7 @@ public class EntityToxicWater extends AbstractArrow implements IAnimatable {
     protected float getInertia() {
         return 0.95F;
     }
-    public float damage = 15.0f;
+    public float damage = 30.0f;
     public int maxLifeTime = 1500;
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
@@ -55,13 +57,15 @@ public class EntityToxicWater extends AbstractArrow implements IAnimatable {
 
     }
 
-    private ParticleOptions getTrailParticle() {
+
+    protected ParticleOptions getTrailParticle() {
         return ParticleTypes.BUBBLE;
     }
 
     @Override
     public void tick() {
         lifeTime++;
+        this.updateRotation();
         if(lifeTime>=maxLifeTime) {
             lifeTime=0;
             this.discard();
@@ -88,6 +92,18 @@ public class EntityToxicWater extends AbstractArrow implements IAnimatable {
     @Override
     protected ItemStack getPickupItem() {
         return ItemStack.EMPTY;
+    }
+
+    private double horizontalMag(Vec3 vector3d) {
+        return vector3d.x * vector3d.x + vector3d.z * vector3d.z;
+    }
+
+
+    protected void updateRotation() {
+        Vec3 vector3d = this.getDeltaMovement();
+        float f = Mth.sqrt((float)horizontalMag(vector3d));
+        this.setXRot(lerpRotation(this.xRotO, (float) (Mth.atan2(vector3d.y, f) * (double) (180F / (float) Math.PI))));
+        this.setYRot(lerpRotation(this.yRotO, (float) (Mth.atan2(vector3d.x, vector3d.z) * (double) (180F / (float) Math.PI))));
     }
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {

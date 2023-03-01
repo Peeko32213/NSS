@@ -69,15 +69,20 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         this.maxUpStep = 1.0f;
     }
 
+    @Override
+    public boolean canDisableShield() {
+        return true;
+    }
+
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 300.0D)
                 .add(Attributes.ARMOR, 15.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.2D)
+                .add(Attributes.MOVEMENT_SPEED, 0.29D)
                 .add(Attributes.ATTACK_DAMAGE, 10.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 10.5D)
                 .add(Attributes.ATTACK_KNOCKBACK, 2.0D)
-                .add(Attributes.FOLLOW_RANGE, 50D);
+                .add(Attributes.FOLLOW_RANGE, 800D);
 
 
     }
@@ -87,7 +92,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(1, new EntityCrayfish.CrayfishMeleeAttackGoal(this, 2F, true));
+        this.goalSelector.addGoal(1, new EntityCrayfish.CrayfishMeleeAttackGoal(this, 1.2F, true));
         this.goalSelector.addGoal(3, new CustomRandomStrollGoal(this, 30, 1.0D, 100, 34));
         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 15.0F));
         this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)));
@@ -313,6 +318,9 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 case 23:
                     tickSlamAttack();
                     break;
+                case 24:
+                    tickPiss();
+                    break;
                 default:
                     this.ticksUntilNextPathRecalculation = Math.max(this.ticksUntilNextPathRecalculation - 1, 0);
                     this.ticksUntilNextAttack = Math.max(this.ticksUntilNextPathRecalculation - 1, 0);
@@ -370,7 +378,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                     this.mob.setAnimationState(22);
                 } else if (r <= 1400) {
                     this.mob.setAnimationState(23);
-                } else {
+                } else if (r <= 10000){
                     this.mob.setAnimationState(24);
                 }
 
@@ -432,11 +440,11 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             }
         }
 
-        /*protected void tickPiss (){
-            animTime++
+        protected void tickPiss (){
+            animTime++;
             this.mob.getNavigation().stop();
             if (animTime==11) {
-                piss();
+                piss(this.mob.getTarget());
             }
             if(animTime>=20) {
                 animTime=0;
@@ -444,7 +452,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 this.resetAttackCooldown();
                 this.ticksUntilNextPathRecalculation = 0;
             }
-        }*/
+        }
 
         //    "minecraft:vindicator",
         //    "minecraft:vex",
@@ -455,26 +463,28 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         //    "minecraft:villager"
         //other victims
 
-        /*protected void piss() {
+        protected void piss(LivingEntity target) {
             Vec3 pos = mob.position();
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
+            this.mob.lookAt(target, 100, 100);
             Vec3 aim = this.mob.getLookAngle();
             double a = Math.PI/10;
 
-            EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level, 4.0f);
+            EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level);
             urine.setOwner(this.mob);
             double x = pos.x + aim.x + 0.75*(aim.x-aim.z);
             double z = pos.z + aim.z + 0.75*(aim.z+aim.x);
             double y = pos.y + 2 + 0.075*(aim.y);
             urine.setPos(x, y, z);
-            //flame.setPos(pos);
-            urine.xPower=aim.x*0.04 + 0.005*(aim.x-aim.z);
-            urine.yPower=aim.y*0.04 - 0.025 + 0.03;
-            urine.zPower=aim.z*0.04 + 0.005*(aim.z+aim.x);
+
+            double xDistance = target.getX() - this.mob.getX();
+            double yDistance = target.getY(0.3333333333333333D) - urine.getY();
+            double zDistance = target.getZ() - this.mob.getZ();
+            double yMath = Mth.sqrt((float) ((xDistance * xDistance) + (zDistance * zDistance)));
+            urine.shoot(xDistance, yDistance + yMath * 0.10000000298023224D, zDistance, 1.6F, 11.0F);
             this.mob.level.addFreshEntity(urine);
-            //System.out.println("added flame to:" + x + y + z );
-        }*/
+        }
 
         protected void preformSlamAttack () {
             Vec3 pos = mob.position();
