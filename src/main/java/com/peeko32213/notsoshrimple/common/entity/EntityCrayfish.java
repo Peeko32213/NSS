@@ -168,6 +168,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     public boolean removeWhenFarAway(double d) {
         return !this.hasCustomName();
     }
+    public int rangedCD = 100;
 
     public int getAnimationState() {
 
@@ -210,6 +211,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         private double pathedTargetZ;
         private int ticksUntilNextPathRecalculation;
         private int ticksUntilNextAttack;
+        private int rangedAttackCD;
         private long lastCanUseCheck;
         private int failedPathFindingPenalty = 0;
         private boolean canPenalize = false;
@@ -284,6 +286,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             this.mob.getNavigation().moveTo(this.path, this.speedModifier);
             this.ticksUntilNextPathRecalculation = 0;
             this.ticksUntilNextAttack = 0;
+            this.rangedAttackCD = 0;
             this.animTime = 0;
             this.mob.setAnimationState(0);
         }
@@ -324,6 +327,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 default:
                     this.ticksUntilNextPathRecalculation = Math.max(this.ticksUntilNextPathRecalculation - 1, 0);
                     this.ticksUntilNextAttack = Math.max(this.ticksUntilNextPathRecalculation - 1, 0);
+                    this.rangedAttackCD = Math.max(this.rangedAttackCD - 1, 0);
                     this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
                     this.doMovement(target, distance);
                     this.checkForCloseRangeAttack(distance, reach);
@@ -378,10 +382,10 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                     this.mob.setAnimationState(22);
                 } else if (r <= 1400) {
                     this.mob.setAnimationState(23);
-                } else if (r <= 10000){
-                    this.mob.setAnimationState(24);
                 }
 
+            } else if (distance > reach && this.ticksUntilNextAttack <= 0 && this.rangedAttackCD <= 0) {
+                this.mob.setAnimationState(24);
             }
         }
 
@@ -442,6 +446,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
         protected void tickPiss (){
             animTime++;
+            this.mob.setXRot((float) Mth.atan2(this.mob.getTarget().getX() - this.mob.getX(), this.mob.getTarget().getY() - this.mob.getY()) * (180F / (float)Math.PI));
             this.mob.getNavigation().stop();
             if (animTime==11) {
                 piss(this.mob.getTarget());
@@ -451,6 +456,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 this.mob.setAnimationState(0);
                 this.resetAttackCooldown();
                 this.ticksUntilNextPathRecalculation = 0;
+                this.rangedAttackCD = 300;
             }
         }
 
@@ -481,8 +487,8 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             double xDistance = target.getX() - this.mob.getX();
             double yDistance = target.getY(0.3333333333333333D) - urine.getY();
             double zDistance = target.getZ() - this.mob.getZ();
-            double yMath = Mth.sqrt((float) ((xDistance * xDistance) + (zDistance * zDistance)));
-            urine.shoot(xDistance, yDistance + yMath * 0.10000000298023224D, zDistance, 1.6F, 11.0F);
+            double yMath = (Mth.sqrt((float) ((xDistance * xDistance) + (zDistance * zDistance)))) * 0.10000000298023224D;
+            urine.shoot(xDistance, yDistance, zDistance, 1.6F, 11.0F);
             this.mob.level.addFreshEntity(urine);
         }
 
@@ -530,13 +536,12 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         }
     }
 
+
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
         return source == DamageSource.FALL || source == DamageSource.IN_WALL || source == DamageSource.FALLING_BLOCK || source == DamageSource.CACTUS || source.isProjectile() || source.isFire() || super.isInvulnerableTo(source);
         //gec - removed void and magic damage immunity
     }
-
-
 
     protected SoundEvent getAmbientSound() {
         return NSSSounds.CRAYFISH_IDLE.get();
@@ -570,6 +575,9 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 case 23:
                     event.getController().setAnimation(new AnimationBuilder().playOnce("animation.lobster.slam"));
                     break;
+
+                case 24:
+                    event.getController().setAnimation(new AnimationBuilder().playOnce("animation.lobster.tarnishedacquired"));
 
                 default:
                     if (!(event.getLimbSwingAmount() > -0.06F && event.getLimbSwingAmount() < 0.06F)) {

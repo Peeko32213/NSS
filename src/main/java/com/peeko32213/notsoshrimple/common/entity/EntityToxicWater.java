@@ -41,7 +41,7 @@ public class EntityToxicWater extends AbstractArrow implements IAnimatable {
         return 0.95F;
     }
     public float damage = 30.0f;
-    public int maxLifeTime = 1500;
+    public int maxLifeTime = 4000;
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     public EntityToxicWater(EntityType<? extends Projectile> p_37248_, Level p_37249_) {
@@ -57,20 +57,50 @@ public class EntityToxicWater extends AbstractArrow implements IAnimatable {
 
     }
 
+    protected static float lerpRotation(float p_234614_0_, float p_234614_1_) {
+        while (p_234614_1_ - p_234614_0_ < -180.0F) {
+            p_234614_0_ -= 360.0F;
+        }
+
+        while (p_234614_1_ - p_234614_0_ >= 180.0F) {
+            p_234614_0_ += 360.0F;
+        }
+
+        return Mth.lerp(0.2F, p_234614_0_, p_234614_1_);
+    }
 
     protected ParticleOptions getTrailParticle() {
         return ParticleTypes.BUBBLE;
     }
 
+    private void addParticlesAroundSelf(ParticleOptions p_28338_) {
+        for(int i = 0; i < 7; ++i) {
+            double d0 = this.random.nextGaussian() * 0.01D;
+            double d1 = this.random.nextGaussian() * 0.01D;
+            double d2 = this.random.nextGaussian() * 0.01D;
+            this.level.addParticle(p_28338_, this.getRandomX(0.5D), this.getRandomY() + 0.2D, this.getRandomZ(0.5D), 10, d1, d2);
+        }
+
+    }
+
     @Override
     public void tick() {
         lifeTime++;
-        this.updateRotation();
+        this.setNoGravity(true);
+        Vec3 vector3d = this.getDeltaMovement();
         if(lifeTime>=maxLifeTime) {
             lifeTime=0;
             this.discard();
         }
-        this.level.addParticle(this.getTrailParticle(), 0,  0.5D, 0, 0.0D, 0.0D, 0.0D);
+        this.addParticlesAroundSelf(this.getTrailParticle());
+        double yMot = Mth.sqrt((float)(this.getDeltaMovement().x * this.getDeltaMovement().x + this.getDeltaMovement().z * this.getDeltaMovement().z));
+
+        float f = 0.99F;
+        float f1 = 0.06F;
+
+        this.setXRot((float) (Mth.atan2(this.getDeltaMovement().y, yMot) * (double) (180F / (float) Math.PI)));
+        this.setYRot((float) (Mth.atan2(vector3d.x, vector3d.z) * (double) (180F / (float) Math.PI)) + 90);
+
         super.tick();
     }
 
@@ -86,6 +116,7 @@ public class EntityToxicWater extends AbstractArrow implements IAnimatable {
                 ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.POISON, 2, 200));
             }
         }
+        this.discard();
 
     }
 
@@ -94,16 +125,18 @@ public class EntityToxicWater extends AbstractArrow implements IAnimatable {
         return ItemStack.EMPTY;
     }
 
+
     private double horizontalMag(Vec3 vector3d) {
         return vector3d.x * vector3d.x + vector3d.z * vector3d.z;
     }
 
-
-    protected void updateRotation() {
-        Vec3 vector3d = this.getDeltaMovement();
-        float f = Mth.sqrt((float)horizontalMag(vector3d));
-        this.setXRot(lerpRotation(this.xRotO, (float) (Mth.atan2(vector3d.y, f) * (double) (180F / (float) Math.PI))));
-        this.setYRot(lerpRotation(this.yRotO, (float) (Mth.atan2(vector3d.x, vector3d.z) * (double) (180F / (float) Math.PI))));
+    public void shootFromRotation(Entity p_234612_1_, float p_234612_2_, float p_234612_3_, float p_234612_4_, float p_234612_5_, float p_234612_6_) {
+        float f = -Mth.sin(p_234612_3_ * ((float) Math.PI / 180F)) * Mth.cos(p_234612_2_ * ((float) Math.PI / 180F));
+        float f1 = -Mth.sin((p_234612_2_ + p_234612_4_) * ((float) Math.PI / 180F));
+        float f2 = Mth.cos(p_234612_3_ * ((float) Math.PI / 180F)) * Mth.cos(p_234612_2_ * ((float) Math.PI / 180F));
+        this.shoot(f, f1, f2, p_234612_5_, p_234612_6_);
+        Vec3 vector3d = p_234612_1_.getDeltaMovement();
+        this.setDeltaMovement(this.getDeltaMovement().add(vector3d.x, p_234612_1_.isOnGround() ? 0.0D : vector3d.y, vector3d.z));
     }
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
