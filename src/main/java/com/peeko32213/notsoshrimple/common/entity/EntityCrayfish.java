@@ -33,6 +33,9 @@ import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -382,6 +385,8 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                     this.mob.setAnimationState(22);
                 } else if (r <= 1400) {
                     this.mob.setAnimationState(23);
+                } else if (r <= 10000 && this.rangedAttackCD <=0) {
+                    this.mob.setAnimationState(24);
                 }
 
             } else if (distance > reach && this.ticksUntilNextAttack <= 0 && this.rangedAttackCD <= 0) {
@@ -456,7 +461,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 this.mob.setAnimationState(0);
                 this.resetAttackCooldown();
                 this.ticksUntilNextPathRecalculation = 0;
-                this.rangedAttackCD = 300;
+                this.rangedAttackCD = 100;
             }
         }
 
@@ -470,7 +475,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         //other victims
 
         protected void piss(LivingEntity target) {
-            Vec3 pos = mob.position();
+            /*Vec3 pos = mob.position();
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
             this.mob.lookAt(target, 100, 100);
@@ -489,6 +494,17 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             double zDistance = target.getZ() - this.mob.getZ();
             double yMath = (Mth.sqrt((float) ((xDistance * xDistance) + (zDistance * zDistance)))) * 0.10000000298023224D;
             urine.shoot(xDistance, yDistance, zDistance, 1.6F, 11.0F);
+            this.mob.level.addFreshEntity(urine);*/
+
+            EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level);
+            urine.setOwner(this.mob);
+            urine.setPos(this.mob.getX(), this.mob.getY(), this.mob.getZ());
+            double d0 = target.getX() - this.mob.getX();
+            double d1 = target.getY(0.3333333333333333D) - urine.getY();
+            double d2 = target.getZ() - this.mob.getZ();
+            double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+            urine.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.mob.level.getDifficulty().getId() * 4));
+            this.mob.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.mob.getRandom().nextFloat() * 0.4F + 0.8F));
             this.mob.level.addFreshEntity(urine);
         }
 

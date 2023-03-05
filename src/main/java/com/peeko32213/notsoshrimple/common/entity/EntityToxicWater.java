@@ -3,7 +3,6 @@ package com.peeko32213.notsoshrimple.common.entity;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -11,10 +10,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -78,28 +75,29 @@ public class EntityToxicWater extends AbstractArrow implements IAnimatable {
             double d0 = this.random.nextGaussian() * 0.01D;
             double d1 = this.random.nextGaussian() * 0.01D;
             double d2 = this.random.nextGaussian() * 0.01D;
-            this.level.addParticle(p_28338_, this.getRandomX(0.5D), this.getRandomY() + 0.2D, this.getRandomZ(0.5D), 10, d1, d2);
+            this.level.addParticle(p_28338_, 0d, 0d, 0d, d0, d1, d2);
         }
 
     }
 
     @Override
+    public boolean isNoGravity() {
+        return false;
+    }
+
+    @Override
     public void tick() {
         lifeTime++;
-        this.setNoGravity(true);
         Vec3 vector3d = this.getDeltaMovement();
         if(lifeTime>=maxLifeTime) {
             lifeTime=0;
             this.discard();
         }
         this.addParticlesAroundSelf(this.getTrailParticle());
-        double yMot = Mth.sqrt((float)(this.getDeltaMovement().x * this.getDeltaMovement().x + this.getDeltaMovement().z * this.getDeltaMovement().z));
-
         float f = 0.99F;
         float f1 = 0.06F;
 
-        this.setXRot((float) (Mth.atan2(this.getDeltaMovement().y, yMot) * (double) (180F / (float) Math.PI)));
-        this.setYRot((float) (Mth.atan2(vector3d.x, vector3d.z) * (double) (180F / (float) Math.PI)) + 90);
+        this.setYRot((float) (Mth.atan2(vector3d.x, vector3d.z) * (double) (180F / (float) Math.PI)));
 
         super.tick();
     }
