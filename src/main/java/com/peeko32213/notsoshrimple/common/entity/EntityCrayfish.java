@@ -475,13 +475,12 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         //other victims
 
         protected void piss(LivingEntity target) {
-            /*Vec3 pos = mob.position();
+            Vec3 pos = mob.position();
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
-            this.mob.lookAt(target, 100, 100);
+            this.mob.lookAt(target, 100000, 100000);
             Vec3 aim = this.mob.getLookAngle();
-            double a = Math.PI/10;
-
+            /*
             EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level);
             urine.setOwner(this.mob);
             double x = pos.x + aim.x + 0.75*(aim.x-aim.z);
@@ -498,13 +497,15 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
             EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level);
             urine.setOwner(this.mob);
-            urine.setPos(this.mob.getX(), this.mob.getY(), this.mob.getZ());
+            urine.moveTo(this.mob.getX(), this.mob.getY() + 2, this.mob.getZ());
             double d0 = target.getX() - this.mob.getX();
             double d1 = target.getY(0.3333333333333333D) - urine.getY();
             double d2 = target.getZ() - this.mob.getZ();
             double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-            urine.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.mob.level.getDifficulty().getId() * 4));
-            this.mob.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.mob.getRandom().nextFloat() * 0.4F + 0.8F));
+            urine.shoot(d0, d1 + d3 * (double)0.2F, d2, 10f, 0f);
+            /*urine.shootFromRotation(mob, (float)mob.getX(), (float)mob.getY(), (float)mob.getZ(), 5, 0);
+            urine.setNoGravity(true);
+             */
             this.mob.level.addFreshEntity(urine);
         }
 

@@ -89,6 +89,7 @@ public class EntityToxicWater extends AbstractArrow implements IAnimatable {
     public void tick() {
         lifeTime++;
         Vec3 vector3d = this.getDeltaMovement();
+        this.setDeltaMovement(vector3d.multiply(1.0D, 0.2D, 1.0D));
         if(lifeTime>=maxLifeTime) {
             lifeTime=0;
             this.discard();
@@ -97,7 +98,7 @@ public class EntityToxicWater extends AbstractArrow implements IAnimatable {
         float f = 0.99F;
         float f1 = 0.06F;
 
-        this.setYRot((float) (Mth.atan2(vector3d.x, vector3d.z) * (double) (180F / (float) Math.PI)));
+        this.setYRot(90f);
 
         super.tick();
     }
@@ -128,14 +129,6 @@ public class EntityToxicWater extends AbstractArrow implements IAnimatable {
         return vector3d.x * vector3d.x + vector3d.z * vector3d.z;
     }
 
-    public void shootFromRotation(Entity p_234612_1_, float p_234612_2_, float p_234612_3_, float p_234612_4_, float p_234612_5_, float p_234612_6_) {
-        float f = -Mth.sin(p_234612_3_ * ((float) Math.PI / 180F)) * Mth.cos(p_234612_2_ * ((float) Math.PI / 180F));
-        float f1 = -Mth.sin((p_234612_2_ + p_234612_4_) * ((float) Math.PI / 180F));
-        float f2 = Mth.cos(p_234612_3_ * ((float) Math.PI / 180F)) * Mth.cos(p_234612_2_ * ((float) Math.PI / 180F));
-        this.shoot(f, f1, f2, p_234612_5_, p_234612_6_);
-        Vec3 vector3d = p_234612_1_.getDeltaMovement();
-        this.setDeltaMovement(this.getDeltaMovement().add(vector3d.x, p_234612_1_.isOnGround() ? 0.0D : vector3d.y, vector3d.z));
-    }
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
         event.getController().setAnimation(new AnimationBuilder().loop("animation.piss.move"));
