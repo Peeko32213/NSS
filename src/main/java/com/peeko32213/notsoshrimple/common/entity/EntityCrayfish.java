@@ -480,20 +480,6 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
             this.mob.lookAt(target, 100000, 100000);
             Vec3 aim = this.mob.getLookAngle();
-            /*
-            EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level);
-            urine.setOwner(this.mob);
-            double x = pos.x + aim.x + 0.75*(aim.x-aim.z);
-            double z = pos.z + aim.z + 0.75*(aim.z+aim.x);
-            double y = pos.y + 2 + 0.075*(aim.y);
-            urine.setPos(x, y, z);
-
-            double xDistance = target.getX() - this.mob.getX();
-            double yDistance = target.getY(0.3333333333333333D) - urine.getY();
-            double zDistance = target.getZ() - this.mob.getZ();
-            double yMath = (Mth.sqrt((float) ((xDistance * xDistance) + (zDistance * zDistance)))) * 0.10000000298023224D;
-            urine.shoot(xDistance, yDistance, zDistance, 1.6F, 11.0F);
-            this.mob.level.addFreshEntity(urine);*/
 
             EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level);
             urine.setOwner(this.mob);
@@ -502,10 +488,8 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             double d1 = target.getY(0.3333333333333333D) - urine.getY();
             double d2 = target.getZ() - this.mob.getZ();
             double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+            this.mob.setXRot((float)Mth.atan2(d1, d0));
             urine.shoot(d0, d1 + d3 * (double)0.2F, d2, 10f, 0f);
-            /*urine.shootFromRotation(mob, (float)mob.getX(), (float)mob.getY(), (float)mob.getZ(), 5, 0);
-            urine.setNoGravity(true);
-             */
             this.mob.level.addFreshEntity(urine);
         }
 
