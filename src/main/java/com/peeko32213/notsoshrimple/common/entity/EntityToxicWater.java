@@ -10,9 +10,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -25,7 +27,7 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
-public class EntityToxicWater extends AbstractArrow implements IAnimatable {
+public class EntityToxicWater extends AbstractHurtingProjectile implements IAnimatable {
 
     private LivingEntity owner;
     private int lifeTime;
@@ -42,7 +44,7 @@ public class EntityToxicWater extends AbstractArrow implements IAnimatable {
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     public EntityToxicWater(EntityType<? extends Projectile> p_37248_, Level p_37249_) {
-        super((EntityType<? extends AbstractArrow>) p_37248_, p_37249_);
+        super((EntityType<? extends AbstractHurtingProjectile>) p_37248_, p_37249_);
     }
 
     @Override
@@ -81,26 +83,30 @@ public class EntityToxicWater extends AbstractArrow implements IAnimatable {
     }
 
     @Override
-    public boolean isNoGravity() {
-        return false;
-    }
-
-    @Override
     public void tick() {
-        lifeTime++;
-        Vec3 vector3d = this.getDeltaMovement();
-        this.setDeltaMovement(vector3d.multiply(1.0D, 0.2D, 1.0D));
-        if(lifeTime>=maxLifeTime) {
-            lifeTime=0;
-            this.discard();
-        }
-        this.addParticlesAroundSelf(this.getTrailParticle());
-        float f = 0.99F;
-        float f1 = 0.06F;
-
-        this.setYRot(90f);
 
         super.tick();
+        Vec3 vector3d = this.getDeltaMovement();
+        double d0 = this.getX() + vector3d.x;
+        double d1 = this.getY() + vector3d.y;
+        double d2 = this.getZ() + vector3d.z;
+
+        this.setYRot(90f);
+        this.updateRotation();
+        float f = 0.99F;
+        float f1 = 0.06F;
+        if (this.level.getBlockStates(this.getBoundingBox()).noneMatch(BlockBehaviour.BlockStateBase::isAir)) {
+            this.remove(RemovalReason.DISCARDED);
+        } else if (this.isInWaterOrBubble()) {
+            this.remove(RemovalReason.DISCARDED);
+        } else {
+            this.setDeltaMovement(vector3d.scale((double)0.99F));
+            /*if (!this.isNoGravity()) {
+                this.setDeltaMovement(this.getDeltaMovement().add(0.0D, (double)-0.06D, 0.0D));
+            }*/
+
+            this.setPos(d0, d1, d2);
+        }
     }
 
     @Override
@@ -119,10 +125,10 @@ public class EntityToxicWater extends AbstractArrow implements IAnimatable {
 
     }
 
-    @Override
-    protected ItemStack getPickupItem() {
-        return ItemStack.EMPTY;
-    }
+    //@Override
+    //protected ItemStack getPickupItem() {
+   //     return ItemStack.EMPTY;
+    //}
 
 
     private double horizontalMag(Vec3 vector3d) {

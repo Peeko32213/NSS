@@ -34,6 +34,7 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.LargeFireball;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -219,7 +220,16 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         private int failedPathFindingPenalty = 0;
         private boolean canPenalize = false;
         private int animTime = 0;
-
+        private int targetVelocityTracker = 0;
+        private double targetNowX;
+        private double targetNowZ;
+        private double targetNowY;
+        private double targetWasX;
+        private double targetWasZ;
+        private double targetWasY;
+        private double netDeltaX = 0;
+        private double netDeltaZ = 0;
+        private double netDeltaY = 0;
 
 
         public CrayfishMeleeAttackGoal(EntityCrayfish p_i1636_1_, double p_i1636_2_, boolean p_i1636_4_) {
@@ -453,15 +463,68 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             animTime++;
             this.mob.setXRot((float) Mth.atan2(this.mob.getTarget().getX() - this.mob.getX(), this.mob.getTarget().getY() - this.mob.getY()) * (180F / (float)Math.PI));
             this.mob.getNavigation().stop();
+            LivingEntity target = this.mob.getTarget();
+
+            if (targetWasX != 0) {
+                targetWasX = targetNowX;
+                targetWasZ = targetNowZ;
+                targetWasY = targetNowY;
+            }
+            targetNowX = target.getX();
+            targetNowZ = target.getZ();
+            targetNowY = target.getY();
+
+            if (targetWasX == 0) {
+                //if all the coords are 0(i.e. starting the tickpiss function), store the current coords instead of the past coords and maintain them for a tick
+                targetWasX = targetNowX;
+                targetWasZ = targetNowZ;
+                targetWasY = targetNowY;
+            }
+
+            double thisDeltaX = targetWasX - targetNowX;
+            double thisDeltaZ = targetWasZ - targetNowZ;
+            double thisDeltaY = targetWasY - targetNowY;
+
+            netDeltaX = netDeltaX += thisDeltaX;
+            netDeltaZ = netDeltaZ += thisDeltaZ;
+            netDeltaY = netDeltaY += thisDeltaY;
+            //basically, just add all the displacement together and get an average displacement, and then add the displacement to each of the player axis to predict where it will go. If the player stands still for more than 2 ticks, reset.
+
+            if (thisDeltaX < 2 && thisDeltaZ < 2 && thisDeltaY < 2 ) {
+                //reset the calculation if the player stops moving
+                targetNowX = 0;
+                targetNowY = 0;
+                targetNowZ = 0;
+                targetWasX = 0;
+                targetWasY = 0;
+                targetWasZ = 0;
+                netDeltaX = 0;
+                netDeltaY = 0;
+                netDeltaZ = 0;
+            }
+
             if (animTime==11) {
-                piss(this.mob.getTarget());
+                double avgDeltaX = netDeltaX/animTime;
+                double avgDeltaY = netDeltaY/animTime;
+                double avgDeltaZ = netDeltaZ/animTime;
+
+                piss(this.mob.getTarget(), avgDeltaY, avgDeltaX, avgDeltaZ);
             }
             if(animTime>=20) {
                 animTime=0;
                 this.mob.setAnimationState(0);
                 this.resetAttackCooldown();
                 this.ticksUntilNextPathRecalculation = 0;
-                this.rangedAttackCD = 100;
+                this.rangedAttackCD = this.mob.getRandom().nextInt(100);;
+                targetNowX = 0;
+                targetNowY = 0;
+                targetNowZ = 0;
+                targetWasX = 0;
+                targetWasY = 0;
+                targetWasZ = 0;
+                netDeltaX = 0;
+                netDeltaY = 0;
+                netDeltaZ = 0;
             }
         }
 
@@ -474,7 +537,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         //    "minecraft:villager"
         //other victims
 
-        protected void piss(LivingEntity target) {
+        protected void piss(LivingEntity target, double offsetY, double offsetX, double offsetZ ) {
             Vec3 pos = mob.position();
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
@@ -483,13 +546,21 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
             EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level);
             urine.setOwner(this.mob);
-            urine.moveTo(this.mob.getX(), this.mob.getY() + 2, this.mob.getZ());
-            double d0 = target.getX() - this.mob.getX();
+            urine.moveTo(this.mob.getX(), this.mob.getY()+3, this.mob.getZ());
+            /*double d0 = target.getX() - this.mob.getX();
             double d1 = target.getY(0.3333333333333333D) - urine.getY();
             double d2 = target.getZ() - this.mob.getZ();
             double d3 = Math.sqrt(d0 * d0 + d2 * d2);
             this.mob.setXRot((float)Mth.atan2(d1, d0));
             urine.shoot(d0, d1 + d3 * (double)0.2F, d2, 10f, 0f);
+            (1 + target.getSpeed())*/
+
+            final double d0 = target.getX() + offsetX - this.mob.getX();
+            final double d1 = target.getY(1/3D) + offsetY - urine.getY();
+            final double d2 = target.getZ() + offsetZ - this.mob.getZ();
+            final double velocity = this.mob.distanceTo(target) * 0.066;
+            final float f = Mth.sqrt((float) (d0 * d0 + d2 * d2)) * 0.2F;
+            urine.shoot(d0, d1, d2, 10f, 0F);
             this.mob.level.addFreshEntity(urine);
         }
 
