@@ -230,6 +230,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         private double netDeltaX = 0;
         private double netDeltaZ = 0;
         private double netDeltaY = 0;
+        private double resetLimit = 1;
 
 
         public CrayfishMeleeAttackGoal(EntityCrayfish p_i1636_1_, double p_i1636_2_, boolean p_i1636_4_) {
@@ -465,7 +466,10 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             this.mob.getNavigation().stop();
             LivingEntity target = this.mob.getTarget();
 
+            double distInit = Math.sqrt(Math.pow(target.getX() - this.mob.getX(), 2) + Math.pow(target.getZ() - this.mob.getZ(), 2));
+
             if (targetWasX != 0) {
+                //send the last tick's coords to coord storage
                 targetWasX = targetNowX;
                 targetWasZ = targetNowZ;
                 targetWasY = targetNowY;
@@ -475,7 +479,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             targetNowY = target.getY();
 
             if (targetWasX == 0) {
-                //if all the coords are 0(i.e. starting the tickpiss function), store the current coords instead of the past coords and maintain them for a tick
+                //if all the coords are 0(i.e. start of the function), store the current coords instead of the past coords and maintain them for a tick
                 targetWasX = targetNowX;
                 targetWasZ = targetNowZ;
                 targetWasY = targetNowY;
@@ -488,20 +492,50 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             netDeltaX = netDeltaX += thisDeltaX;
             netDeltaZ = netDeltaZ += thisDeltaZ;
             netDeltaY = netDeltaY += thisDeltaY;
-            //basically, just add all the displacement together and get an average displacement, and then add the displacement to each of the player axis to predict where it will go. If the player stands still for more than 2 ticks, reset.
+            //basically, just add all the displacement together and get an average displacement, and then add the displacement to each of the player axis to predict where it will go. If the player stands still for more than resetLimit ticks, reset.
 
-            if (thisDeltaX < 2 && thisDeltaZ < 2 && thisDeltaY < 2 ) {
-                //reset the calculation if the player stops moving
+            if (thisDeltaX < resetLimit) {
+                //reset the calculation if the player stops moving or slows down significantly in any axis
                 targetNowX = 0;
-                targetNowY = 0;
-                targetNowZ = 0;
                 targetWasX = 0;
-                targetWasY = 0;
-                targetWasZ = 0;
                 netDeltaX = 0;
-                netDeltaY = 0;
+                thisDeltaX = 0;
+                targetNowZ = 0;
+                targetWasZ = 0;
                 netDeltaZ = 0;
+                thisDeltaZ = 0;
+                targetNowY = 0;
+                targetWasY = 0;
+                netDeltaY = 0;
+                thisDeltaY = 0;
             }
+            if (thisDeltaY < 1) {
+                targetNowY = 0;
+                targetWasY = 0;
+                netDeltaY = 0;
+                thisDeltaY = 0;
+            }
+
+
+            /*if (thisDeltaX < resetLimit) {
+                //reset the calculation if the player stops moving or slows down significantly in any axis
+                targetNowX = 0;
+                targetWasX = 0;
+                netDeltaX = 0;
+                thisDeltaX = 0;
+            }
+            if (thisDeltaZ < resetLimit){
+                targetNowZ = 0;
+                targetWasZ = 0;
+                netDeltaZ = 0;
+                thisDeltaZ = 0;
+            }
+            if (thisDeltaY < resetLimit) {
+                targetNowY = 0;
+                targetWasY = 0;
+                netDeltaY = 0;
+                thisDeltaY = 0;
+            }*/
 
             if (animTime==11) {
                 double avgDeltaX = netDeltaX/animTime;
@@ -555,12 +589,19 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             urine.shoot(d0, d1 + d3 * (double)0.2F, d2, 10f, 0f);
             (1 + target.getSpeed())*/
 
+            /*            final double distX = target.getX() - urine.getX();
+            final double distY = target.getY() - urine.getY();
+            final double distZ = target.getZ() - urine.getZ();
+            final float distVector = Mth.sqrt((float) ((float)Math.pow(distX, 2) + Math.pow(distZ, 2)));
+
+            double thetaAngular = distVector */
+
             final double d0 = target.getX() + offsetX - this.mob.getX();
             final double d1 = target.getY(1/3D) + offsetY - urine.getY();
             final double d2 = target.getZ() + offsetZ - this.mob.getZ();
-            final double velocity = this.mob.distanceTo(target) * 0.066;
             final float f = Mth.sqrt((float) (d0 * d0 + d2 * d2)) * 0.2F;
-            urine.shoot(d0, d1, d2, 10f, 0F);
+            urine.shoot(d0, d1+1, d2, 10f, 0F);
+            //d1+1 so that they can get headshots
             this.mob.level.addFreshEntity(urine);
         }
 
