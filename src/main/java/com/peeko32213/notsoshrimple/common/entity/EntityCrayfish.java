@@ -542,7 +542,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 double avgDeltaY = netDeltaY/animTime;
                 double avgDeltaZ = netDeltaZ/animTime;
 
-                piss(this.mob.getTarget(), avgDeltaY, avgDeltaX, avgDeltaZ);
+                piss(this.mob.getTarget(), thisDeltaY, thisDeltaX, thisDeltaZ);
             }
             if(animTime>=20) {
                 animTime=0;
@@ -596,9 +596,9 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
             double thetaAngular = distVector */
 
-            final double d0 = target.getX() + offsetX - this.mob.getX();
+            final double d0 = target.getX() + offsetX - urine.getX();
             final double d1 = target.getY(1/3D) + offsetY - urine.getY();
-            final double d2 = target.getZ() + offsetZ - this.mob.getZ();
+            final double d2 = target.getZ() + offsetZ - urine.getZ();
             final float f = Mth.sqrt((float) (d0 * d0 + d2 * d2)) * 0.2F;
             urine.shoot(d0, d1+1, d2, 10f, 0F);
             //d1+1 so that they can get headshots
