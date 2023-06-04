@@ -7,31 +7,31 @@
 				"texture_width": 128,
 				"texture_height": 128,
 				"visible_bounds_width": 5,
-				"visible_bounds_height": 1.5,
-				"visible_bounds_offset": [0, 0.25, 0]
+				"visible_bounds_height": 2.5,
+				"visible_bounds_offset": [0, 0.75, 0]
 			},
 			"bones": [
 				{
 					"name": "pisscore",
 					"pivot": [0, 0, 0],
 					"cubes": [
-						{"origin": [-4, -4, -8], "size": [8, 8, 16], "uv": [0, 0]}
+						{"origin": [-4, 0, -8], "size": [8, 8, 16], "uv": [0, 0]}
 					]
 				},
 				{
 					"name": "moisture",
 					"parent": "pisscore",
-					"pivot": [0, 0, 8],
+					"pivot": [0, 4, 8],
 					"cubes": [
-						{"origin": [-4, -4, -24], "size": [8, 8, 32], "inflate": 0.01, "uv": [0, 54]}
+						{"origin": [-4, 0, -24], "size": [8, 8, 32], "inflate": 0.01, "uv": [0, 54]}
 					]
 				},
 				{
 					"name": "moist2",
 					"parent": "pisscore",
-					"pivot": [0, 0, 8],
+					"pivot": [0, 4, 8],
 					"cubes": [
-						{"origin": [-3, -3, -41], "size": [6, 6, 48], "inflate": 0.01, "uv": [0, 0]}
+						{"origin": [-3, 1, -41], "size": [6, 6, 48], "inflate": 0.01, "uv": [0, 0]}
 					]
 				}
 			]

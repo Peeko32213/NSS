@@ -1,5 +1,6 @@
 package com.peeko32213.notsoshrimple.common.entity;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
@@ -15,6 +16,9 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -48,12 +52,19 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
     }
 
     @Override
-    protected void onHit(HitResult p_37218_) {
-        super.onHit(p_37218_);
-        if (!this.level.isClientSide) {
+    protected void onHit(HitResult pResult) {
+        super.onHit(pResult);
+        HitResult.Type hitresult$type = pResult.getType();
+        if (hitresult$type == HitResult.Type.ENTITY) {
+            this.onHitEntity((EntityHitResult)pResult);
+            this.level.gameEvent(GameEvent.PROJECTILE_LAND, pResult.getLocation(), GameEvent.Context.of(this, (BlockState)null));
+        } else if (hitresult$type == HitResult.Type.BLOCK) {
+            BlockHitResult blockhitresult = (BlockHitResult)pResult;
+            //this.onHitBlock(blockhitresult);
+            BlockPos blockpos = blockhitresult.getBlockPos();
+            this.level.gameEvent(GameEvent.PROJECTILE_LAND, blockpos, GameEvent.Context.of(this, this.level.getBlockState(blockpos)));
             this.discard();
         }
-
     }
 
     protected static float lerpRotation(float p_234614_0_, float p_234614_1_) {
@@ -73,11 +84,11 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
     }
 
     private void addParticlesAroundSelf(ParticleOptions p_28338_) {
-        for(int i = 0; i < 7; ++i) {
+        for(int i = 0; i < 20; ++i) {
             double d0 = this.random.nextGaussian() * 0.01D;
             double d1 = this.random.nextGaussian() * 0.01D;
             double d2 = this.random.nextGaussian() * 0.01D;
-            this.level.addParticle(p_28338_, 0d, 0d, 0d, d0, d1, d2);
+            this.level.addParticle(ParticleTypes.BUBBLE_COLUMN_UP, 0d, 0d, 0d, d0, d1, d2);
         }
 
     }
@@ -107,19 +118,20 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
 
             this.setPos(d0, d1, d2);
         }
+
     }
 
     @Override
-    protected void onHitEntity(EntityHitResult p_37216_) {
-        super.onHitEntity(p_37216_);
+    protected void onHitEntity(EntityHitResult hitData) {
+        super.onHitEntity(hitData);
         Entity entity1 = this.getOwner();
-        Entity entity = p_37216_.getEntity();
+        Entity entity = hitData.getEntity();
+        if (entity instanceof LivingEntity) {
+            hitData.getEntity().hurt(DamageSource.mobAttack((LivingEntity) entity1), damage);
+            ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.POISON, 200, 2));
+        }
         if (entity1 instanceof LivingEntity) {
             ((LivingEntity)entity1).setLastHurtMob(entity);
-            p_37216_.getEntity().hurt(DamageSource.mobAttack((LivingEntity) entity1), damage);
-            if (entity instanceof LivingEntity) {
-                ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.POISON, 2, 200));
-            }
         }
         this.discard();
 
