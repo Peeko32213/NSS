@@ -3,17 +3,15 @@ package com.peeko32213.notsoshrimple.core.event;
 import com.google.common.base.Predicates;
 import com.peeko32213.notsoshrimple.NotSoShrimple;
 import com.peeko32213.notsoshrimple.common.entity.EntityCrayfish;
-import com.peeko32213.notsoshrimple.common.entity.EntityManeaterShell;
+import com.peeko32213.notsoshrimple.common.entity.mobs.EntityManeaterShell;
+import com.peeko32213.notsoshrimple.common.particles.FoamStandardParticle;
 import com.peeko32213.notsoshrimple.core.registry.NSSEntities;
-import net.minecraft.core.Holder;
+import com.peeko32213.notsoshrimple.core.registry.NSSParticles;
+import net.minecraft.client.Minecraft;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.common.world.BiomeModifier;
-import net.minecraftforge.common.world.ModifiableBiomeInfo;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -37,6 +35,12 @@ public class CommonModEvents {
         event.put(NSSEntities.MANEATER.get(), EntityManeaterShell.createAttributes().build());
 
     }
+
+    @SubscribeEvent
+    public static void registerParticleFactories (final RegisterParticleProvidersEvent event) {
+        Minecraft.getInstance().particleEngine.register(NSSParticles.FOAM_STANDARD.get(), FoamStandardParticle.Provider::new);
+    }
+
 
     public static Predicate<LivingEntity> buildPredicateFromTag(TagKey<EntityType<?>> entityTag){
         if(entityTag == null){

@@ -1,9 +1,7 @@
 package com.peeko32213.notsoshrimple.client.model;
 
 import com.peeko32213.notsoshrimple.NotSoShrimple;
-import com.peeko32213.notsoshrimple.common.entity.EntityManeaterShell;
-import com.peeko32213.notsoshrimple.common.entity.EntityToxicWater;
-import com.peeko32213.notsoshrimple.common.item.ItemSwampBuster;
+import com.peeko32213.notsoshrimple.common.entity.projectiles.EntityToxicWater;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 

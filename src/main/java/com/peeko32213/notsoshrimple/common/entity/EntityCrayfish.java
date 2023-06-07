@@ -1,5 +1,6 @@
 package com.peeko32213.notsoshrimple.common.entity;
 
+import com.peeko32213.notsoshrimple.common.entity.projectiles.EntityToxicWater;
 import com.peeko32213.notsoshrimple.common.entity.utl.*;
 import com.peeko32213.notsoshrimple.core.config.NotSoShrimpleConfig;
 import com.peeko32213.notsoshrimple.core.registry.NSSEntities;
@@ -10,19 +11,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -33,10 +27,6 @@ import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.LargeFireball;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -55,10 +45,8 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
-import java.util.Random;
 
 
 public class EntityCrayfish extends Monster implements IAnimatable {
@@ -220,7 +208,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         private int failedPathFindingPenalty = 0;
         private boolean canPenalize = false;
         private int animTime = 0;
-        private int targetVelocityTracker = 0;
+        /*private int targetVelocityTracker = 0;
         private double targetNowX;
         private double targetNowZ;
         private double targetNowY;
@@ -230,7 +218,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         private double netDeltaX = 0;
         private double netDeltaZ = 0;
         private double netDeltaY = 0;
-        private double resetLimit = 0.09;
+        private double resetLimit = 0.09;*/
         //speed the player has to be at before resetting the aimbot^
 
         public CrayfishMeleeAttackGoal(EntityCrayfish p_i1636_1_, double p_i1636_2_, boolean p_i1636_4_) {
@@ -417,6 +405,8 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
 
         protected void tickLeftClawAttack () {
+            this.mob.lookAt(this.mob.getTarget(), 100000, 100000);
+            this.mob.yBodyRot = this.mob.yHeadRot;
             animTime++;
             this.mob.getNavigation().stop();
             if(animTime==12) {
@@ -434,6 +424,10 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         }
 
         protected void tickRightClawAttack () {
+            if (animTime <= 3) {
+                this.mob.lookAt(this.mob.getTarget(), 100000, 100000);
+                this.mob.yBodyRot = this.mob.yHeadRot;
+            }
             animTime++;
             if(animTime==12) {
                 preformRightClawAttack();
@@ -447,10 +441,14 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
         }
         protected void tickSlamAttack () {
+            if (animTime <= 2) {
+                this.mob.lookAt(this.mob.getTarget(), 100000, 100000);
+                this.mob.yBodyRot = this.mob.yHeadRot;
+            }
             animTime++;
             this.mob.getNavigation().stop();
             if(animTime==15) {
-                preformSlamAttack();
+                performSlamAttack();
             }
             if(animTime>=17) {
                 animTime=0;
@@ -460,12 +458,14 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             }
         }
 
-        protected void tickPiss (){
-            animTime++;
-            this.mob.setXRot((float) Mth.atan2(this.mob.getTarget().getX() - this.mob.getX(), this.mob.getTarget().getY() - this.mob.getY()) * (180F / (float)Math.PI));
+        protected void tickPiss (){;
             this.mob.getNavigation().stop();
             LivingEntity target = this.mob.getTarget();
-
+            this.mob.lookAt(target, 100000, 100000);
+            this.mob.yBodyRot = this.mob.yHeadRot;
+            animTime ++;
+//--------------------------------------------------------------------------------------------------------------------------------------
+/*
             double distInit = Math.sqrt(Math.pow(target.getX() - this.mob.getX(), 2) + Math.pow(target.getZ() - this.mob.getZ(), 2));
 
             targetNowX = target.getX();
@@ -493,7 +493,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
             if (animTime != 1 && (thisDeltaX < resetLimit || target.isAlive() != true)) {
                 //reset the calculation if the player stops moving or slows down significantly in any axis (less than resetlimit blocks per sec)
-                //System.out.println("resetfull" + thisDeltaX);
+                //System.out.println("resetX" + thisDeltaX);
                 targetNowX = target.getX();
                 targetWasX = 0;
                 netDeltaX = 0;
@@ -511,7 +511,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
             if (animTime != 1 && (thisDeltaZ < resetLimit || target.isAlive() != true)) {
                 //reset the calculation if the player stops moving or slows down significantly in any axis (less than .5 blocks per sec)
-                System.out.println("resetfull" + thisDeltaZ);
+                //System.out.println("resetZ" + thisDeltaZ);
                 targetNowX = target.getX();
                 targetWasX = 0;
                 netDeltaX = 0;
@@ -526,7 +526,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 thisDeltaY = 0;
             }
 
-            /*if (thisDeltaX < resetLimit || target.isAlive() != true) {
+            if (thisDeltaX < resetLimit || target.isAlive() != true) {
                 //reset the calculation if the player stops moving or slows down significantly in the X axis (less than .5 blocks per sec)
                 targetNowX = 0;
                 targetWasX = 0;
@@ -542,7 +542,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 netDeltaZ = 0;
                 thisDeltaZ = 0;
                 System.out.println("resetZ" + thisDeltaZ);
-            }*/
+            }
 
             if (animTime != 1 && thisDeltaY < 1) {
                 //reset the calculation if the player isn't jumping
@@ -557,25 +557,26 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             netDeltaZ = netDeltaZ += thisDeltaZ;
             netDeltaY = netDeltaY += thisDeltaY;
             //basically, just add all the displacement together and get an average displacement, and then add the displacement to each of the player axis to predict where it will go. If the player stands still for more than resetLimit ticks, reset.
+*/
+//--------------------------------------------------------------------------------------------------------------------------------------
 
+            if (animTime==8) {
+                /*double avgDeltaX = netDeltaX/8;
+                double avgDeltaY = netDeltaY/8;
+                double avgDeltaZ = netDeltaZ/8;*/
 
-            if (animTime==11) {
-                double avgDeltaX = netDeltaX/animTime;
-                double avgDeltaY = netDeltaY/animTime;
-                double avgDeltaZ = netDeltaZ/animTime;
-
-                piss(this.mob.getTarget(), avgDeltaY, avgDeltaX, avgDeltaZ);
+                piss(this.mob.getTarget(), target.getDeltaMovement());
                 //System.out.println("net" + netDeltaY + " " + netDeltaX + " " + netDeltaZ);
-                System.out.println(avgDeltaY);
+                //System.out.println(avgDeltaY);
 
             }
-            if(animTime>=11) {
+            if(animTime>=12) {
                 animTime=0;
                 this.mob.setAnimationState(0);
                 this.resetAttackCooldown();
                 this.ticksUntilNextPathRecalculation = 0;
-                this.rangedAttackCD = 0;//this.mob.getRandom().nextInt(100);;
-                targetNowX = target.getX();
+                this.rangedAttackCD = 20;//this.mob.getRandom().nextInt(100);;
+                /*targetNowX = target.getX();
                 targetNowY = target.getX();
                 targetNowZ = target.getX();
                 targetWasX = 0;
@@ -583,7 +584,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 targetWasZ = 0;
                 netDeltaX = 0;
                 netDeltaY = 0;
-                netDeltaZ = 0;
+                netDeltaZ = 0;*/
             }
         }
 
@@ -596,27 +597,54 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         //    "minecraft:villager"
         //other victims
 
-        protected void piss(LivingEntity target, double offsetY, double offsetX, double offsetZ ) {
-            Vec3 pos = mob.position();
+        protected void piss(LivingEntity target, Vec3 targetVelocity) {
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
-            this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
-            this.mob.lookAt(target, 100000, 100000);
+            this.mob.yBodyRot = this.mob.yHeadRot;
 
             EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level);
             urine.setOwner(this.mob);
-            urine.moveTo(this.mob.getX(), this.mob.getY()+3, this.mob.getZ());
+            urine.moveTo(this.mob.getX(), this.mob.getY()+2, this.mob.getZ());
 
-            final double d0 = target.getX() + offsetX - urine.getX();
-            final double d1 = target.getY() - urine.getY() + target.getEyeHeight()/2;// + offsetY;
-            final double d2 = target.getZ() + offsetZ - urine.getZ();
-            final float f = Mth.sqrt((float) (d0 * d0 + d2 * d2)) * 0.2F;
-            urine.shoot(d0, d1, d2, 3f, 0F);
+            double pissspeed = 6;
+            //blocks per second^
+            Vec3 tStartPos = target.position();
+            Vec3 tTempPos = tStartPos;
 
+            for (int count = 0; count < 4; count++) {
+                double distFlat = Math.sqrt(Math.pow(tTempPos.x, 2)+Math.pow(tTempPos.z, 2));
+                double dist3D = Math.sqrt(Math.pow(distFlat, 2) + Math.pow(tTempPos.y, 2));
+                double pissReachTime = distFlat/pissspeed;
+
+                tTempPos = tTempPos.add(targetVelocity.multiply(pissReachTime, pissReachTime, pissReachTime));
+            }
+            //multiply target speed by time to get target position additive^
+
+            /*double distFlat = Math.sqrt(Math.pow(tTempPos.x - this.mob.getX(), 2) + (Math.pow(tTempPos.z - this.mob.getZ(), 2)));
+            double dist3D = Math.sqrt(Math.pow(distFlat, 2) + (Math.pow(tTempPos.y - this.mob.getY(), 2)));
+            double pissReachTime = dist3D/pissspeed;
+            Vec3 finalTargetPos = tTempPos.add(targetVelocity.multiply(pissReachTime, pissReachTime, pissReachTime));*/
+            Vec3 finalTargetPos = tTempPos;
+
+            double dx = finalTargetPos.x() - urine.getX();
+            double dy = target.getY() + (target.getEyeHeight()*0.5) - urine.getY();// + finalTargetPos.y - urine.getY();
+            double dz = finalTargetPos.z() - urine.getZ();
+
+            //this.mob.lookAt(target, 100000, 100000);
+            //this.mob.yBodyRot = this.mob.yHeadRot;
+            urine.shoot(dx, dy, dz, (float) pissspeed, 0F);
+            System.out.println("xyz" + dx + " " + dy + " " + dz);
+            System.out.println("speed" + targetVelocity.x + " " + targetVelocity.y + " " + targetVelocity.z);
             this.mob.level.addFreshEntity(urine);
+            //LightningBolt marker = EntityType.LIGHTNING_BOLT.create(this.mob.level);
+            //marker.moveTo(finalTargetPos);
+            //System.out.println("intent" + pos);
+            //System.out.println("target" + target.position());
+            //this.mob.level.addFreshEntity(marker);
         }
 
-        protected void preformSlamAttack () {
+        protected void performSlamAttack() {
             Vec3 pos = mob.position();
+
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
             HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),30.0f, 2.5f, mob, pos,  20.0F, -Math.PI/6, Math.PI/6, -1.0f, 3.0f);
@@ -634,12 +662,12 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             Vec3 pos = mob.position();
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
-            HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),15.0f, 1.0f, mob, pos,  6.0F, -Math.PI/2, Math.PI/2, -1.0f, 3.0f);
+            HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),15.0f, 1.0f, mob, pos,  8.0F, -Math.PI/2, Math.PI/2, -1.0f, 3.0f);
         }
 
 
         protected void resetAttackCooldown () {
-            this.ticksUntilNextAttack = 0;
+            this.ticksUntilNextAttack = 5;
         }
 
         protected boolean isTimeToAttack () {
@@ -682,6 +710,45 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         this.playSound(NSSSounds.CRAYFISH_SCUTTLE.get(), 0.3F, 1.0F);
     }
 
+    /*
+    public static void pointTowards(Vec3 targetcoords, LivingEntity entityinquestion){
+        double xdiff = targetcoords.x - entityinquestion.getX();
+        double zdiff = targetcoords.z - entityinquestion.getZ();
+        double rvalue = 0;
+
+        if (xdiff == 0) {
+            if (zdiff == 0 || zdiff > 0) {
+                rvalue = 0;
+            } else if (zdiff < 0) {
+                rvalue = 180;
+            }
+            entityinquestion.setYRot((float) rvalue);
+            return;
+
+        } else if (xdiff < 0) {
+            if (zdiff == 0) {
+                rvalue = 0;
+            } else if (zdiff < 0) {
+                rvalue = Math.toDegrees(Math.atan(xdiff/zdiff));
+            } else if (zdiff > 0) {
+                rvalue = 180 - Math.toDegrees(Math.atan(xdiff/zdiff));
+            }
+
+        } else if (xdiff > 0) {
+            if (zdiff == 0) {
+                rvalue = 0;
+            } else if (zdiff < 0) {
+                rvalue = -(Math.toDegrees(Math.atan(xdiff/zdiff)));
+            } else if (zdiff > 0) {
+                rvalue = -(180 - Math.toDegrees(Math.atan(xdiff/zdiff)));
+            }
+        }
+        entityinquestion.setYRot((float) -(Math.toRadians(180 + rvalue)));
+        //System.out.println("pointing" + (180 + rvalue));
+        //System.out.println(Math.toDegrees(entityinquestion.getYRot()));
+    }
+    */
+
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
         int animState = this.getAnimationState();
         {
@@ -701,6 +768,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
                 case 24:
                     event.getController().setAnimation(new AnimationBuilder().playOnce("animation.lobster.snipe"));
+                    break;
 
                 default:
                     if (!(event.getLimbSwingAmount() > -0.06F && event.getLimbSwingAmount() < 0.06F)) {
@@ -721,13 +789,18 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     @Override
     public void registerControllers(AnimationData data) {
         data.setResetSpeedInTicks(1);
-        AnimationController<EntityCrayfish> controller = new AnimationController<>(this, "controller", 4, this::predicate);
+        AnimationController<EntityCrayfish> controller = new AnimationController<>(this, "controller", 3, this::predicate);
         data.addAnimationController(controller);
     }
 
     @Override
     public AnimationFactory getFactory() {
         return this.factory;
+    }
+
+    @Override
+    public boolean isOnFire() {
+        return false;
     }
 
     public int getVariant() {

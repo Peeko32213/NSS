@@ -6,6 +6,7 @@ import com.peeko32213.notsoshrimple.core.config.ConfigHolder;
 import com.peeko32213.notsoshrimple.core.config.NotSoShrimpleConfig;
 import com.peeko32213.notsoshrimple.core.registry.NSSEntities;
 import com.peeko32213.notsoshrimple.core.registry.NSSItems;
+import com.peeko32213.notsoshrimple.core.registry.NSSParticles;
 import com.peeko32213.notsoshrimple.core.registry.NSSSounds;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -52,6 +53,7 @@ public class NotSoShrimple
         NSSSounds.DEF_REG.register(modEventBus);
         NSSItems.ITEMS.register(modEventBus);
         NSSEntities.ENTITIES.register(modEventBus);
+        NSSParticles.SHRIMPARTICLES.register(modEventBus);
 
         eventBus.register(this);
 
