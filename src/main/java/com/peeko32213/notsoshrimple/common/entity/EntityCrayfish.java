@@ -1,17 +1,21 @@
 package com.peeko32213.notsoshrimple.common.entity;
 
-import com.peeko32213.notsoshrimple.common.entity.projectiles.EntityToxicWater;
+import com.peeko32213.notsoshrimple.common.entity.EntityToxicWater;
 import com.peeko32213.notsoshrimple.common.entity.utl.*;
 import com.peeko32213.notsoshrimple.core.config.NotSoShrimpleConfig;
 import com.peeko32213.notsoshrimple.core.registry.NSSEntities;
+import com.peeko32213.notsoshrimple.core.registry.NSSParticles;
 import com.peeko32213.notsoshrimple.core.registry.NSSSounds;
 import com.peeko32213.notsoshrimple.core.registry.NSSTags;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
@@ -599,13 +603,50 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
         protected void piss(LivingEntity target, Vec3 targetVelocity) {
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
+            this.mob.getLookControl().setLookAt(target.position());
             this.mob.yBodyRot = this.mob.yHeadRot;
+            Vec3 pissspeed = new Vec3(6,6,6);
+
+            /*Vec3 startPos = this.mob.position().add(0.0D, (double)1.6F, 0.0D);
+            Vec3 deltaPos = target.getEyePosition().subtract(startPos);
+            Vec3 normalDeltaPos = deltaPos.normalize();
+            double hitBoxR = 1.75;
+            //hitbox radius
+
+            this.mob.playSound(SoundEvents.PLAYER_SPLASH_HIGH_SPEED, 3.0F, 1.0F);
+
+            for(int i = 1; i < Mth.floor(normalDeltaPos.length()) + 1500; ++i) {
+                Vec3 scaledPos = startPos.add(normalDeltaPos.scale((double)i));
+                ServerLevel world = (ServerLevel)this.mob.level;
+                world.sendParticles(NSSParticles.FOAM_STANDARD.get(), scaledPos.x, scaledPos.y, scaledPos.z,  1, 0.0D, 0.0D, 0.0D, 0.0D);
+                //System.out.println(scaledPos);
+
+                for(int p = 0; p < 10 * (1 + Math.sqrt(0.001 * i)); ++p) {
+                    double d0 = this.mob.random.nextGaussian() * 0.05D * (Math.sqrt(i));
+                    double d1 = this.mob.random.nextGaussian() * 0.05D * (Math.sqrt(i));
+                    double d2 = this.mob.random.nextGaussian() * 0.05D * (Math.sqrt(i));
+                    double length = this.mob.random.nextDouble();
+                    //System.out.println(length);
+                    world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), (int) 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                    this.mob.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), 0.0D, 0.0D, 0.0D);
+                }
+
+                if (Math.abs(target.position().x - scaledPos.x) <= hitBoxR && Math.abs(target.position().y + 1 - scaledPos.y) <= hitBoxR && Math.abs(target.position().z - scaledPos.z) <= hitBoxR) {
+                    target.hurt(DamageSource.explosion(this.mob), 10.0F);
+                    double d1 = 0.5D * (1.0D - target.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+                    double d0 = 2.5D * (1.0D - target.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+                    target.push(normalDeltaPos.x() * d0, normalDeltaPos.y() * d1, normalDeltaPos.z() * d0);
+                }
+            }*/
+
 
             EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level);
+            urine.setInvisible(true);
+            urine.moveTo(this.mob.getX(), this.mob.getY() + 2, this.mob.getZ());
             urine.setOwner(this.mob);
-            urine.moveTo(this.mob.getX(), this.mob.getY()+2, this.mob.getZ());
+            this.mob.level.addFreshEntity(urine);
 
-            double pissspeed = 6;
+            /*double pissspeed = 6;
             //blocks per second^
             Vec3 tStartPos = target.position();
             Vec3 tTempPos = tStartPos;
@@ -617,29 +658,29 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
                 tTempPos = tTempPos.add(targetVelocity.multiply(pissReachTime, pissReachTime, pissReachTime));
             }
-            //multiply target speed by time to get target position additive^
 
-            /*double distFlat = Math.sqrt(Math.pow(tTempPos.x - this.mob.getX(), 2) + (Math.pow(tTempPos.z - this.mob.getZ(), 2)));
-            double dist3D = Math.sqrt(Math.pow(distFlat, 2) + (Math.pow(tTempPos.y - this.mob.getY(), 2)));
-            double pissReachTime = dist3D/pissspeed;
-            Vec3 finalTargetPos = tTempPos.add(targetVelocity.multiply(pissReachTime, pissReachTime, pissReachTime));*/
             Vec3 finalTargetPos = tTempPos;
 
             double dx = finalTargetPos.x() - urine.getX();
             double dy = target.getY() + (target.getEyeHeight()*0.5) - urine.getY();// + finalTargetPos.y - urine.getY();
             double dz = finalTargetPos.z() - urine.getZ();
 
-            //this.mob.lookAt(target, 100000, 100000);
-            //this.mob.yBodyRot = this.mob.yHeadRot;
             urine.shoot(dx, dy, dz, (float) pissspeed, 0F);
             System.out.println("xyz" + dx + " " + dy + " " + dz);
             System.out.println("speed" + targetVelocity.x + " " + targetVelocity.y + " " + targetVelocity.z);
-            this.mob.level.addFreshEntity(urine);
+            this.mob.level.addFreshEntity(urine);*/
             //LightningBolt marker = EntityType.LIGHTNING_BOLT.create(this.mob.level);
             //marker.moveTo(finalTargetPos);
             //System.out.println("intent" + pos);
             //System.out.println("target" + target.position());
             //this.mob.level.addFreshEntity(marker);
+
+
+        }
+
+        public static AABB getAABB(double pX, double pY, double pZ, LivingEntity entity) {
+            float f = entity.getBbWidth() / 2.0F;
+            return new AABB(pX - (double)f, pY, pZ - (double)f, pX + (double)f, pY + (double)entity.getBbHeight(), pZ + (double)f);
         }
 
         protected void performSlamAttack() {

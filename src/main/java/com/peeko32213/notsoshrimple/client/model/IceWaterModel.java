@@ -1,7 +1,7 @@
 package com.peeko32213.notsoshrimple.client.model;
 
 import com.peeko32213.notsoshrimple.NotSoShrimple;
-import com.peeko32213.notsoshrimple.common.entity.projectiles.EntityIceWater;
+import com.peeko32213.notsoshrimple.common.entity.EntityIceWater;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 

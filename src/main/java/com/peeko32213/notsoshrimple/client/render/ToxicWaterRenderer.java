@@ -1,7 +1,7 @@
 package com.peeko32213.notsoshrimple.client.render;
 
 import com.peeko32213.notsoshrimple.client.model.PoisonWaterModel;
-import com.peeko32213.notsoshrimple.common.entity.projectiles.EntityToxicWater;
+import com.peeko32213.notsoshrimple.common.entity.EntityToxicWater;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import com.peeko32213.notsoshrimple.NotSoShrimple;

@@ -1,8 +1,11 @@
-package com.peeko32213.notsoshrimple.common.entity.projectiles;
+package com.peeko32213.notsoshrimple.common.entity;
 
 import com.peeko32213.notsoshrimple.core.registry.NSSParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -10,6 +13,8 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -17,10 +22,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.*;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -30,9 +33,11 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
+import java.util.List;
+
 public class EntityToxicWater extends AbstractHurtingProjectile implements IAnimatable {
 
-    private LivingEntity owner;
+    private Monster owner;
     private int lifeTime;
     private static ParticleOptions particle = NSSParticles.FOAM_STANDARD.get();
     public boolean isOnFire() {
@@ -43,23 +48,46 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
         return 0.95F;
     }
     public float damage = 30.0f;
-    public int maxLifeTime = 4000;
+    public float pissspeed = 6;
+    //piss speed multiplier
+    public int maxLifeTime = (int) (1500/pissspeed);
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
+
+    Vec3 startPos;
+    Vec3 deltaPos;
+    Vec3 normalDeltaPos;
+    double boxRadius = 1.75;
+    Vec3 scanBox = new Vec3(50,50,50);
+
+    //hitbox radius
 
     public EntityToxicWater(EntityType<? extends Projectile> p_37248_, Level p_37249_) {
         super((EntityType<? extends AbstractHurtingProjectile>) p_37248_, p_37249_);
     }
 
     protected ParticleOptions getTrailParticle() {
-        return NSSParticles.FOAM_STANDARD.get();
+        return ParticleTypes.SNEEZE;
     }
 
     @Override
+    public Monster getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Monster owner) {
+        this.owner = owner;
+        this.startPos = this.position();
+        deltaPos = owner.getTarget().getEyePosition().subtract(startPos);
+        normalDeltaPos = deltaPos.normalize();
+        System.out.println("start" + startPos);
+    }
+
+    /*@Override
     protected void onHit(HitResult pResult) {
         super.onHit(pResult);
-        System.out.println("hit" + this.position());
-        Shulker marker = EntityType.SHULKER.create(this.level);
-        marker.moveTo(this.position());
+        //System.out.println("hit" + this.position());
+        //Shulker marker = EntityType.SHULKER.create(this.level);
+        //marker.moveTo(this.position());
 
 
         HitResult.Type hitresult$type = pResult.getType();
@@ -73,7 +101,7 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
             this.level.gameEvent(GameEvent.PROJECTILE_LAND, blockpos, GameEvent.Context.of(this, this.level.getBlockState(blockpos)));
             this.discard();
         }
-    }
+    }*/
 
     protected static float lerpRotation(float p_234614_0_, float p_234614_1_) {
         while (p_234614_1_ - p_234614_0_ < -180.0F) {
@@ -88,7 +116,7 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
     }
 
 
-    private void addParticlesAroundSelf() {
+    /*private void addParticlesAroundSelf() {
         Vec3 vec3 = this.getDeltaMovement();
         for(int i = 0; i < 20; ++i) {
             double d0 = this.random.nextGaussian() * 0.2D;
@@ -102,13 +130,18 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
                     this.getDeltaMovement().z*0.02);
         }
 
-    }
+    }*/
 
     @Override
     public void tick() {
-
         super.tick();
-        Vec3 vector3d = this.getDeltaMovement();
+        lifeTime++;
+
+        this.setInvisible(true);
+        if (this.lifeTime >= maxLifeTime) {
+            this.remove(RemovalReason.DISCARDED);
+        }
+        /*Vec3 vector3d = this.getDeltaMovement();
         double d0 = this.getX() + vector3d.x;
         double d1 = this.getY() + vector3d.y;
         double d2 = this.getZ() + vector3d.z;
@@ -121,9 +154,9 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
             this.remove(RemovalReason.DISCARDED);
         } else {
             this.setDeltaMovement(vector3d.scale(1));
-            /*if (!this.isNoGravity()) {
+            if (!this.isNoGravity()) {
                 this.setDeltaMovement(this.getDeltaMovement().add(0.0D, (double)-0.06D, 0.0D));
-            }*/
+            }
 
             this.setPos(d0, d1, d2);
         }
@@ -131,8 +164,9 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
         if (vector3d.x == 0 && vector3d.y == 0 && vector3d.z == 0) {
             System.out.println("hit" + this.position());
             this.remove(RemovalReason.DISCARDED);
-        }
-        /*vanilla particle code ahead
+        }*/
+
+        /*vanilla particle code below
         Vec3 vec3 = this.getDeltaMovement();
         double d5 = vec3.x;
         double d6 = vec3.y;
@@ -145,9 +179,60 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
             float f2 = 0.25F;
             this.level.addParticle(NSSParticles.FOAM_STANDARD.get(), d7 - d5 * 0.25D, d2 - d6 * 0.25D, d3 - d1 * 0.25D, d5, d6, d1);
         }*/
+
+        //---------------------------------------------------------------
+        //original code^
+        if (this.getOwner() != null){
+            int timer = this.lifeTime;
+
+            Vec3 scaledPos = startPos.add(normalDeltaPos.scale((double)timer * pissspeed));
+            ServerLevel world = (ServerLevel)owner.level;
+            //world.sendParticles(NSSParticles.FOAM_STANDARD.get(), scaledPos.x, scaledPos.y, scaledPos.z,  1, 0.0D, 0.0D, 0.0D, 0.0D);
+
+            for(int p = 0; p < 20 * (1 + Math.sqrt(0.001 * timer)); ++p) {
+                double d0 = this.random.nextGaussian() * 0.075D * (Math.sqrt(timer));
+                double d1 = this.random.nextGaussian() * 0.075D * (Math.sqrt(timer));
+                double d2 = this.random.nextGaussian() * 0.075D * (Math.sqrt(timer));
+                double length = this.random.nextDouble();
+                //System.out.println(length);
+                world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), (int) 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                owner.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), 0.0D, 0.0D, 0.0D);
+            }
+
+            AABB checkZone = AABB.ofSize(scanBox, 0, 0, 0);
+            List<LivingEntity> potentialVictims = this.level.getEntitiesOfClass(LivingEntity.class, checkZone);
+            System.out.println(potentialVictims);
+            System.out.println(scaledPos);
+
+            for (int v = 0; v < potentialVictims.size(); v ++){
+                LivingEntity victim = potentialVictims.get(v);
+                if (Math.abs(victim.position().x - scaledPos.x) <= boxRadius && Math.abs(victim.position().y + 1 - scaledPos.y) <= boxRadius && Math.abs(victim.position().z - scaledPos.z) <= boxRadius) {
+                    victim.hurt(DamageSource.mobAttack(owner), 10.0F);
+                    double dA = 0.5D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+                    double dB = 2.5D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+                    victim.push(normalDeltaPos.x() * dB, normalDeltaPos.y() * dA, normalDeltaPos.z() * dB);
+                }
+            }
+            //TODO: add a particle at each point where the code checks for a hit, to check for coverage.
+        }
+
+        //------------------------------------------------------------------
+        //^warden stuff
+
+            /*if (!this.isNoGravity()) {
+                this.setDeltaMovement(this.getDeltaMovement().add(0.0D, (double)-0.06D, 0.0D));
+            }
+
+            this.setPos(d0, d1, d2);
+        }
+//        this.addParticlesAroundSelf();
+        if (vector3d.x == 0 && vector3d.y == 0 && vector3d.z == 0) {
+            System.out.println("hit" + this.position());
+            this.remove(RemovalReason.DISCARDED);*/
     }
 
-    @Override
+
+    /*@Override
     protected void onHitEntity(EntityHitResult hitData) {
         super.onHitEntity(hitData);
         Entity entity1 = this.getOwner();
@@ -161,7 +246,7 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
         }
         //this.discard();
 
-    }
+    }*/
 
     //@Override
     //protected ItemStack getPickupItem() {
