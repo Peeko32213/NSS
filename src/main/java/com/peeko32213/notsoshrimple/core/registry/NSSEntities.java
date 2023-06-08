@@ -2,7 +2,7 @@ package com.peeko32213.notsoshrimple.core.registry;
 
 import com.peeko32213.notsoshrimple.NotSoShrimple;
 import com.peeko32213.notsoshrimple.common.entity.EntityCrayfish;
-import com.peeko32213.notsoshrimple.common.entity.projectiles.EntityIceWater;
+import com.peeko32213.notsoshrimple.common.entity.EntityIceWater;
 import com.peeko32213.notsoshrimple.common.entity.mobs.EntityManeaterShell;
 import com.peeko32213.notsoshrimple.common.entity.EntityToxicWater;
 import net.minecraft.resources.ResourceLocation;

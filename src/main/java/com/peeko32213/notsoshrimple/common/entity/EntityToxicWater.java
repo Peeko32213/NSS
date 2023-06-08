@@ -190,9 +190,9 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
             //world.sendParticles(NSSParticles.FOAM_STANDARD.get(), scaledPos.x, scaledPos.y, scaledPos.z,  1, 0.0D, 0.0D, 0.0D, 0.0D);
 
             for(int p = 0; p < 20 * (1 + Math.sqrt(0.001 * timer)); ++p) {
-                double d0 = this.random.nextGaussian() * 0.075D * (Math.sqrt(timer));
-                double d1 = this.random.nextGaussian() * 0.075D * (Math.sqrt(timer));
-                double d2 = this.random.nextGaussian() * 0.075D * (Math.sqrt(timer));
+                double d0 = this.random.nextGaussian() * 0.1D * (Math.sqrt(timer));
+                double d1 = this.random.nextGaussian() * 0.1D * (Math.sqrt(timer));
+                double d2 = this.random.nextGaussian() * 0.1D * (Math.sqrt(timer));
                 double length = this.random.nextDouble();
                 //System.out.println(length);
                 world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), (int) 1, 0.0D, 0.0D, 0.0D, 0.0D);
