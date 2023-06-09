@@ -644,7 +644,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             double pissspeed = 8;
             //MAKE SURE THIS IS THE SAME NUMBER AS EntityToxicWater's pissspeed
             //it's supposed to be unused
-            double pissspeedforcalculation = pissspeed - 1 + Math.sqrt(this.mob.distanceTo(target));
+            double pissspeedforcalculation = pissspeed - 3 + Math.sqrt(this.mob.distanceTo(target));
             //slight delay to tune it
 
             EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level);
@@ -656,7 +656,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             Vec3 tTempPos = tStartPos;
 
             System.out.println("newloop");
-            for (int count = 0; count < 6; count++) {
+            for (int count = 0; count < 3; count++) {
                 double rawdist = this.mob.distanceTo(target);
                 double pissReachTime = rawdist/pissspeedforcalculation;
                 tTempPos = tTempPos.add(targetVelocity.multiply(pissReachTime, 0, pissReachTime));
