@@ -605,7 +605,6 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.getLookControl().setLookAt(target.position());
             this.mob.yBodyRot = this.mob.yHeadRot;
-            Vec3 pissspeed = new Vec3(6,6,6);
 
             /*Vec3 startPos = this.mob.position().add(0.0D, (double)1.6F, 0.0D);
             Vec3 deltaPos = target.getEyePosition().subtract(startPos);
@@ -639,33 +638,46 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 }
             }*/
 
+            //double pissspeed = 6;
+            //blocks per second^
+
+            double pissspeed = 8;
+            //MAKE SURE THIS IS THE SAME NUMBER AS EntityToxicWater's pissspeed
+            //it's supposed to be unused
+            double pissspeedforcalculation = pissspeed - 1 + Math.sqrt(this.mob.distanceTo(target));
+            //slight delay to tune it
 
             EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level);
             urine.setInvisible(true);
             urine.moveTo(this.mob.getX(), this.mob.getY() + 2, this.mob.getZ());
             urine.setOwner(this.mob);
-            this.mob.level.addFreshEntity(urine);
 
-            /*double pissspeed = 6;
-            //blocks per second^
             Vec3 tStartPos = target.position();
             Vec3 tTempPos = tStartPos;
 
-            for (int count = 0; count < 4; count++) {
-                double distFlat = Math.sqrt(Math.pow(tTempPos.x, 2)+Math.pow(tTempPos.z, 2));
-                double dist3D = Math.sqrt(Math.pow(distFlat, 2) + Math.pow(tTempPos.y, 2));
-                double pissReachTime = distFlat/pissspeed;
+            System.out.println("newloop");
+            for (int count = 0; count < 6; count++) {
+                double rawdist = this.mob.distanceTo(target);
+                double pissReachTime = rawdist/pissspeedforcalculation;
+                tTempPos = tTempPos.add(targetVelocity.multiply(pissReachTime, 0, pissReachTime));
 
-                tTempPos = tTempPos.add(targetVelocity.multiply(pissReachTime, pissReachTime, pissReachTime));
+                System.out.println(tTempPos.distanceTo(target.position()));
+
+                if (tTempPos.distanceTo(target.position()) <= 1) {
+                    break;
+                }
             }
 
-            Vec3 finalTargetPos = tTempPos;
+            Vec3 finalTargetPos = tTempPos.add(0,target.getEyeHeight()*0.5,0);
 
-            double dx = finalTargetPos.x() - urine.getX();
+            /*double dx = finalTargetPos.x() - urine.getX();
             double dy = target.getY() + (target.getEyeHeight()*0.5) - urine.getY();// + finalTargetPos.y - urine.getY();
-            double dz = finalTargetPos.z() - urine.getZ();
+            double dz = finalTargetPos.z() - urine.getZ();*/
 
-            urine.shoot(dx, dy, dz, (float) pissspeed, 0F);
+            urine.setTargetPos(finalTargetPos);
+            this.mob.level.addFreshEntity(urine);
+
+            /*urine.shoot(dx, dy, dz, (float) pissspeed, 0F);
             System.out.println("xyz" + dx + " " + dy + " " + dz);
             System.out.println("speed" + targetVelocity.x + " " + targetVelocity.y + " " + targetVelocity.z);
             this.mob.level.addFreshEntity(urine);*/

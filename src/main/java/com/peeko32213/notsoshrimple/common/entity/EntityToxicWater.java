@@ -48,15 +48,16 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
         return 0.95F;
     }
     public float damage = 30.0f;
-    public float pissspeed = 6;
+    public float pissspeed = 8;
     //piss speed multiplier
+    //MAKE SURE THIS IS THE SAME NUMBER AS EntityCrayfish's pissspeed
     public int maxLifeTime = (int) (1500/pissspeed);
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     Vec3 startPos;
     Vec3 deltaPos;
     Vec3 normalDeltaPos;
-    double boxRadius = 1.75;
+    double boxRadius = 2.25;
     Vec3 scanBox = new Vec3(50,50,50);
 
     //hitbox radius
@@ -66,7 +67,7 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
     }
 
     protected ParticleOptions getTrailParticle() {
-        return ParticleTypes.SNEEZE;
+        return ParticleTypes.WITCH;
     }
 
     @Override
@@ -76,10 +77,16 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
 
     public void setOwner(Monster owner) {
         this.owner = owner;
-        this.startPos = this.position();
+        /*this.startPos = this.position();
         deltaPos = owner.getTarget().getEyePosition().subtract(startPos);
-        normalDeltaPos = deltaPos.normalize();
-        System.out.println("start" + startPos);
+        normalDeltaPos = deltaPos.normalize();*/
+        //System.out.println("start" + this.position());
+    }
+
+    public void setTargetPos(Vec3 pos){
+        this.startPos = this.position();
+        this.deltaPos = pos.subtract(this.position());
+        this.normalDeltaPos = deltaPos.normalize();
     }
 
     /*@Override
@@ -185,35 +192,45 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
         if (this.getOwner() != null){
             int timer = this.lifeTime;
 
-            Vec3 scaledPos = startPos.add(normalDeltaPos.scale((double)timer * pissspeed));
+            Vec3 scaledPos = startPos.add(normalDeltaPos.scale((double)timer*pissspeed));
             ServerLevel world = (ServerLevel)owner.level;
-            //world.sendParticles(NSSParticles.FOAM_STANDARD.get(), scaledPos.x, scaledPos.y, scaledPos.z,  1, 0.0D, 0.0D, 0.0D, 0.0D);
-
-            for(int p = 0; p < 20 * (1 + Math.sqrt(0.001 * timer)); ++p) {
-                double d0 = this.random.nextGaussian() * 0.1D * (Math.sqrt(timer));
-                double d1 = this.random.nextGaussian() * 0.1D * (Math.sqrt(timer));
-                double d2 = this.random.nextGaussian() * 0.1D * (Math.sqrt(timer));
-                double length = this.random.nextDouble();
-                //System.out.println(length);
-                world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), (int) 1, 0.0D, 0.0D, 0.0D, 0.0D);
-                owner.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), 0.0D, 0.0D, 0.0D);
+            BlockPos center = new BlockPos(scaledPos);
+            if (world.getBlockState(center).isAir() == false){
+                this.remove(RemovalReason.DISCARDED);
             }
 
-            AABB checkZone = AABB.ofSize(scanBox, 0, 0, 0);
-            List<LivingEntity> potentialVictims = this.level.getEntitiesOfClass(LivingEntity.class, checkZone);
-            System.out.println(potentialVictims);
-            System.out.println(scaledPos);
+            AABB checkZone = new AABB(center).inflate(boxRadius + pissspeed);
+            //hitboxOutline(checkZone, world);
+
+            List<LivingEntity> potentialVictims = world.getEntitiesOfClass(LivingEntity.class, checkZone);
+            //System.out.println(potentialVictims);
+            //System.out.println(scaledPos);
 
             for (int v = 0; v < potentialVictims.size(); v ++){
                 LivingEntity victim = potentialVictims.get(v);
-                if (Math.abs(victim.position().x - scaledPos.x) <= boxRadius && Math.abs(victim.position().y + 1 - scaledPos.y) <= boxRadius && Math.abs(victim.position().z - scaledPos.z) <= boxRadius) {
-                    victim.hurt(DamageSource.mobAttack(owner), 10.0F);
-                    double dA = 0.5D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
-                    double dB = 2.5D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
-                    victim.push(normalDeltaPos.x() * dB, normalDeltaPos.y() * dA, normalDeltaPos.z() * dB);
+                if (victim != owner) {
+                    if (Math.abs(victim.position().x - scaledPos.x) <= boxRadius && Math.abs(victim.position().y + 1 - scaledPos.y) <= boxRadius && Math.abs(victim.position().z - scaledPos.z) <= boxRadius) {
+                        victim.hurt(DamageSource.mobAttack(owner), 10.0F);
+                        double dA = 0.5D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+                        double dB = 2.5D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+                        victim.push(normalDeltaPos.x() * dB, normalDeltaPos.y() * dA, normalDeltaPos.z() * dB);
+                    }
                 }
             }
-            //TODO: add a particle at each point where the code checks for a hit, to check for coverage.
+
+            //world.sendParticles(NSSParticles.FOAM_STANDARD.get(), scaledPos.x, scaledPos.y, scaledPos.z,  1, 0.0D, 0.0D, 0.0D, 0.0D);
+
+            for(int p = 0; p < 6 * (1 + Math.sqrt(0.001 * timer)); ++p) {
+                double d0 = this.random.nextGaussian() * 0.125D;
+                double d1 = this.random.nextGaussian() * 0.125D;
+                double d2 = this.random.nextGaussian() * 0.125D;
+                double length = this.random.nextDouble();
+                //System.out.println(length);
+                world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+(d0*(Math.sqrt(timer)))) + (deltaPos.x*length), (scaledPos.y+(d1*(Math.sqrt(timer)))) + (deltaPos.y*length), (scaledPos.z+(d2*(Math.sqrt(timer)))) + (deltaPos.z*length), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d1) + (deltaPos.x*length), (scaledPos.y+d2) + (deltaPos.y*length), (scaledPos.z+d0) + (deltaPos.z*length), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                //owner.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), 0.0D, 0.0D, 0.0D);
+            }
         }
 
         //------------------------------------------------------------------
@@ -256,6 +273,18 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
 
     private double horizontalMag(Vec3 vector3d) {
         return vector3d.x * vector3d.x + vector3d.z * vector3d.z;
+    }
+
+    public void hitboxOutline (AABB hitbox, ServerLevel world) {
+        world.sendParticles(ParticleTypes.END_ROD, (hitbox.maxX), (hitbox.maxY), (hitbox.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.END_ROD, (hitbox.maxX), (hitbox.minY), (hitbox.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.END_ROD, (hitbox.maxX), (hitbox.maxY), (hitbox.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.END_ROD, (hitbox.maxX), (hitbox.minY), (hitbox.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+
+        world.sendParticles(ParticleTypes.END_ROD, (hitbox.minX), (hitbox.maxY), (hitbox.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.END_ROD, (hitbox.minX), (hitbox.minY), (hitbox.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.END_ROD, (hitbox.minX), (hitbox.maxY), (hitbox.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.END_ROD, (hitbox.minX), (hitbox.minY), (hitbox.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
     }
 
 
