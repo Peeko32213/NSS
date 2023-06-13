@@ -39,7 +39,7 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
 
     private Monster owner;
     private int lifeTime;
-    private static ParticleOptions particle = NSSParticles.FOAM_STANDARD.get();
+    private static final ParticleOptions particle = NSSParticles.FOAM_STANDARD.get();
     public boolean isOnFire() {
         return false;
     }
@@ -48,11 +48,11 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
         return 0.95F;
     }
     public float damage = 30.0f;
-    public float pissspeed = 8;
+    public float pissspeed = 7;
     //piss speed multiplier
     //MAKE SURE THIS IS THE SAME NUMBER AS EntityCrayfish's pissspeed
     public int maxLifeTime = (int) (1500/pissspeed);
-    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
+    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     Vec3 startPos;
     Vec3 deltaPos;
@@ -146,6 +146,7 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
 
         this.setInvisible(true);
         if (this.lifeTime >= maxLifeTime) {
+            //System.out.println("removed(lifetime)");
             this.remove(RemovalReason.DISCARDED);
         }
         /*Vec3 vector3d = this.getDeltaMovement();
@@ -193,14 +194,23 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
             int timer = this.lifeTime;
 
             Vec3 scaledPos = startPos.add(normalDeltaPos.scale((double)timer*pissspeed));
+            //System.out.println(scaledPos);
+            //System.out.println(lifeTime);
             ServerLevel world = (ServerLevel)owner.level;
             BlockPos center = new BlockPos(scaledPos);
-            if (world.getBlockState(center).isAir() == false){
+            if (world.getBlockState(center).getBlock().hasCollision == true){
+                //System.out.println("removed(hitting smthin)");
+                //System.out.println("blockstate" + center);
+                //TODO: Check if this fix works(do shrimprojectiles pierce cobweb)
                 this.remove(RemovalReason.DISCARDED);
             }
 
+            world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x), (scaledPos.y), (scaledPos.z), 1, 0.0D, 0.0D, 0.0D, 0.0D);
             AABB checkZone = new AABB(center).inflate(boxRadius + pissspeed);
-            //hitboxOutline(checkZone, world);
+
+            //Vec3 hitbox = new Vec3 ((boxRadius), (boxRadius), (boxRadius));
+            AABB hitboxbox = new AABB(center).inflate(boxRadius);
+            //hitboxOutline(scaledPos, hitbox.x, hitbox.y, hitbox.z, world);
 
             List<LivingEntity> potentialVictims = world.getEntitiesOfClass(LivingEntity.class, checkZone);
             //System.out.println(potentialVictims);
@@ -209,18 +219,20 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
             for (int v = 0; v < potentialVictims.size(); v ++){
                 LivingEntity victim = potentialVictims.get(v);
                 if (victim != owner) {
-                    if (Math.abs(victim.position().x - scaledPos.x) <= boxRadius && Math.abs(victim.position().y + 1 - scaledPos.y) <= boxRadius && Math.abs(victim.position().z - scaledPos.z) <= boxRadius) {
+                    AABB targetbox = getAABB(victim.getX(), victim.getY(), victim.getZ(), victim);
+                    if (targetbox.intersects(hitboxbox)) {
                         victim.hurt(DamageSource.mobAttack(owner), 10.0F);
-                        double dA = 0.5D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
-                        double dB = 2.5D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+                        double dA = 0.2D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+                        double dB = 1.0D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
                         victim.push(normalDeltaPos.x() * dB, normalDeltaPos.y() * dA, normalDeltaPos.z() * dB);
+                        System.out.println(victim);
                     }
                 }
             }
 
             //world.sendParticles(NSSParticles.FOAM_STANDARD.get(), scaledPos.x, scaledPos.y, scaledPos.z,  1, 0.0D, 0.0D, 0.0D, 0.0D);
 
-            for(int p = 0; p < 6 * (1 + Math.sqrt(0.001 * timer)); ++p) {
+            /*for(int p = 0; p < 6 * (1 + Math.sqrt(0.001 * timer)); ++p) {
                 double d0 = this.random.nextGaussian() * 0.125D;
                 double d1 = this.random.nextGaussian() * 0.125D;
                 double d2 = this.random.nextGaussian() * 0.125D;
@@ -230,7 +242,7 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
                 world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), 1, 0.0D, 0.0D, 0.0D, 0.0D);
                 world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d1) + (deltaPos.x*length), (scaledPos.y+d2) + (deltaPos.y*length), (scaledPos.z+d0) + (deltaPos.z*length), 1, 0.0D, 0.0D, 0.0D, 0.0D);
                 //owner.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), 0.0D, 0.0D, 0.0D);
-            }
+            }*/
         }
 
         //------------------------------------------------------------------
@@ -275,16 +287,21 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
         return vector3d.x * vector3d.x + vector3d.z * vector3d.z;
     }
 
-    public void hitboxOutline (AABB hitbox, ServerLevel world) {
-        world.sendParticles(ParticleTypes.END_ROD, (hitbox.maxX), (hitbox.maxY), (hitbox.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.END_ROD, (hitbox.maxX), (hitbox.minY), (hitbox.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.END_ROD, (hitbox.maxX), (hitbox.maxY), (hitbox.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.END_ROD, (hitbox.maxX), (hitbox.minY), (hitbox.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+    public void hitboxOutline (Vec3 pos, double rX, double rY, double rZ, ServerLevel world) {
+        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (pos.x + rX), (pos.y + rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.END_ROD, (pos.x + rX), (pos.y - rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (pos.x + rX), (pos.y + rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.HAPPY_VILLAGER, (pos.x + rX), (pos.z - rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
 
-        world.sendParticles(ParticleTypes.END_ROD, (hitbox.minX), (hitbox.maxY), (hitbox.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.END_ROD, (hitbox.minX), (hitbox.minY), (hitbox.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.END_ROD, (hitbox.minX), (hitbox.maxY), (hitbox.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.END_ROD, (hitbox.minX), (hitbox.minY), (hitbox.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.HAPPY_VILLAGER, (pos.x - rX), (pos.y + rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (pos.x - rX), (pos.y - rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.END_ROD, (pos.x - rX), (pos.y + rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (pos.x - rX), (pos.z - rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+    }
+
+    public static AABB getAABB(double pX, double pY, double pZ, LivingEntity entity) {
+        float f = entity.getBbWidth() / 2.0F;
+        return new AABB(pX - (double)f, pY, pZ - (double)f, pX + (double)f, pY + (double)entity.getBbHeight(), pZ + (double)f);
     }
 
 
