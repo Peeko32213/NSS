@@ -210,6 +210,10 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         private int failedPathFindingPenalty = 0;
         private boolean canPenalize = false;
         private int animTime = 0;
+
+        private double targetOldX;
+        private double targetOldY;
+        private double targetOldZ;
         /*private int targetVelocityTracker = 0;
         private double targetNowX;
         private double targetNowZ;
@@ -564,12 +568,18 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 /*double avgDeltaX = netDeltaX/8;
                 double avgDeltaY = netDeltaY/8;
                 double avgDeltaZ = netDeltaZ/8;*/
-
-                piss(this.mob.getTarget(), target.getDeltaMovement());
+                piss(target);
+                //piss(target, target.getDeltaMovement());
                 //System.out.println("net" + netDeltaY + " " + netDeltaX + " " + netDeltaZ);
                 //System.out.println(avgDeltaY);
 
+            } else {
+                this.targetOldX = target.getX();
+                this.targetOldY = target.getY();
+                this.targetOldZ = target.getZ();
+                //only update the old coords after confirming they won't be used
             }
+
             if(animTime>=12) {
                 animTime=0;
                 this.mob.setAnimationState(0);
@@ -596,7 +606,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         //    "minecraft_piglin_brute"
         //other victims
 
-        protected void piss(LivingEntity target, Vec3 targetVelocity) {
+        protected void piss(LivingEntity target/*, Vec3 targetVelocity*/) {
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.getLookControl().setLookAt(target.position());
             this.mob.yBodyRot = this.mob.yHeadRot;
@@ -639,8 +649,14 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             double pissspeed = 7;
             //MAKE SURE THIS IS THE SAME NUMBER AS EntityToxicWater's pissspeed
             //it's supposed to be unused
-            double pissspeedforcalculation = pissspeed;
+            double pissspeedforcalculation = pissspeed - 1;
             //slight delay to tune it
+            //Vec3 oldPos = new Vec3(targetOldX, targetOldY, targetOldZ);
+            Vec3 targetVelocity = new Vec3((target.getX() - targetOldX),(target.getY() - targetOldY),(target.getZ() - targetOldZ));
+            //System.out.println(targetOldX + ", " + targetOldY + ", " + targetOldZ);
+            //System.out.println(target.position());
+            //System.out.println(targetVelocity);
+            //System.out.println(target.getDeltaMovement());
 
             EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level);
             urine.setInvisible(true);
@@ -651,22 +667,20 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             Vec3 tTempPos = tStartPos;
 
             //System.out.println("newloop");
-            for (int count = 0; count < 3; count++) {
+            for (int count = 0; count < 1; count++) {
 
-                double flatDist = Math.sqrt(Math.pow(urine.getX() - target.getX(), 2) + Math.pow(urine.getZ() - target.getZ(), 2));
-                double tallDist = Math.sqrt(Math.pow(flatDist, 2) + Math.pow(urine.getY() - target.getY(), 2));
-                double fulldist = urine.distanceTo(target);
-                double pissReachTime = fulldist/pissspeedforcalculation;
-                tTempPos = tTempPos.add(targetVelocity.multiply(pissReachTime, 0, pissReachTime));
-                //Player p = new Player();
-                System.out.println(target.getDeltaMovement());
+                double flatDist = Math.sqrt((urine.getX() - target.getX())*(urine.getX() - target.getX()) + (urine.getZ() - target.getZ())*(urine.getZ() - target.getZ()));
+                double tallDist = Math.sqrt(flatDist*flatDist + (urine.getY() - target.getY())*(urine.getY() - target.getY()));
+                //double fulldist = urine.distanceTo(target);
+                double pissReachTime = tallDist/pissspeedforcalculation;
+                tTempPos = tTempPos.add(targetVelocity.multiply(pissReachTime - (0.1*target.distanceTo(urine)), 0, pissReachTime - (0.1*target.distanceTo(urine))));
+                System.out.println(tTempPos);
+                System.out.println(tTempPos.distanceTo(target.position()));
 
                 if (tTempPos.distanceTo(target.position()) <= 1) {
                     break;
                 }
             }
-
-
 
             Vec3 finalTargetPos = tTempPos.add(0,target.getEyeHeight()*0.5,0);
 

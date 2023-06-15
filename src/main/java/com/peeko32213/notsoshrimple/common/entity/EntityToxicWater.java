@@ -48,7 +48,7 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
         return 0.95F;
     }
     public float damage = 30.0f;
-    public float pissspeed = 7;
+    public double pissspeed = 7.5;
     //piss speed multiplier
     //MAKE SURE THIS IS THE SAME NUMBER AS EntityCrayfish's pissspeed
     public int maxLifeTime = (int) (1500/pissspeed);
@@ -232,17 +232,19 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
 
             //world.sendParticles(NSSParticles.FOAM_STANDARD.get(), scaledPos.x, scaledPos.y, scaledPos.z,  1, 0.0D, 0.0D, 0.0D, 0.0D);
 
-            /*for(int p = 0; p < 6 * (1 + Math.sqrt(0.001 * timer)); ++p) {
-                double d0 = this.random.nextGaussian() * 0.125D;
-                double d1 = this.random.nextGaussian() * 0.125D;
-                double d2 = this.random.nextGaussian() * 0.125D;
-                double length = this.random.nextDouble();
+            for(int p = 0; p < 6 * (1 + Math.sqrt(0.001 * timer)); ++p) {
                 //System.out.println(length);
-                world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+(d0*(Math.sqrt(timer)))) + (deltaPos.x*length), (scaledPos.y+(d1*(Math.sqrt(timer)))) + (deltaPos.y*length), (scaledPos.z+(d2*(Math.sqrt(timer)))) + (deltaPos.z*length), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-                world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-                world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d1) + (deltaPos.x*length), (scaledPos.y+d2) + (deltaPos.y*length), (scaledPos.z+d0) + (deltaPos.z*length), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-                //owner.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), 0.0D, 0.0D, 0.0D);
-            }*/
+                if (this.level.isClientSide) {
+                    double d0 = this.random.nextGaussian() * 0.125D;
+                    double d1 = this.random.nextGaussian() * 0.125D;
+                    double d2 = this.random.nextGaussian() * 0.125D;
+                    double length = this.random.nextDouble();
+                    this.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x + (d0 * (Math.sqrt(timer)))) + (deltaPos.x * length), (scaledPos.y + (d1 * (Math.sqrt(timer)))) + (deltaPos.y * length), (scaledPos.z + (d2 * (Math.sqrt(timer)))) + (deltaPos.z * length), 0.0D, 0.0D, 0.0D);
+                    this.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x + d0) + (deltaPos.x * length), (scaledPos.y + d1) + (deltaPos.y * length), (scaledPos.z + d2) + (deltaPos.z * length), 0.0D, 0.0D, 0.0D);
+                    this.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x + d1) + (deltaPos.x * length), (scaledPos.y + d2) + (deltaPos.y * length), (scaledPos.z + d0) + (deltaPos.z * length), 0.0D, 0.0D, 0.0D);
+                    //owner.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), 0.0D, 0.0D, 0.0D);
+                }
+            }
         }
 
         //------------------------------------------------------------------
