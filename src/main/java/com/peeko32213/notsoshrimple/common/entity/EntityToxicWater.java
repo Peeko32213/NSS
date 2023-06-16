@@ -157,7 +157,7 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
         }
 
         if (this.level.isClientSide) {
-            this.normalDeltaPos = startPos.normalize();D
+            this.normalDeltaPos = startPos.normalize();
             Vec3 scaledPos = startPos.add(normalDeltaPos.scale((double)timer*pissspeed));
 
             for (int p = 0; p < 6 * (1 + Math.sqrt(0.001 * timer)); ++p) {
