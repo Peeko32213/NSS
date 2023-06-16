@@ -6,6 +6,7 @@ import com.peeko32213.notsoshrimple.common.entity.EntityCrayfish;
 import com.peeko32213.notsoshrimple.common.entity.mobs.EntityManeaterShell;
 import com.peeko32213.notsoshrimple.common.particles.FoamStandardParticle;
 import com.peeko32213.notsoshrimple.core.registry.NSSEntities;
+import com.peeko32213.notsoshrimple.core.registry.NSSPacketHub;
 import com.peeko32213.notsoshrimple.core.registry.NSSParticles;
 import net.minecraft.client.Minecraft;
 import net.minecraft.tags.TagKey;
@@ -27,6 +28,7 @@ public class CommonModEvents {
         event.enqueueWork(() -> {
 
         });
+        event.enqueueWork(NSSPacketHub::init);
     }
 
     @SubscribeEvent

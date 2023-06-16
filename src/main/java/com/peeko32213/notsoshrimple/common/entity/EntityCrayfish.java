@@ -684,17 +684,9 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
             Vec3 finalTargetPos = tTempPos.add(0,target.getEyeHeight()*0.5,0);
 
-            /*double dx = finalTargetPos.x() - urine.getX();
-            double dy = target.getY() + (target.getEyeHeight()*0.5) - urine.getY();// + finalTargetPos.y - urine.getY();
-            double dz = finalTargetPos.z() - urine.getZ();*/
-
             urine.setTargetPos(finalTargetPos);
             this.mob.level.addFreshEntity(urine);
 
-            /*urine.shoot(dx, dy, dz, (float) pissspeed, 0F);
-            System.out.println("xyz" + dx + " " + dy + " " + dz);
-            System.out.println("speed" + targetVelocity.x + " " + targetVelocity.y + " " + targetVelocity.z);
-            this.mob.level.addFreshEntity(urine);*/
             //LightningBolt marker = EntityType.LIGHTNING_BOLT.create(this.mob.level);
             //marker.moveTo(finalTargetPos);
             //System.out.println("intent" + pos);

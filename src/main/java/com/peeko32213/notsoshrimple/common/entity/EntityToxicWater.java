@@ -1,5 +1,7 @@
 package com.peeko32213.notsoshrimple.common.entity;
 
+import com.peeko32213.notsoshrimple.core.network.ClientboundShrimpTargetingDataInAPacket;
+import com.peeko32213.notsoshrimple.core.registry.NSSPacketHub;
 import com.peeko32213.notsoshrimple.core.registry.NSSParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
@@ -23,6 +25,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.*;
+import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -38,7 +41,7 @@ import java.util.List;
 public class EntityToxicWater extends AbstractHurtingProjectile implements IAnimatable {
 
     private Monster owner;
-    private int lifeTime;
+    public int lifeTime = 0;
     private static final ParticleOptions particle = NSSParticles.FOAM_STANDARD.get();
     public boolean isOnFire() {
         return false;
@@ -54,11 +57,11 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
     public int maxLifeTime = (int) (1500/pissspeed);
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
-    Vec3 startPos;
-    Vec3 deltaPos;
-    Vec3 normalDeltaPos;
-    double boxRadius = 2.25;
-    Vec3 scanBox = new Vec3(50,50,50);
+    public Vec3 startPos;
+    public Vec3 deltaPos;
+    public Vec3 normalDeltaPos;
+    public double boxRadius = 2.25;
+    public Vec3 scanBox = new Vec3(50,50,50);
 
     //hitbox radius
 
@@ -87,6 +90,8 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
         this.startPos = this.position();
         this.deltaPos = pos.subtract(this.position());
         this.normalDeltaPos = deltaPos.normalize();
+        NSSPacketHub.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> this.level.getEntity(this.getId())),
+                new ClientboundShrimpTargetingDataInAPacket(this.startPos, this.deltaPos, this.lifeTime, this.getId()));
     }
 
     /*@Override
@@ -143,12 +148,33 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
     public void tick() {
         super.tick();
         lifeTime++;
+        int timer = this.lifeTime;
 
         this.setInvisible(true);
         if (this.lifeTime >= maxLifeTime) {
             //System.out.println("removed(lifetime)");
             this.remove(RemovalReason.DISCARDED);
         }
+
+        if (this.level.isClientSide) {
+            this.normalDeltaPos = startPos.normalize();D
+            Vec3 scaledPos = startPos.add(normalDeltaPos.scale((double)timer*pissspeed));
+
+            for (int p = 0; p < 6 * (1 + Math.sqrt(0.001 * timer)); ++p) {
+                //System.out.println(length);
+                //if (this.level.isClientSide) {
+                double d0 = this.random.nextGaussian() * 0.125D;
+                double d1 = this.random.nextGaussian() * 0.125D;
+                double d2 = this.random.nextGaussian() * 0.125D;
+                double length = this.random.nextDouble();
+                this.level.addAlwaysVisibleParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x + (d0 * (Math.sqrt(timer)))) + (deltaPos.x * length), (scaledPos.y + (d1 * (Math.sqrt(timer)))) + (deltaPos.y * length), (scaledPos.z + (d2 * (Math.sqrt(timer)))) + (deltaPos.z * length), 0.0D, 0.0D, 0.0D);
+                this.level.addAlwaysVisibleParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x + d0) + (normalDeltaPos.x * length), (scaledPos.y + d1) + (normalDeltaPos.y * length), (scaledPos.z + d2) + (normalDeltaPos.z * length), 0.0D, 0.0D, 0.0D);
+                this.level.addAlwaysVisibleParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x + d1) + (normalDeltaPos.x * length), (scaledPos.y + d2) + (normalDeltaPos.y * length), (scaledPos.z + d0) + (normalDeltaPos.z * length), 0.0D, 0.0D, 0.0D);
+                //owner.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), 0.0D, 0.0D, 0.0D);
+                //}
+            }
+        }
+
         /*Vec3 vector3d = this.getDeltaMovement();
         double d0 = this.getX() + vector3d.x;
         double d1 = this.getY() + vector3d.y;
@@ -187,12 +213,9 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
             float f2 = 0.25F;
             this.level.addParticle(NSSParticles.FOAM_STANDARD.get(), d7 - d5 * 0.25D, d2 - d6 * 0.25D, d3 - d1 * 0.25D, d5, d6, d1);
         }*/
-
         //---------------------------------------------------------------
         //original code^
-        if (this.getOwner() != null){
-            int timer = this.lifeTime;
-
+        if (this.getOwner() != null){;
             Vec3 scaledPos = startPos.add(normalDeltaPos.scale((double)timer*pissspeed));
             //System.out.println(scaledPos);
             //System.out.println(lifeTime);
@@ -229,22 +252,7 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
                     }
                 }
             }
-
             //world.sendParticles(NSSParticles.FOAM_STANDARD.get(), scaledPos.x, scaledPos.y, scaledPos.z,  1, 0.0D, 0.0D, 0.0D, 0.0D);
-
-            for(int p = 0; p < 6 * (1 + Math.sqrt(0.001 * timer)); ++p) {
-                //System.out.println(length);
-                if (this.level.isClientSide) {
-                    double d0 = this.random.nextGaussian() * 0.125D;
-                    double d1 = this.random.nextGaussian() * 0.125D;
-                    double d2 = this.random.nextGaussian() * 0.125D;
-                    double length = this.random.nextDouble();
-                    this.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x + (d0 * (Math.sqrt(timer)))) + (deltaPos.x * length), (scaledPos.y + (d1 * (Math.sqrt(timer)))) + (deltaPos.y * length), (scaledPos.z + (d2 * (Math.sqrt(timer)))) + (deltaPos.z * length), 0.0D, 0.0D, 0.0D);
-                    this.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x + d0) + (deltaPos.x * length), (scaledPos.y + d1) + (deltaPos.y * length), (scaledPos.z + d2) + (deltaPos.z * length), 0.0D, 0.0D, 0.0D);
-                    this.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x + d1) + (deltaPos.x * length), (scaledPos.y + d2) + (deltaPos.y * length), (scaledPos.z + d0) + (deltaPos.z * length), 0.0D, 0.0D, 0.0D);
-                    //owner.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), 0.0D, 0.0D, 0.0D);
-                }
-            }
         }
 
         //------------------------------------------------------------------
@@ -278,11 +286,6 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
         //this.discard();
 
     }*/
-
-    //@Override
-    //protected ItemStack getPickupItem() {
-   //     return ItemStack.EMPTY;
-    //}
 
 
     private double horizontalMag(Vec3 vector3d) {

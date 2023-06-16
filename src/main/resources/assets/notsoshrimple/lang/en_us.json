@@ -7,15 +7,15 @@
 
   "item.notsoshrimple.crayfish_spawn_egg": "Crayfish Spawn Egg",
   "item.notsoshrimple.maneater_spawn_egg": "Maneater Shell Spawn Egg",
-  "item.notsoshrimple.swampbuster": "Swamp Buster",
-  "item.notsoshrimple.claw": "Discarded Claw",
+  "item.notsoshrimple.swampbuster": "Great-Prawn Clawblade",
+  "item.notsoshrimple.claw": "Calloused Claw",
   "item.notsoshrimple.raw_prawn": "Raw Prawn",
   "item.notsoshrimple.cooked_prawn": "Cooked Prawn",
 
   "notsoshrimple.sound.subtitle.crayfish_idle": "Dreadful Chattering",
-  "notsoshrimple.sound.subtitle.crayfish_attack": "Claw Swipe",
-  "notsoshrimple.sound.subtitle.crayfish_hurt": "Dink",
+  "notsoshrimple.sound.subtitle.crayfish_attack": "Heavy Claw Swipe",
+  "notsoshrimple.sound.subtitle.crayfish_hurt": "Pling",
   "notsoshrimple.sound.subtitle.crayfish_death": "Mournful Chattering",
-  "notsoshrimple.sound.subtitle.crayfish_scuttle": "Scuttling"
+  "notsoshrimple.sound.subtitle.crayfish_scuttle": "Menancing Scuttling"
 
 }
