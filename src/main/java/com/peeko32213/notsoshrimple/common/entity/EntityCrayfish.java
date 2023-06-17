@@ -59,6 +59,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     private static final EntityDataAccessor<Integer> ENTITY_STATE = SynchedEntityData.defineId(EntityCrayfish.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(EntityCrayfish.class, EntityDataSerializers.INT);
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
+    //public Vec3 finalTargetPos;
 
     public EntityCrayfish(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
@@ -214,18 +215,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         private double targetOldX;
         private double targetOldY;
         private double targetOldZ;
-        /*private int targetVelocityTracker = 0;
-        private double targetNowX;
-        private double targetNowZ;
-        private double targetNowY;
-        private double targetWasX;
-        private double targetWasZ;
-        private double targetWasY;
-        private double netDeltaX = 0;
-        private double netDeltaZ = 0;
-        private double netDeltaY = 0;
-        private double resetLimit = 0.09;*/
-        //speed the player has to be at before resetting the aimbot^
+
 
         public CrayfishMeleeAttackGoal(EntityCrayfish p_i1636_1_, double p_i1636_2_, boolean p_i1636_4_) {
             this.mob = p_i1636_1_;
@@ -468,110 +458,9 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             this.mob.lookAt(target, 100000, 100000);
             this.mob.yBodyRot = this.mob.yHeadRot;
             animTime ++;
-//--------------------------------------------------------------------------------------------------------------------------------------
-/*
-            double distInit = Math.sqrt(Math.pow(target.getX() - this.mob.getX(), 2) + Math.pow(target.getZ() - this.mob.getZ(), 2));
-
-            targetNowX = target.getX();
-            targetNowZ = target.getZ();
-            targetNowY = target.getY();
-            //System.out.println("targetNow" + targetWasX + " " + targetWasZ + " " + targetWasY + " ");
-
-            if (animTime == 1) {
-                //if all the coords are 0(i.e. start of the function), store the current coords instead of the past coords and maintain them for a tick
-                targetWasX = targetNowX;
-                targetWasZ = targetNowZ;
-                targetWasY = targetNowY;
-                //System.out.println("zeroanimtime");
-            }
-
-            double thisDeltaX = Math.abs(targetWasX - targetNowX);
-            double thisDeltaZ = Math.abs(targetWasZ - targetNowZ);
-            double thisDeltaY = Math.abs(targetWasY - targetNowY);
-            //System.out.println("delta " + (targetWasX - targetNowX) + " " + (targetWasZ - targetNowZ) + " " + (targetWasY - targetNowY) + " ");
-
-            targetWasX = targetNowX;
-            targetWasZ = targetNowZ;
-            targetWasY = targetNowY;
-            //System.out.println("targetWas" + targetNowX + " " + targetNowX + " " + targetNowX + " ");
-
-            if (animTime != 1 && (thisDeltaX < resetLimit || target.isAlive() != true)) {
-                //reset the calculation if the player stops moving or slows down significantly in any axis (less than resetlimit blocks per sec)
-                //System.out.println("resetX" + thisDeltaX);
-                targetNowX = target.getX();
-                targetWasX = 0;
-                netDeltaX = 0;
-                thisDeltaX = 0;
-                targetNowZ = target.getZ();
-                targetWasZ = 0;
-                netDeltaZ = 0;
-                thisDeltaZ = 0;
-                targetNowY = target.getY();
-                targetWasY = 0;
-                netDeltaY = 0;
-                thisDeltaY = 0;
-                //System.out.println("resetfull" + thisDeltaX);
-            }
-
-            if (animTime != 1 && (thisDeltaZ < resetLimit || target.isAlive() != true)) {
-                //reset the calculation if the player stops moving or slows down significantly in any axis (less than .5 blocks per sec)
-                //System.out.println("resetZ" + thisDeltaZ);
-                targetNowX = target.getX();
-                targetWasX = 0;
-                netDeltaX = 0;
-                thisDeltaX = 0;
-                targetNowZ = target.getZ();
-                targetWasZ = 0;
-                netDeltaZ = 0;
-                thisDeltaZ = 0;
-                targetNowY = target.getY();
-                targetWasY = 0;
-                netDeltaY = 0;
-                thisDeltaY = 0;
-            }
-
-            if (thisDeltaX < resetLimit || target.isAlive() != true) {
-                //reset the calculation if the player stops moving or slows down significantly in the X axis (less than .5 blocks per sec)
-                targetNowX = 0;
-                targetWasX = 0;
-                netDeltaX = 0;
-                thisDeltaX = 0;
-                System.out.println("resetX" + thisDeltaX);
-            }
-
-            if (thisDeltaZ < resetLimit || target.isAlive() != true) {
-                //reset the calculation if the player stops moving or slows down significantly in the Y axis (less than .5 blocks per sec)
-                targetNowZ = 0;
-                targetWasZ = 0;
-                netDeltaZ = 0;
-                thisDeltaZ = 0;
-                System.out.println("resetZ" + thisDeltaZ);
-            }
-
-            if (animTime != 1 && thisDeltaY < 1) {
-                //reset the calculation if the player isn't jumping
-                targetNowY = 0;
-                targetWasY = 0;
-                netDeltaY = 0;
-                thisDeltaY = 0;
-            }
-
-
-            netDeltaX = netDeltaX += thisDeltaX;
-            netDeltaZ = netDeltaZ += thisDeltaZ;
-            netDeltaY = netDeltaY += thisDeltaY;
-            //basically, just add all the displacement together and get an average displacement, and then add the displacement to each of the player axis to predict where it will go. If the player stands still for more than resetLimit ticks, reset.
-*/
-//--------------------------------------------------------------------------------------------------------------------------------------
 
             if (animTime==8) {
-                /*double avgDeltaX = netDeltaX/8;
-                double avgDeltaY = netDeltaY/8;
-                double avgDeltaZ = netDeltaZ/8;*/
                 piss(target);
-                //piss(target, target.getDeltaMovement());
-                //System.out.println("net" + netDeltaY + " " + netDeltaX + " " + netDeltaZ);
-                //System.out.println(avgDeltaY);
 
             } else {
                 this.targetOldX = target.getX();
@@ -586,96 +475,33 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 this.resetAttackCooldown();
                 this.ticksUntilNextPathRecalculation = 0;
                 this.rangedAttackCD = 20;//this.mob.getRandom().nextInt(100);;
-                /*targetNowX = target.getX();
-                targetNowY = target.getX();
-                targetNowZ = target.getX();
-                targetWasX = 0;
-                targetWasY = 0;
-                targetWasZ = 0;
-                netDeltaX = 0;
-                netDeltaY = 0;
-                netDeltaZ = 0;*/
             }
         }
 
-        //    "minecraft:vindicator",
-        //    "minecraft:vex",
-        //    "minecraft:illusioner",
-        //    "minecraft:wither",
-        //    "minecraft_piglin",
-        //    "minecraft_piglin_brute"
-        //other victims
+        //TODO: replace piss texture, add biome - specific shrimp variants, add piss variants, make piss poison stuff and freeze stuff, make blue and golds rare, update animations
+        //Also TODO: set a safe distance from the shrimp where you won't be shot, but it also can't hit you
 
-        protected void piss(LivingEntity target/*, Vec3 targetVelocity*/) {
+        protected void piss(LivingEntity target) {
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.getLookControl().setLookAt(target.position());
             this.mob.yBodyRot = this.mob.yHeadRot;
 
-            /*Vec3 startPos = this.mob.position().add(0.0D, (double)1.6F, 0.0D);
-            Vec3 deltaPos = target.getEyePosition().subtract(startPos);
-            Vec3 normalDeltaPos = deltaPos.normalize();
-            double hitBoxR = 1.75;
-            //hitbox radius
-
-            this.mob.playSound(SoundEvents.PLAYER_SPLASH_HIGH_SPEED, 3.0F, 1.0F);
-
-            for(int i = 1; i < Mth.floor(normalDeltaPos.length()) + 1500; ++i) {
-                Vec3 scaledPos = startPos.add(normalDeltaPos.scale((double)i));
-                ServerLevel world = (ServerLevel)this.mob.level;
-                world.sendParticles(NSSParticles.FOAM_STANDARD.get(), scaledPos.x, scaledPos.y, scaledPos.z,  1, 0.0D, 0.0D, 0.0D, 0.0D);
-                //System.out.println(scaledPos);
-
-                for(int p = 0; p < 10 * (1 + Math.sqrt(0.001 * i)); ++p) {
-                    double d0 = this.mob.random.nextGaussian() * 0.05D * (Math.sqrt(i));
-                    double d1 = this.mob.random.nextGaussian() * 0.05D * (Math.sqrt(i));
-                    double d2 = this.mob.random.nextGaussian() * 0.05D * (Math.sqrt(i));
-                    double length = this.mob.random.nextDouble();
-                    //System.out.println(length);
-                    world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), (int) 1, 0.0D, 0.0D, 0.0D, 0.0D);
-                    this.mob.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), 0.0D, 0.0D, 0.0D);
-                }
-
-                if (Math.abs(target.position().x - scaledPos.x) <= hitBoxR && Math.abs(target.position().y + 1 - scaledPos.y) <= hitBoxR && Math.abs(target.position().z - scaledPos.z) <= hitBoxR) {
-                    target.hurt(DamageSource.explosion(this.mob), 10.0F);
-                    double d1 = 0.5D * (1.0D - target.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
-                    double d0 = 2.5D * (1.0D - target.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
-                    target.push(normalDeltaPos.x() * d0, normalDeltaPos.y() * d1, normalDeltaPos.z() * d0);
-                }
-            }*/
-
-            //double pissspeed = 6;
-            //blocks per second^
-
             double pissspeed = 7;
             //MAKE SURE THIS IS THE SAME NUMBER AS EntityToxicWater's pissspeed
-            //it's supposed to be unused
             double pissspeedforcalculation = pissspeed - 1;
             //slight delay to tune it
-            //Vec3 oldPos = new Vec3(targetOldX, targetOldY, targetOldZ);
             Vec3 targetVelocity = new Vec3((target.getX() - targetOldX),(target.getY() - targetOldY),(target.getZ() - targetOldZ));
-            //System.out.println(targetOldX + ", " + targetOldY + ", " + targetOldZ);
-            //System.out.println(target.position());
-            //System.out.println(targetVelocity);
-            //System.out.println(target.getDeltaMovement());
-
-            EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level);
-            urine.setInvisible(true);
-            urine.moveTo(this.mob.getX(), this.mob.getY() + 2, this.mob.getZ());
-            urine.setOwner(this.mob);
 
             Vec3 tStartPos = target.position();
             Vec3 tTempPos = tStartPos;
 
-            //System.out.println("newloop");
             for (int count = 0; count < 1; count++) {
 
-                double flatDist = Math.sqrt((urine.getX() - target.getX())*(urine.getX() - target.getX()) + (urine.getZ() - target.getZ())*(urine.getZ() - target.getZ()));
-                double tallDist = Math.sqrt(flatDist*flatDist + (urine.getY() - target.getY())*(urine.getY() - target.getY()));
-                //double fulldist = urine.distanceTo(target);
+                double flatDist = Math.sqrt((this.mob.getX() - target.getX())*(this.mob.getX() - target.getX()) + (this.mob.getZ() - target.getZ())*(this.mob.getZ() - target.getZ()));
+                double tallDist = Math.sqrt(flatDist*flatDist + (this.mob.getY() + 2 - target.getY())*(this.mob.getY() + 2 - target.getY()));
+                //use urine.getwhatevercoordinate if this.mob.getwhatevercoordinate makes it worse
                 double pissReachTime = tallDist/pissspeedforcalculation;
-                tTempPos = tTempPos.add(targetVelocity.multiply(pissReachTime - (0.1*target.distanceTo(urine)), 0, pissReachTime - (0.1*target.distanceTo(urine))));
-                System.out.println(tTempPos);
-                System.out.println(tTempPos.distanceTo(target.position()));
+                tTempPos = tTempPos.add(targetVelocity.multiply(pissReachTime - (0.1*target.distanceTo(this.mob)), 0, pissReachTime - (0.1*target.distanceTo(this.mob))));
 
                 if (tTempPos.distanceTo(target.position()) <= 1) {
                     break;
@@ -684,6 +510,10 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
             Vec3 finalTargetPos = tTempPos.add(0,target.getEyeHeight()*0.5,0);
 
+            EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level);
+            urine.setOwner(this.mob);
+            urine.setInvisible(true);
+            urine.moveTo(this.mob.getX(), this.mob.getY() + 2, this.mob.getZ());
             urine.setTargetPos(finalTargetPos);
             this.mob.level.addFreshEntity(urine);
 
@@ -692,8 +522,6 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             //System.out.println("intent" + pos);
             //System.out.println("target" + target.position());
             //this.mob.level.addFreshEntity(marker);
-
-
         }
 
         public void positionProphet(Vec3 targetPos, Vec3 shooterPos, Vec3 targetVelocity, float bulletSpeed) {
@@ -770,45 +598,6 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         this.playSound(NSSSounds.CRAYFISH_SCUTTLE.get(), 0.3F, 1.0F);
     }
 
-    /*
-    public static void pointTowards(Vec3 targetcoords, LivingEntity entityinquestion){
-        double xdiff = targetcoords.x - entityinquestion.getX();
-        double zdiff = targetcoords.z - entityinquestion.getZ();
-        double rvalue = 0;
-
-        if (xdiff == 0) {
-            if (zdiff == 0 || zdiff > 0) {
-                rvalue = 0;
-            } else if (zdiff < 0) {
-                rvalue = 180;
-            }
-            entityinquestion.setYRot((float) rvalue);
-            return;
-
-        } else if (xdiff < 0) {
-            if (zdiff == 0) {
-                rvalue = 0;
-            } else if (zdiff < 0) {
-                rvalue = Math.toDegrees(Math.atan(xdiff/zdiff));
-            } else if (zdiff > 0) {
-                rvalue = 180 - Math.toDegrees(Math.atan(xdiff/zdiff));
-            }
-
-        } else if (xdiff > 0) {
-            if (zdiff == 0) {
-                rvalue = 0;
-            } else if (zdiff < 0) {
-                rvalue = -(Math.toDegrees(Math.atan(xdiff/zdiff)));
-            } else if (zdiff > 0) {
-                rvalue = -(180 - Math.toDegrees(Math.atan(xdiff/zdiff)));
-            }
-        }
-        entityinquestion.setYRot((float) -(Math.toRadians(180 + rvalue)));
-        //System.out.println("pointing" + (180 + rvalue));
-        //System.out.println(Math.toDegrees(entityinquestion.getYRot()));
-    }
-    */
-
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
         int animState = this.getAnimationState();
         {
@@ -883,6 +672,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         }
         this.setVariant(i);
         return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+        //TODO: give the variants rarity and terrain specialization as required
     }
 
 

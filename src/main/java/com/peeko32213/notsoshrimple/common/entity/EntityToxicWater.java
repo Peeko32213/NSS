@@ -6,6 +6,9 @@ import com.peeko32213.notsoshrimple.core.registry.NSSParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -50,27 +53,39 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
     protected float getInertia() {
         return 0.95F;
     }
-    public float damage = 30.0f;
+    public float damage = 10.0f;
     public double pissspeed = 7.5;
     //piss speed multiplier
     //MAKE SURE THIS IS THE SAME NUMBER AS EntityCrayfish's pissspeed
     public int maxLifeTime = (int) (1500/pissspeed);
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
+    private static final EntityDataAccessor<Float> DATA_PISS_STARTPOSX = SynchedEntityData.defineId(EntityToxicWater.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> DATA_PISS_STARTPOSY = SynchedEntityData.defineId(EntityToxicWater.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> DATA_PISS_STARTPOSZ = SynchedEntityData.defineId(EntityToxicWater.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> DATA_PISS_DELTAPOSX = SynchedEntityData.defineId(EntityToxicWater.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> DATA_PISS_DELTAPOSY = SynchedEntityData.defineId(EntityToxicWater.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> DATA_PISS_DELTAPOSZ = SynchedEntityData.defineId(EntityToxicWater.class, EntityDataSerializers.FLOAT);
+    //change these to EntityDataSerializers.VECTOR3 on newer versions(they don't exist yet)
     public Vec3 startPos;
     public Vec3 deltaPos;
     public Vec3 normalDeltaPos;
     public double boxRadius = 2.25;
     public Vec3 scanBox = new Vec3(50,50,50);
 
-    //hitbox radius
-
     public EntityToxicWater(EntityType<? extends Projectile> p_37248_, Level p_37249_) {
         super((EntityType<? extends AbstractHurtingProjectile>) p_37248_, p_37249_);
+
+        this.entityData.define(DATA_PISS_STARTPOSX, 0F);
+        this.entityData.define(DATA_PISS_STARTPOSY, 0F);
+        this.entityData.define(DATA_PISS_STARTPOSZ, 0F);
+        this.entityData.define(DATA_PISS_DELTAPOSX, 0F);
+        this.entityData.define(DATA_PISS_DELTAPOSY, 0F);
+        this.entityData.define(DATA_PISS_DELTAPOSZ, 0F);
     }
 
     protected ParticleOptions getTrailParticle() {
-        return ParticleTypes.WITCH;
+        return ParticleTypes.ENTITY_EFFECT;
     }
 
     @Override
@@ -80,18 +95,20 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
 
     public void setOwner(Monster owner) {
         this.owner = owner;
-        /*this.startPos = this.position();
-        deltaPos = owner.getTarget().getEyePosition().subtract(startPos);
-        normalDeltaPos = deltaPos.normalize();*/
-        //System.out.println("start" + this.position());
     }
 
-    public void setTargetPos(Vec3 pos){
+    public void setTargetPos(Vec3 finalTargetPos){
         this.startPos = this.position();
-        this.deltaPos = pos.subtract(this.position());
+        this.deltaPos = finalTargetPos.subtract(this.position());
         this.normalDeltaPos = deltaPos.normalize();
-        NSSPacketHub.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> this.level.getEntity(this.getId())),
-                new ClientboundShrimpTargetingDataInAPacket(this.startPos, this.deltaPos, this.lifeTime, this.getId()));
+        this.entityData.set(DATA_PISS_STARTPOSX, (float) startPos.x);
+        this.entityData.set(DATA_PISS_STARTPOSY, (float) startPos.y);
+        this.entityData.set(DATA_PISS_STARTPOSZ, (float) startPos.z);
+        this.entityData.set(DATA_PISS_DELTAPOSX, (float) deltaPos.x);
+        this.entityData.set(DATA_PISS_DELTAPOSY, (float) deltaPos.y);
+        this.entityData.set(DATA_PISS_DELTAPOSZ, (float) deltaPos.z);
+        //NSSPacketHub.INSTANCE.send(PacketDistributor.ALL.with(() -> null,
+        //        new ClientboundShrimpTargetingDataInAPacket(this.startPos, this.deltaPos, this.lifeTime, this.getId()));
     }
 
     /*@Override
@@ -150,143 +167,74 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
         lifeTime++;
         int timer = this.lifeTime;
 
+        if (this.level.isClientSide && this.lifeTime <= 1) {
+            this.startPos = new Vec3(this.entityData.get(DATA_PISS_STARTPOSX), this.entityData.get(DATA_PISS_STARTPOSY), this.entityData.get(DATA_PISS_STARTPOSZ));
+            this.deltaPos = new Vec3(this.entityData.get(DATA_PISS_DELTAPOSX), this.entityData.get(DATA_PISS_DELTAPOSY), this.entityData.get(DATA_PISS_DELTAPOSZ));
+            this.normalDeltaPos = deltaPos.normalize();
+        }
+
         this.setInvisible(true);
         if (this.lifeTime >= maxLifeTime) {
             //System.out.println("removed(lifetime)");
             this.remove(RemovalReason.DISCARDED);
         }
 
-        if (this.level.isClientSide) {
-            this.normalDeltaPos = startPos.normalize();
+        if (this.level.isClientSide() && startPos != null) {
+            this.normalDeltaPos = deltaPos.normalize();
             Vec3 scaledPos = startPos.add(normalDeltaPos.scale((double)timer*pissspeed));
+            //startPos is fine, the process that makes scaledPos broke it
+            System.out.println("Client deltaPos" + deltaPos);
+            System.out.println("Client normalDeltaPos" + normalDeltaPos);
+
+            this.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x), (scaledPos.y), (scaledPos.z), 0.0D, 0.0D, 0.0D);
+            //completely normal particle
 
             for (int p = 0; p < 6 * (1 + Math.sqrt(0.001 * timer)); ++p) {
-                //System.out.println(length);
-                //if (this.level.isClientSide) {
+                //1 + Math.sqrt(0.001 * timer) makes the piss spawn more particles the farther you are to compensate for the beam getting wider
                 double d0 = this.random.nextGaussian() * 0.125D;
                 double d1 = this.random.nextGaussian() * 0.125D;
                 double d2 = this.random.nextGaussian() * 0.125D;
                 double length = this.random.nextDouble();
-                this.level.addAlwaysVisibleParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x + (d0 * (Math.sqrt(timer)))) + (deltaPos.x * length), (scaledPos.y + (d1 * (Math.sqrt(timer)))) + (deltaPos.y * length), (scaledPos.z + (d2 * (Math.sqrt(timer)))) + (deltaPos.z * length), 0.0D, 0.0D, 0.0D);
-                this.level.addAlwaysVisibleParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x + d0) + (normalDeltaPos.x * length), (scaledPos.y + d1) + (normalDeltaPos.y * length), (scaledPos.z + d2) + (normalDeltaPos.z * length), 0.0D, 0.0D, 0.0D);
-                this.level.addAlwaysVisibleParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x + d1) + (normalDeltaPos.x * length), (scaledPos.y + d2) + (normalDeltaPos.y * length), (scaledPos.z + d0) + (normalDeltaPos.z * length), 0.0D, 0.0D, 0.0D);
-                //owner.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x+d0) + (deltaPos.x*length), (scaledPos.y+d1) + (deltaPos.y*length), (scaledPos.z+d2) + (deltaPos.z*length), 0.0D, 0.0D, 0.0D);
-                //}
+                this.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x + (d0 * (Math.sqrt(timer)))) + (deltaPos.x * length), (scaledPos.y + (d1 * (Math.sqrt(timer)))) + (deltaPos.y * length), (scaledPos.z + (d2 * (Math.sqrt(timer)))) + (deltaPos.z * length), 0.0D, 0.0D, 0.0D);
+                //this foam gets wider over distance^
+                this.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x + d0) + (deltaPos.x * length), (scaledPos.y + d1) + (deltaPos.y * length), (scaledPos.z + d2) + (deltaPos.z * length), 0.0D, 0.0D, 0.0D);
+                this.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x + d1) + (deltaPos.x * length), (scaledPos.y + d2) + (deltaPos.y * length), (scaledPos.z + d0) + (deltaPos.z * length), 0.0D, 0.0D, 0.0D);
+                //these two foams are randomized in range and they will distribute themselves across the length of the pathway
             }
         }
 
-        /*Vec3 vector3d = this.getDeltaMovement();
-        double d0 = this.getX() + vector3d.x;
-        double d1 = this.getY() + vector3d.y;
-        double d2 = this.getZ() + vector3d.z;
-
-        this.updateRotation();
-        float f = 0.99F;
-        float f1 = 0.06F;
-
-        if (this.level.getBlockStates(this.getBoundingBox()).noneMatch(BlockBehaviour.BlockStateBase::isAir)) {
-            this.remove(RemovalReason.DISCARDED);
-        } else {
-            this.setDeltaMovement(vector3d.scale(1));
-            if (!this.isNoGravity()) {
-                this.setDeltaMovement(this.getDeltaMovement().add(0.0D, (double)-0.06D, 0.0D));
-            }
-
-            this.setPos(d0, d1, d2);
-        }
-        this.addParticlesAroundSelf();
-        if (vector3d.x == 0 && vector3d.y == 0 && vector3d.z == 0) {
-            System.out.println("hit" + this.position());
-            this.remove(RemovalReason.DISCARDED);
-        }*/
-
-        /*vanilla particle code below
-        Vec3 vec3 = this.getDeltaMovement();
-        double d5 = vec3.x;
-        double d6 = vec3.y;
-        d1 = vec3.z;
-        double d7 = this.getX() + d5;
-        d2 = this.getY() + d6;
-        double d3 = this.getZ() + d1;
-        double d4 = vec3.horizontalDistance();
-        for(int j = 0; j < 4; ++j) {
-            float f2 = 0.25F;
-            this.level.addParticle(NSSParticles.FOAM_STANDARD.get(), d7 - d5 * 0.25D, d2 - d6 * 0.25D, d3 - d1 * 0.25D, d5, d6, d1);
-        }*/
-        //---------------------------------------------------------------
-        //original code^
         if (this.getOwner() != null){;
             Vec3 scaledPos = startPos.add(normalDeltaPos.scale((double)timer*pissspeed));
-            //System.out.println(scaledPos);
-            //System.out.println(lifeTime);
             ServerLevel world = (ServerLevel)owner.level;
             BlockPos center = new BlockPos(scaledPos);
             if (world.getBlockState(center).getBlock().hasCollision == true){
-                //System.out.println("removed(hitting smthin)");
-                //System.out.println("blockstate" + center);
-                //TODO: Check if this fix works(do shrimprojectiles pierce cobweb)
                 this.remove(RemovalReason.DISCARDED);
             }
 
-            world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x), (scaledPos.y), (scaledPos.z), 1, 0.0D, 0.0D, 0.0D, 0.0D);
             AABB checkZone = new AABB(center).inflate(boxRadius + pissspeed);
-
-            //Vec3 hitbox = new Vec3 ((boxRadius), (boxRadius), (boxRadius));
+            //zone to check for a hit
             AABB hitboxbox = new AABB(center).inflate(boxRadius);
-            //hitboxOutline(scaledPos, hitbox.x, hitbox.y, hitbox.z, world);
+            //actual hitbox
 
             List<LivingEntity> potentialVictims = world.getEntitiesOfClass(LivingEntity.class, checkZone);
-            //System.out.println(potentialVictims);
-            //System.out.println(scaledPos);
 
             for (int v = 0; v < potentialVictims.size(); v ++){
                 LivingEntity victim = potentialVictims.get(v);
                 if (victim != owner) {
                     AABB targetbox = getAABB(victim.getX(), victim.getY(), victim.getZ(), victim);
                     if (targetbox.intersects(hitboxbox)) {
-                        victim.hurt(DamageSource.mobAttack(owner), 10.0F);
+                        victim.hurt(DamageSource.mobAttack(owner), damage);
                         double dA = 0.2D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
                         double dB = 1.0D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
                         victim.push(normalDeltaPos.x() * dB, normalDeltaPos.y() * dA, normalDeltaPos.z() * dB);
-                        System.out.println(victim);
+                        //System.out.println();
                     }
                 }
             }
-            //world.sendParticles(NSSParticles.FOAM_STANDARD.get(), scaledPos.x, scaledPos.y, scaledPos.z,  1, 0.0D, 0.0D, 0.0D, 0.0D);
+            //harms anything it hits
+
         }
-
-        //------------------------------------------------------------------
-        //^warden stuff
-
-            /*if (!this.isNoGravity()) {
-                this.setDeltaMovement(this.getDeltaMovement().add(0.0D, (double)-0.06D, 0.0D));
-            }
-
-            this.setPos(d0, d1, d2);
-        }
-//        this.addParticlesAroundSelf();
-        if (vector3d.x == 0 && vector3d.y == 0 && vector3d.z == 0) {
-            System.out.println("hit" + this.position());
-            this.remove(RemovalReason.DISCARDED);*/
     }
-
-
-    /*@Override
-    protected void onHitEntity(EntityHitResult hitData) {
-        super.onHitEntity(hitData);
-        Entity entity1 = this.getOwner();
-        Entity entity = hitData.getEntity();
-        if (entity instanceof LivingEntity) {
-            hitData.getEntity().hurt(DamageSource.mobAttack((LivingEntity) entity1), damage);
-            ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.POISON, 200, 2));
-        }
-        if (entity1 instanceof LivingEntity) {
-            ((LivingEntity)entity1).setLastHurtMob(entity);
-        }
-        //this.discard();
-
-    }*/
-
 
     private double horizontalMag(Vec3 vector3d) {
         return vector3d.x * vector3d.x + vector3d.z * vector3d.z;

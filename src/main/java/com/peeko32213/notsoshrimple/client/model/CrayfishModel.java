@@ -15,10 +15,12 @@ public class CrayfishModel extends AnimatedGeoModel<EntityCrayfish>
     hashMap.put(0, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_brown.png"));
     hashMap.put(1, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_frost.png"));
     hashMap.put(2, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_blood.png"));
+    //biome variants^
     hashMap.put(3, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_red.png"));
     hashMap.put(4, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_orange.png"));
     hashMap.put(3, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_yellow.png"));
     hashMap.put(4, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_blue.png"));
+    //rare variants^
 });
 
     @Override

@@ -30,7 +30,7 @@ public class NSSEntities {
                     .build(new ResourceLocation(NotSoShrimple.MODID, "maneater").toString()));
 
     public static final RegistryObject<EntityType<EntityToxicWater>> TOXICWATER = ENTITIES.register("toxicwater",
-            () -> EntityType.Builder.of(EntityToxicWater::new, MobCategory.MISC).sized(4f, 4f)
+            () -> EntityType.Builder.of(EntityToxicWater::new, MobCategory.MISC).sized(0f, 0f)
                     .build(new ResourceLocation(NotSoShrimple.MODID, "toxicwater").toString()));
 
     public static final RegistryObject<EntityType<EntityIceWater>> ICEWATER = ENTITIES.register("icewater",
