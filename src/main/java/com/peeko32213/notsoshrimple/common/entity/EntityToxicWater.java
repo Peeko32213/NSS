@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -183,8 +184,6 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
             this.normalDeltaPos = deltaPos.normalize();
             Vec3 scaledPos = startPos.add(normalDeltaPos.scale((double)timer*pissspeed));
             //startPos is fine, the process that makes scaledPos broke it
-            System.out.println("Client deltaPos" + deltaPos);
-            System.out.println("Client normalDeltaPos" + normalDeltaPos);
 
             this.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x), (scaledPos.y), (scaledPos.z), 0.0D, 0.0D, 0.0D);
             //completely normal particle
@@ -224,6 +223,9 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
                     AABB targetbox = getAABB(victim.getX(), victim.getY(), victim.getZ(), victim);
                     if (targetbox.intersects(hitboxbox)) {
                         victim.hurt(DamageSource.mobAttack(owner), damage);
+                        if (victim instanceof LivingEntity) {
+                            victim.addEffect(new MobEffectInstance(MobEffects.POISON, 200, 2));
+                        }
                         double dA = 0.2D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
                         double dB = 1.0D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
                         victim.push(normalDeltaPos.x() * dB, normalDeltaPos.y() * dA, normalDeltaPos.z() * dB);

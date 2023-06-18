@@ -1,21 +1,17 @@
 package com.peeko32213.notsoshrimple.common.entity;
 
-import com.peeko32213.notsoshrimple.common.entity.EntityToxicWater;
 import com.peeko32213.notsoshrimple.common.entity.utl.*;
 import com.peeko32213.notsoshrimple.core.config.NotSoShrimpleConfig;
 import com.peeko32213.notsoshrimple.core.registry.NSSEntities;
-import com.peeko32213.notsoshrimple.core.registry.NSSParticles;
 import com.peeko32213.notsoshrimple.core.registry.NSSSounds;
 import com.peeko32213.notsoshrimple.core.registry.NSSTags;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
@@ -35,6 +31,8 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.*;
 import net.minecraft.world.phys.AABB;
@@ -59,7 +57,9 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     private static final EntityDataAccessor<Integer> ENTITY_STATE = SynchedEntityData.defineId(EntityCrayfish.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(EntityCrayfish.class, EntityDataSerializers.INT);
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
-    //public Vec3 finalTargetPos;
+    public int biomeVariant;
+    //0 = swamp, 1 = ice, 2 = blood
+
 
     public EntityCrayfish(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
@@ -660,16 +660,47 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         this.entityData.set(VARIANT, variant);
     }
 
+    private static boolean canSpawnBlood(LevelAccessor worldIn, BlockPos position) {
+        return worldIn.getBiome(position).is(NSSTags.SPAWNS_BLOOD_CRAYFISH);
+    }
+
+    private static boolean canSpawnIce(LevelAccessor worldIn, BlockPos position) {
+        return worldIn.getBiome(position).is(NSSTags.SPAWNS_ICE_CRAYFISH);
+    }
+
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
         spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+
         int i;
-        if(reason == MobSpawnType.SPAWN_EGG){
-            i = this.getRandom().nextInt(4);
-        }else{
-            i = this.getRandom().nextInt(3);
+        if(canSpawnBlood(worldIn, this.blockPosition())){
+            i = this.random.nextIntBetweenInclusive(10, 13);
+            this.biomeVariant = 2;
+            //blood
+            System.out.println(this.level.getBiome(this.blockPosition()));
+            System.out.println(NSSTags.SPAWNS_BLOOD_CRAYFISH);
+            System.out.println(i);
+
+
+        } else if(canSpawnIce(worldIn, this.blockPosition())){
+            i = this.random.nextIntBetweenInclusive(5, 8);
+            this.biomeVariant = 1;
+            //ice
+            System.out.println(this.level.getBiomeManager().getBiome(this.blockPosition()));
+            System.out.println(NSSTags.SPAWNS_ICE_CRAYFISH);
+            System.out.println(i);
+
+        } else {
+            i = this.random.nextIntBetweenInclusive(0, 3);
+            this.biomeVariant = 0;
+            //swamp
+            System.out.println(this.level.getBiome(this.blockPosition()));
+            System.out.println(NSSTags.SPAWNS_ICE_CRAYFISH);
+            System.out.println(NSSTags.SPAWNS_BLOOD_CRAYFISH);
+            System.out.println(i);
         }
+
         this.setVariant(i);
         return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
         //TODO: give the variants rarity and terrain specialization as required
