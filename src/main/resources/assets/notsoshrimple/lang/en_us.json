@@ -12,10 +12,12 @@
   "item.notsoshrimple.raw_prawn": "Raw Prawn",
   "item.notsoshrimple.cooked_prawn": "Cooked Prawn",
 
-  "notsoshrimple.sound.subtitle.crayfish_idle": "Dreadful Chattering",
-  "notsoshrimple.sound.subtitle.crayfish_attack": "Heavy Claw Swipe",
+  "notsoshrimple.sound.subtitle.crayfish_idle": "Dreadful chattering",
+  "notsoshrimple.sound.subtitle.crayfish_attack": "Heavy claw swipe",
   "notsoshrimple.sound.subtitle.crayfish_hurt": "Pling",
-  "notsoshrimple.sound.subtitle.crayfish_death": "Mournful Chattering",
-  "notsoshrimple.sound.subtitle.crayfish_scuttle": "Menancing Scuttling"
+  "notsoshrimple.sound.subtitle.crayfish_death": "Mournful chattering",
+  "notsoshrimple.sound.subtitle.crayfish_scuttle": "Menancing scuttling",
+  "notsoshrimple.sound.subtitle.crayfish_scuttling_0": "Horrid scuttling",
+  "notsoshrimple.sound.subtitle.crayfish_scuttling_1": "Oppressive scuttling"
 
 }

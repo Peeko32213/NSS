@@ -572,7 +572,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             Vec3 pos = mob.position();
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
-            this.mob.willItBreak = true;
+            //this.mob.willItBreak = true;
             //HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),5.0f, 1.5f, mob, pos,  80.0F, -Math.PI/6, Math.PI/6, -1.0f, 3.0f);
             PisslikeHitboxes.PivotedRadialHitCheck(this.mob, this.slamOffSet, 3f, (ServerLevel)this.mob.getLevel(), 15f, DamageSource.mobAttack(mob), 2f, true);
             //THIS METHOD CAN ONLY BE RAN ON THE SERVERSIDE.
@@ -584,7 +584,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             Vec3 pos = mob.position();
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
-            this.mob.willItBreak = false;
+            //this.mob.willItBreak = false;
             PisslikeHitboxes.PivotedPolyHitCheck(this.mob, this.slashOffSet, 6f, 0.6f, 8f, (ServerLevel)this.mob.getLevel(), 10f, DamageSource.mobAttack(mob), 3f, false);
             //HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),5.0f, 1.0f, mob, pos,  6.0F, -Math.PI/2, Math.PI/2, -1.0f, 3.0f);
         }
@@ -593,7 +593,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             Vec3 pos = mob.position();
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
-            this.mob.willItBreak = false;
+            //this.mob.willItBreak = false;
             PisslikeHitboxes.PivotedPolyHitCheck(this.mob, this.pokeOffSet, 0.5f, 0.5f, 0.5f, (ServerLevel)this.mob.getLevel(), 10f, DamageSource.mobAttack(mob), 0.3f, false);
             //HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),5.0f, 1.0f, mob, pos,  6.0F, -Math.PI/2, Math.PI/2, -1.0f, 3.0f);
         }
@@ -627,16 +627,13 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         if (source.getDirectEntity() instanceof AbstractArrow) {
             if (((AbstractArrow) source.getDirectEntity()).getPierceLevel() >= 1) {
                 blowthrough = true;
+                return true;
             }
         }
-        System.out.println("blowtrue" + blowthrough);
-        System.out.println("projtrue" + source.isProjectile());
-        System.out.println("both??" + (source.isProjectile() && blowthrough));
-
         return source == DamageSource.FALL ||
                 source == DamageSource.IN_WALL ||
                 source == DamageSource.CACTUS ||
-                !(source.isProjectile() && blowthrough) ||
+                //(source.isProjectile() && !blowthrough) ||
                 (source.isFire() && this.biomeVariant == 2) ||
                 super.isInvulnerableTo(source);
     }
