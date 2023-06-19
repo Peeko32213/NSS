@@ -2,7 +2,7 @@ package com.peeko32213.notsoshrimple.core.registry;
 
 import com.peeko32213.notsoshrimple.NotSoShrimple;
 import com.peeko32213.notsoshrimple.common.entity.EntityCrayfish;
-import com.peeko32213.notsoshrimple.common.entity.EntityIceWater;
+import com.peeko32213.notsoshrimple.common.entity.ArchivedProjectileWater;
 import com.peeko32213.notsoshrimple.common.entity.mobs.EntityManeaterShell;
 import com.peeko32213.notsoshrimple.common.entity.EntityToxicWater;
 import net.minecraft.resources.ResourceLocation;
@@ -33,8 +33,8 @@ public class NSSEntities {
             () -> EntityType.Builder.of(EntityToxicWater::new, MobCategory.MISC).sized(0f, 0f)
                     .build(new ResourceLocation(NotSoShrimple.MODID, "toxicwater").toString()));
 
-    public static final RegistryObject<EntityType<EntityIceWater>> ICEWATER = ENTITIES.register("icewater",
-            () -> EntityType.Builder.of(EntityIceWater::new, MobCategory.MISC).sized(5.0F, 6.5F)
+    public static final RegistryObject<EntityType<ArchivedProjectileWater>> ICEWATER = ENTITIES.register("icewater",
+            () -> EntityType.Builder.of(ArchivedProjectileWater::new, MobCategory.MISC).sized(5.0F, 6.5F)
                     .build(new ResourceLocation(NotSoShrimple.MODID, "icewater").toString()));
 
     public static boolean rollSpawn(int rolls, RandomSource random, MobSpawnType reason){

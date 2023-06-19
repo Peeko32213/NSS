@@ -25,6 +25,8 @@ import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -206,13 +208,15 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
             Vec3 scaledPos = startPos.add(normalDeltaPos.scale((double)timer*pissspeed));
             ServerLevel world = (ServerLevel)owner.level;
             BlockPos center = new BlockPos(scaledPos);
-            if (world.getBlockState(center).getBlock().hasCollision == true){
+            Block currentBlock = world.getBlockState(center).getBlock();
+            if (currentBlock.hasCollision == true && !(currentBlock instanceof LeavesBlock)){
                 this.remove(RemovalReason.DISCARDED);
             }
 
             AABB checkZone = new AABB(center).inflate(boxRadius + pissspeed);
             //zone to check for a hit
             AABB hitboxbox = new AABB(center).inflate(boxRadius);
+            //hitboxOutline(hitboxbox, world);
             //actual hitbox
 
             List<LivingEntity> potentialVictims = world.getEntitiesOfClass(LivingEntity.class, checkZone);
@@ -224,7 +228,8 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
                     if (targetbox.intersects(hitboxbox)) {
                         victim.hurt(DamageSource.mobAttack(owner), damage);
                         if (victim instanceof LivingEntity) {
-                            victim.addEffect(new MobEffectInstance(MobEffects.POISON, 200, 2));
+                            victim.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 1));
+                            //poison for poison piss
                         }
                         double dA = 0.2D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
                         double dB = 1.0D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
@@ -252,6 +257,18 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
         world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (pos.x - rX), (pos.y - rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
         world.sendParticles(ParticleTypes.END_ROD, (pos.x - rX), (pos.y + rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
         world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (pos.x - rX), (pos.z - rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+    }
+
+    public static void hitboxOutline (AABB box, ServerLevel world) {
+        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (box.maxX), (box.maxY), (box.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.END_ROD, (box.maxX), (box.minY), (box.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (box.maxX), (box.minY), (box.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.HAPPY_VILLAGER, (box.maxX), (box.maxY), (box.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+
+        world.sendParticles(ParticleTypes.HAPPY_VILLAGER, (box.minX), (box.maxY), (box.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (box.minX), (box.minY), (box.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.END_ROD, (box.minX), (box.minY), (box.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (box.minX), (box.maxY), (box.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
     }
 
     public static AABB getAABB(double pX, double pY, double pZ, LivingEntity entity) {

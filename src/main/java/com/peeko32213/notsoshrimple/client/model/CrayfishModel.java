@@ -13,19 +13,13 @@ import java.util.Map;
 public class CrayfishModel extends AnimatedGeoModel<EntityCrayfish> {
     public static final Map<Integer, ResourceLocation> TEXTURES = Util.make(Maps.newHashMap(), (hashMap) -> {
         hashMap.put(0, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_brown.png"));
-        hashMap.put(1, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_red.png"));
-        hashMap.put(2, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_yellow.png"));
-        hashMap.put(3, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_blue.png"));
+        hashMap.put(1, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_yellow.png"));
         //brown selection^
-        hashMap.put(5, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_frost.png"));
-        hashMap.put(6, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_red.png"));
-        hashMap.put(7, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_yellow.png"));
-        hashMap.put(8, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_blue.png"));
+        hashMap.put(2, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_frost.png"));
+        hashMap.put(3, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_blue.png"));
         //frost selection^
-        hashMap.put(10, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_blood.png"));
-        hashMap.put(11, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_red.png"));
-        hashMap.put(12, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_yellow.png"));
-        hashMap.put(13, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_blue.png"));
+        hashMap.put(4, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_blood.png"));
+        hashMap.put(5, new ResourceLocation(NotSoShrimple.MODID, "textures/entity/lobster_red.png"));
         //blood selection^
     });
 

@@ -11,6 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -27,6 +28,11 @@ import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -57,8 +63,11 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     private static final EntityDataAccessor<Integer> ENTITY_STATE = SynchedEntityData.defineId(EntityCrayfish.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(EntityCrayfish.class, EntityDataSerializers.INT);
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
+
     public int biomeVariant;
-    //0 = swamp, 1 = ice, 2 = blood
+    public boolean willItBreak = false;
+
+    //0 = swamp, 1 = ice, 2 = blood for biomeVariant
 
 
     public EntityCrayfish(EntityType<? extends Monster> entityType, Level level) {
@@ -66,28 +75,37 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         this.maxUpStep = 1.0f;
     }
 
-    /*@Override
-    public boolean canDisableShield() {
-        //return this.ANIMATION_STATE == 23;
-    }*/
+    @Override
+    public void maybeDisableShield(Player pPlayer, ItemStack pMobItemStack, ItemStack pPlayerItemStack) {
+        if (!pPlayerItemStack.isEmpty() && pPlayerItemStack.is(Items.SHIELD) && this.willItBreak == true) {
+            float f = 0.25F + (float) EnchantmentHelper.getBlockEfficiency(this) * 0.05F;
+            if (this.random.nextFloat() < f) {
+                pPlayer.getCooldowns().addCooldown(Items.SHIELD, 100);
+                this.level.broadcastEntityEvent(pPlayer, (byte)30);
+            }
+        }
+
+    }
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 300.0D)
-                .add(Attributes.ARMOR, 15.0D)
+                .add(Attributes.MAX_HEALTH, 200.0D)
+                .add(Attributes.ARMOR, 20.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.29D)
                 .add(Attributes.ATTACK_DAMAGE, 10.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 10.5D)
-                .add(Attributes.ATTACK_KNOCKBACK, 2.0D)
+                .add(Attributes.ATTACK_KNOCKBACK, 1.0D)
                 .add(Attributes.FOLLOW_RANGE, 800D);
-
+        //health nerfed
+        //armour buffed
+        //we don't need knockback and damage tbh
     }
 
 
 
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(0, new FloatGoal(this));
+        //this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new EntityCrayfish.CrayfishMeleeAttackGoal(this, 1.2F, true));
         this.goalSelector.addGoal(3, new CustomRandomStrollGoal(this, 30, 1.0D, 100, 34));
         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 15.0F));
@@ -215,6 +233,14 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         private double targetOldX;
         private double targetOldY;
         private double targetOldZ;
+        private int meleeRange = 150;
+        //the range(blocks) in which the shrimp would stay in melee mode. Adjust until perfect.
+        //this is NOT IN BLOCKS. I DO NOT KNOW WHAT UNIT THIS IS.
+        Vec3 slamOffSet = new Vec3(0, 1.25, 5.5);
+        Vec3 pokeOffSet = new Vec3(0, 0.25, 5.625);
+        Vec3 slashOffSet = new Vec3(2, -1, 10);
+        //the Y value is at the BOTTOM of the offset, and the hitbox is inflated up.
+        //EVERYTHING IS INFLATED IN THE POSITIVE DIRECTION.
 
 
         public CrayfishMeleeAttackGoal(EntityCrayfish p_i1636_1_, double p_i1636_2_, boolean p_i1636_4_) {
@@ -303,7 +329,6 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
             LivingEntity target = this.mob.getTarget();
             double distance = this.mob.distanceToSqr(target.getX(), target.getY(), target.getZ());
-            double reach = this.getAttackReachSqr(target);
             int animState = this.mob.getAnimationState();
             Vec3 aim = this.mob.getLookAngle();
             Vec2 aim2d = new Vec2((float) (aim.x / (1 - Math.abs(aim.y))), (float) (aim.z / (1 - Math.abs(aim.y))));
@@ -312,18 +337,22 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             switch (animState) {
                 case 21:
                     tickRightClawAttack();
+                    this.mob.willItBreak = false;
                     break;
                 case 22:
                     tickLeftClawAttack();
+                    this.mob.willItBreak = false;
                     break;
                 case 23:
                     this.mob.lookAt(this.mob.getTarget(), 100000, 100000);
                     this.mob.yBodyRot = this.mob.yHeadRot;
+                    this.mob.willItBreak = true;
                     tickSlamAttack();
                     break;
                 case 24:
                     this.mob.lookAt(this.mob.getTarget(), 100000, 100000);
                     this.mob.yBodyRot = this.mob.yHeadRot;
+                    this.mob.willItBreak = false;
                     tickPiss();
                     break;
                 default:
@@ -332,7 +361,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                     this.rangedAttackCD = Math.max(this.rangedAttackCD - 1, 0);
                     this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
                     this.doMovement(target, distance);
-                    this.checkForCloseRangeAttack(distance, reach);
+                    this.checkForCloseRangeAttack(distance, meleeRange);
                     break;
 
             }
@@ -375,18 +404,18 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         }
 
 
-        protected void checkForCloseRangeAttack ( double distance, double reach){
-            if (distance <= reach && this.ticksUntilNextAttack <= 0) {
+        protected void checkForCloseRangeAttack ( double distance, double meleeRange){
+            if (distance <= meleeRange && this.ticksUntilNextAttack <= 0) {
                 int r = this.mob.getRandom().nextInt(2048);
                 if (r <= 600) {
                     this.mob.setAnimationState(21);
-                } else if (r <= 800) {
+                } else if (r <= 1000) {
                     this.mob.setAnimationState(22);
                 } else if (r <= 1400) {
                     this.mob.setAnimationState(23);
                 }
 
-            } else if (distance > reach && this.ticksUntilNextAttack <= 0 && this.rangedAttackCD <= 0) {
+            } else if (distance > meleeRange && this.ticksUntilNextAttack <= 0 && this.rangedAttackCD <= 0) {
                 this.mob.setAnimationState(24);
             }
         }
@@ -408,7 +437,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             animTime++;
             this.mob.getNavigation().stop();
             if(animTime==12) {
-                preformLeftClawAttack();
+                performLeftClawAttack();
             }
             if(animTime>=13) {
                 animTime=0;
@@ -428,7 +457,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             }
             animTime++;
             if(animTime==12) {
-                preformRightClawAttack();
+                performRightClawAttack();
             }
             if(animTime>=16) {
                 animTime=0;
@@ -441,6 +470,10 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         protected void tickSlamAttack () {
             animTime++;
             this.mob.getNavigation().stop();
+            if (animTime <= 3) {
+                this.mob.lookAt(this.mob.getTarget(), 100000, 100000);
+                this.mob.yBodyRot = this.mob.yHeadRot;
+            }
             if(animTime==15) {
                 performSlamAttack();
             }
@@ -474,11 +507,11 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 this.mob.setAnimationState(0);
                 this.resetAttackCooldown();
                 this.ticksUntilNextPathRecalculation = 0;
-                this.rangedAttackCD = 20;//this.mob.getRandom().nextInt(100);;
+                this.rangedAttackCD = this.mob.getRandom().nextInt(100);;
             }
         }
 
-        //TODO: replace piss texture, add biome - specific shrimp variants, add piss variants, make piss poison stuff and freeze stuff, make blue and golds rare, update animations
+        //TODO: replace piss texture, make blue and golds rare, update animations
         //Also TODO: set a safe distance from the shrimp where you won't be shot, but it also can't hit you
 
         protected void piss(LivingEntity target) {
@@ -510,12 +543,23 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
             Vec3 finalTargetPos = tTempPos.add(0,target.getEyeHeight()*0.5,0);
 
-            EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level);
-            urine.setOwner(this.mob);
-            urine.setInvisible(true);
-            urine.moveTo(this.mob.getX(), this.mob.getY() + 2, this.mob.getZ());
-            urine.setTargetPos(finalTargetPos);
-            this.mob.level.addFreshEntity(urine);
+            if (this.mob.biomeVariant == 0){
+                EntityToxicWater urine = new EntityToxicWater(NSSEntities.TOXICWATER.get(), this.mob.level);
+                urine.setOwner(this.mob);
+                urine.setInvisible(true);
+                urine.moveTo(this.mob.getX(), this.mob.getY() + 2, this.mob.getZ());
+                urine.setTargetPos(finalTargetPos);
+                this.mob.level.addFreshEntity(urine);
+
+            } else if (this.mob.biomeVariant == 1){
+                EntityIceWater urine = new EntityIceWater(NSSEntities.ICEWATER.get(), this.mob.level);
+                urine.setOwner(this.mob);
+                urine.setInvisible(true);
+                urine.moveTo(this.mob.getX(), this.mob.getY() + 2, this.mob.getZ());
+                urine.setTargetPos(finalTargetPos);
+                this.mob.level.addFreshEntity(urine);
+
+            }
 
             //LightningBolt marker = EntityType.LIGHTNING_BOLT.create(this.mob.level);
             //marker.moveTo(finalTargetPos);
@@ -524,33 +568,34 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             //this.mob.level.addFreshEntity(marker);
         }
 
-        public void positionProphet(Vec3 targetPos, Vec3 shooterPos, Vec3 targetVelocity, float bulletSpeed) {
-
-            Vec3 displacement = targetPos.subtract(shooterPos);
-            float targetMoveAngle = (float) Math.atan2(displacement.x, displacement.y);
-
-        }
-
         protected void performSlamAttack() {
             Vec3 pos = mob.position();
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
-            HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),30.0f, 1.5f, mob, pos,  10.0F, -Math.PI/6, Math.PI/6, -1.0f, 3.0f);
+            this.mob.willItBreak = true;
+            //HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),5.0f, 1.5f, mob, pos,  80.0F, -Math.PI/6, Math.PI/6, -1.0f, 3.0f);
+            PisslikeHitboxes.PivotedRadialHitCheck(this.mob, this.slamOffSet, 3f, (ServerLevel)this.mob.getLevel(), 15f, DamageSource.mobAttack(mob), 2f, true);
+            //THIS METHOD CAN ONLY BE RAN ON THE SERVERSIDE.
         }
 
 
-        protected void preformLeftClawAttack () {
+
+        protected void performLeftClawAttack () {
             Vec3 pos = mob.position();
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
-            HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),25.0f, 1.0f, mob, pos,  8.0F, -Math.PI/2, Math.PI/2, -1.0f, 3.0f);
+            this.mob.willItBreak = false;
+            PisslikeHitboxes.PivotedPolyHitCheck(this.mob, this.slashOffSet, 6f, 0.6f, 8f, (ServerLevel)this.mob.getLevel(), 10f, DamageSource.mobAttack(mob), 3f, false);
+            //HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),5.0f, 1.0f, mob, pos,  6.0F, -Math.PI/2, Math.PI/2, -1.0f, 3.0f);
         }
 
-        protected void preformRightClawAttack () {
+        protected void performRightClawAttack () {
             Vec3 pos = mob.position();
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
-            HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),15.0f, 1.0f, mob, pos,  8.0F, -Math.PI/2, Math.PI/2, -1.0f, 3.0f);
+            this.mob.willItBreak = false;
+            PisslikeHitboxes.PivotedPolyHitCheck(this.mob, this.pokeOffSet, 0.5f, 0.5f, 0.5f, (ServerLevel)this.mob.getLevel(), 10f, DamageSource.mobAttack(mob), 0.3f, false);
+            //HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),5.0f, 1.0f, mob, pos,  6.0F, -Math.PI/2, Math.PI/2, -1.0f, 3.0f);
         }
 
 
@@ -578,8 +623,22 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
-        return source == DamageSource.FALL || source == DamageSource.IN_WALL || source == DamageSource.FALLING_BLOCK || source == DamageSource.CACTUS || source.isProjectile() || source.isFire() || super.isInvulnerableTo(source);
-        //gec - removed void and magic damage immunity
+        boolean blowthrough = false;
+        if (source.getDirectEntity() instanceof AbstractArrow) {
+            if (((AbstractArrow) source.getDirectEntity()).getPierceLevel() >= 1) {
+                blowthrough = true;
+            }
+        }
+        System.out.println("blowtrue" + blowthrough);
+        System.out.println("projtrue" + source.isProjectile());
+        System.out.println("both??" + (source.isProjectile() && blowthrough));
+
+        return source == DamageSource.FALL ||
+                source == DamageSource.IN_WALL ||
+                source == DamageSource.CACTUS ||
+                !(source.isProjectile() && blowthrough) ||
+                (source.isFire() && this.biomeVariant == 2) ||
+                super.isInvulnerableTo(source);
     }
 
     protected SoundEvent getAmbientSound() {
@@ -672,33 +731,24 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
         spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+        //since it uses nextIntBetweenInclusive you just take the max and min texture range and put it in without changing anything
+        //i.e. the blood selection in CrayfishModel ranges from 4 - 5, so you put that in
 
         int i;
         if(canSpawnBlood(worldIn, this.blockPosition())){
-            i = this.random.nextIntBetweenInclusive(10, 13);
+            i = this.random.nextIntBetweenInclusive(4, 5);
             this.biomeVariant = 2;
-            //blood
-            System.out.println(this.level.getBiome(this.blockPosition()));
-            System.out.println(NSSTags.SPAWNS_BLOOD_CRAYFISH);
-            System.out.println(i);
-
+            //2 for blood
 
         } else if(canSpawnIce(worldIn, this.blockPosition())){
-            i = this.random.nextIntBetweenInclusive(5, 8);
+            i = this.random.nextIntBetweenInclusive(2, 3);
             this.biomeVariant = 1;
-            //ice
-            System.out.println(this.level.getBiomeManager().getBiome(this.blockPosition()));
-            System.out.println(NSSTags.SPAWNS_ICE_CRAYFISH);
-            System.out.println(i);
+            //1 for ice;
 
         } else {
-            i = this.random.nextIntBetweenInclusive(0, 3);
+            i = this.random.nextIntBetweenInclusive(0, 1);
             this.biomeVariant = 0;
-            //swamp
-            System.out.println(this.level.getBiome(this.blockPosition()));
-            System.out.println(NSSTags.SPAWNS_ICE_CRAYFISH);
-            System.out.println(NSSTags.SPAWNS_BLOOD_CRAYFISH);
-            System.out.println(i);
+            //0 for swamp
         }
 
         this.setVariant(i);

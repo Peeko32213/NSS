@@ -21,6 +21,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -34,7 +35,7 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class EntityIceWater extends AbstractHurtingProjectile implements IAnimatable {
+public class EntityBloodWater extends AbstractHurtingProjectile implements IAnimatable {
 
     private Monster owner;
     public int lifeTime = 0;
@@ -53,12 +54,12 @@ public class EntityIceWater extends AbstractHurtingProjectile implements IAnimat
     public int maxLifeTime = (int) (1500/pissspeed);
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
-    private static final EntityDataAccessor<Float> DATA_PISS_STARTPOSX = SynchedEntityData.defineId(EntityIceWater.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> DATA_PISS_STARTPOSY = SynchedEntityData.defineId(EntityIceWater.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> DATA_PISS_STARTPOSZ = SynchedEntityData.defineId(EntityIceWater.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> DATA_PISS_DELTAPOSX = SynchedEntityData.defineId(EntityIceWater.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> DATA_PISS_DELTAPOSY = SynchedEntityData.defineId(EntityIceWater.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> DATA_PISS_DELTAPOSZ = SynchedEntityData.defineId(EntityIceWater.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> DATA_PISS_STARTPOSX = SynchedEntityData.defineId(EntityBloodWater.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> DATA_PISS_STARTPOSY = SynchedEntityData.defineId(EntityBloodWater.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> DATA_PISS_STARTPOSZ = SynchedEntityData.defineId(EntityBloodWater.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> DATA_PISS_DELTAPOSX = SynchedEntityData.defineId(EntityBloodWater.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> DATA_PISS_DELTAPOSY = SynchedEntityData.defineId(EntityBloodWater.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> DATA_PISS_DELTAPOSZ = SynchedEntityData.defineId(EntityBloodWater.class, EntityDataSerializers.FLOAT);
     //change these to EntityDataSerializers.VECTOR3 on newer versions(they don't exist yet)
     public Vec3 startPos;
     public Vec3 deltaPos;
@@ -66,7 +67,7 @@ public class EntityIceWater extends AbstractHurtingProjectile implements IAnimat
     public double boxRadius = 2.25;
     public Vec3 scanBox = new Vec3(50,50,50);
 
-    public EntityIceWater(EntityType<? extends Projectile> p_37248_, Level p_37249_) {
+    public EntityBloodWater(EntityType<? extends Projectile> p_37248_, Level p_37249_) {
         super((EntityType<? extends AbstractHurtingProjectile>) p_37248_, p_37249_);
 
         this.entityData.define(DATA_PISS_STARTPOSX, 0F);
@@ -100,6 +101,8 @@ public class EntityIceWater extends AbstractHurtingProjectile implements IAnimat
         this.entityData.set(DATA_PISS_DELTAPOSX, (float) deltaPos.x);
         this.entityData.set(DATA_PISS_DELTAPOSY, (float) deltaPos.y);
         this.entityData.set(DATA_PISS_DELTAPOSZ, (float) deltaPos.z);
+        //NSSPacketHub.INSTANCE.send(PacketDistributor.ALL.with(() -> null,
+        //        new ClientboundShrimpTargetingDataInAPacket(this.startPos, this.deltaPos, this.lifeTime, this.getId()));
     }
 
     /*@Override
@@ -184,10 +187,10 @@ public class EntityIceWater extends AbstractHurtingProjectile implements IAnimat
                 double d1 = this.random.nextGaussian() * 0.125D;
                 double d2 = this.random.nextGaussian() * 0.125D;
                 double length = this.random.nextDouble();
-                this.level.addParticle(ParticleTypes.SNOWFLAKE, (scaledPos.x + (d0 * (Math.sqrt(timer)))) + (deltaPos.x * length), (scaledPos.y + (d1 * (Math.sqrt(timer)))) + (deltaPos.y * length), (scaledPos.z + (d2 * (Math.sqrt(timer)))) + (deltaPos.z * length), 0.0D, 0.0D, 0.0D);
+                this.level.addParticle(ParticleTypes.SMOKE, (scaledPos.x + (d0 * (Math.sqrt(timer)))) + (deltaPos.x * length), (scaledPos.y + (d1 * (Math.sqrt(timer)))) + (deltaPos.y * length), (scaledPos.z + (d2 * (Math.sqrt(timer)))) + (deltaPos.z * length), 0.0D, 0.0D, 0.0D);
                 //this foam gets wider over distance^
-                this.level.addParticle(ParticleTypes.SNOWFLAKE, (scaledPos.x + d0) + (deltaPos.x * length), (scaledPos.y + d1) + (deltaPos.y * length), (scaledPos.z + d2) + (deltaPos.z * length), 0.0D, 0.0D, 0.0D);
-                this.level.addParticle(ParticleTypes.SNOWFLAKE, (scaledPos.x + d1) + (deltaPos.x * length), (scaledPos.y + d2) + (deltaPos.y * length), (scaledPos.z + d0) + (deltaPos.z * length), 0.0D, 0.0D, 0.0D);
+                this.level.addParticle(ParticleTypes.SMOKE, (scaledPos.x + d0) + (deltaPos.x * length), (scaledPos.y + d1) + (deltaPos.y * length), (scaledPos.z + d2) + (deltaPos.z * length), 0.0D, 0.0D, 0.0D);
+                this.level.addParticle(ParticleTypes.SMOKE, (scaledPos.x + d1) + (deltaPos.x * length), (scaledPos.y + d2) + (deltaPos.y * length), (scaledPos.z + d0) + (deltaPos.z * length), 0.0D, 0.0D, 0.0D);
                 //these two foams are randomized in range and they will distribute themselves across the length of the pathway
             }
         }
@@ -215,12 +218,13 @@ public class EntityIceWater extends AbstractHurtingProjectile implements IAnimat
                     if (targetbox.intersects(hitboxbox)) {
                         victim.hurt(DamageSource.mobAttack(owner), damage);
                         if (victim instanceof LivingEntity) {
-                            victim.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 200, 2));
-                            //NOTE: THIS IS THE ICE PISS, THUS IT MUST INFLICT COLD
+                            victim.addEffect(new MobEffectInstance(MobEffects.WITHER, 50, 2));
+                            //NOTE: THIS IS THE BLOOD PISS, THUS IT MUST INFLICT A NETHER STATUS
                         }
                         double dA = 0.2D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
                         double dB = 1.0D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
                         victim.push(normalDeltaPos.x() * dB, normalDeltaPos.y() * dA, normalDeltaPos.z() * dB);
+                        //System.out.println();
                     }
                 }
             }
@@ -260,7 +264,7 @@ public class EntityIceWater extends AbstractHurtingProjectile implements IAnimat
     @Override
     public void registerControllers(AnimationData data) {
         data.setResetSpeedInTicks(1);
-        AnimationController<EntityIceWater> controller = new AnimationController<>(this, "controller", 1, this::predicate);
+        AnimationController<EntityBloodWater> controller = new AnimationController<>(this, "controller", 1, this::predicate);
         data.addAnimationController(controller);
     }
 
