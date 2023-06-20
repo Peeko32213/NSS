@@ -236,7 +236,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         private int meleeRange = 150;
         //the range(blocks) in which the shrimp would stay in melee mode. Adjust until perfect.
         //this is NOT IN BLOCKS. I DO NOT KNOW WHAT UNIT THIS IS.
-        Vec3 slamOffSet = new Vec3(0, 1.25, 5.5);
+        Vec3 slamOffSet = new Vec3(0, 1.25, 6);
         Vec3 pokeOffSet = new Vec3(0, 0.25, 5.625);
         Vec3 slashOffSet = new Vec3(2, -1, 10);
         //the Y value is at the BOTTOM of the offset, and the hitbox is inflated up.
@@ -574,7 +574,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
             //this.mob.willItBreak = true;
             //HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),5.0f, 1.5f, mob, pos,  80.0F, -Math.PI/6, Math.PI/6, -1.0f, 3.0f);
-            PisslikeHitboxes.PivotedRadialHitCheck(this.mob, this.slamOffSet, 3f, (ServerLevel)this.mob.getLevel(), 15f, DamageSource.mobAttack(mob), 2f, true);
+            PisslikeHitboxes.PivotedRadialHitCheck(this.mob, this.slamOffSet, 2.5f, (ServerLevel)this.mob.getLevel(), 15f, DamageSource.mobAttack(mob), 2f, true);
             //THIS METHOD CAN ONLY BE RAN ON THE SERVERSIDE.
         }
 
@@ -627,7 +627,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         if (source.getDirectEntity() instanceof AbstractArrow) {
             if (((AbstractArrow) source.getDirectEntity()).getPierceLevel() >= 1) {
                 blowthrough = true;
-                return true;
+                return false;
             }
         }
         return source == DamageSource.FALL ||
