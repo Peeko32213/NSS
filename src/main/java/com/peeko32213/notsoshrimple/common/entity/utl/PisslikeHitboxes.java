@@ -113,12 +113,12 @@ public class PisslikeHitboxes {
     public static void disableShield(Player pPlayer, ItemStack mainHand, ItemStack offHand, PathfinderMob source) {
         //System.out.println("Shatter " + (!mainHand.isEmpty() && mainHand.is(Items.SHIELD)));
 
-        if (!mainHand.isEmpty() && mainHand.is(Items.SHIELD)) {
+        if (!mainHand.isEmpty() && mainHand.is(Items.SHIELD) && pPlayer.isBlocking()) {
             //float f = 0.25F + (float) EnchantmentHelper.getBlockEfficiency(source) * 0.05F;
             pPlayer.getCooldowns().addCooldown(Items.SHIELD, 100);
             source.level.broadcastEntityEvent(pPlayer, (byte)30);
 
-        } else if (!offHand.isEmpty() && offHand.is(Items.SHIELD)) {
+        } else if (!offHand.isEmpty() && offHand.is(Items.SHIELD) && pPlayer.isBlocking()) {
             //float f = 0.25F + (float) EnchantmentHelper.getBlockEfficiency(source) * 0.05F;
             pPlayer.getCooldowns().addCooldown(Items.SHIELD, 100);
             source.level.broadcastEntityEvent(pPlayer, (byte)30);

@@ -175,7 +175,7 @@ public class EntityIceWater extends AbstractHurtingProjectile implements IAnimat
             Vec3 scaledPos = startPos.add(normalDeltaPos.scale((double)timer*pissspeed));
             //startPos is fine, the process that makes scaledPos broke it
 
-            this.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x), (scaledPos.y), (scaledPos.z), 0.0D, 0.0D, 0.0D);
+            this.level.addParticle(ParticleTypes.CLOUD, (scaledPos.x), (scaledPos.y), (scaledPos.z), 0.0D, 0.0D, 0.0D);
             //completely normal particle
 
             for (int p = 0; p < 6 * (1 + Math.sqrt(0.001 * timer)); ++p) {
@@ -215,6 +215,7 @@ public class EntityIceWater extends AbstractHurtingProjectile implements IAnimat
                     if (targetbox.intersects(hitboxbox)) {
                         victim.hurt(DamageSource.mobAttack(owner), damage);
                         if (victim instanceof LivingEntity) {
+                            victim.setIsInPowderSnow(true);
                             victim.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 200, 2));
                             //NOTE: THIS IS THE ICE PISS, THUS IT MUST INFLICT COLD
                         }

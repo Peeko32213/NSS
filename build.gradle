@@ -95,12 +95,19 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    maven {
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+    }
+    maven {
+        url "https://cursemaven.com"
+    }
 }
+
 
 dependencies {
     minecraft 'net.minecraftforge:forge:1.19.2-43.1.0'
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.19:3.1.39')
+    //implementation fg.deobf('curse.maven:spark-361579:4057111')
 }
 
 jar {

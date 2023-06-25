@@ -1,10 +1,8 @@
 package com.peeko32213.notsoshrimple.core.registry;
 
 import com.peeko32213.notsoshrimple.NotSoShrimple;
-import com.peeko32213.notsoshrimple.common.entity.EntityCrayfish;
-import com.peeko32213.notsoshrimple.common.entity.ArchivedProjectileWater;
+import com.peeko32213.notsoshrimple.common.entity.*;
 import com.peeko32213.notsoshrimple.common.entity.mobs.EntityManeaterShell;
-import com.peeko32213.notsoshrimple.common.entity.EntityToxicWater;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
@@ -22,7 +20,7 @@ public class NSSEntities {
             NotSoShrimple.MODID);
 
     public static final RegistryObject<EntityType<EntityCrayfish>> CRAYFISH = ENTITIES.register("crayfish",
-            () -> EntityType.Builder.of(EntityCrayfish::new, MobCategory.MONSTER).sized(5.0F, 3.5F)
+            () -> EntityType.Builder.of(EntityCrayfish::new, MobCategory.MONSTER).sized(3.5F, 2.5F)
                     .build(new ResourceLocation(NotSoShrimple.MODID, "crayfish").toString()));
 
     public static final RegistryObject<EntityType<EntityManeaterShell>> MANEATER = ENTITIES.register("maneater",
@@ -33,9 +31,12 @@ public class NSSEntities {
             () -> EntityType.Builder.of(EntityToxicWater::new, MobCategory.MISC).sized(0f, 0f)
                     .build(new ResourceLocation(NotSoShrimple.MODID, "toxicwater").toString()));
 
-    public static final RegistryObject<EntityType<ArchivedProjectileWater>> ICEWATER = ENTITIES.register("icewater",
-            () -> EntityType.Builder.of(ArchivedProjectileWater::new, MobCategory.MISC).sized(5.0F, 6.5F)
+    public static final RegistryObject<EntityType<EntityIceWater>> ICEWATER = ENTITIES.register("icewater",
+            () -> EntityType.Builder.of(EntityIceWater::new, MobCategory.MISC).sized(5.0F, 6.5F)
                     .build(new ResourceLocation(NotSoShrimple.MODID, "icewater").toString()));
+    public static final RegistryObject<EntityType<EntityBloodWater>> BLOODWATER = ENTITIES.register("bloodwater",
+            () -> EntityType.Builder.of(EntityBloodWater::new, MobCategory.MISC).sized(5.0F, 6.5F)
+                    .build(new ResourceLocation(NotSoShrimple.MODID, "bloodwater").toString()));
 
     public static boolean rollSpawn(int rolls, RandomSource random, MobSpawnType reason){
         if(reason == MobSpawnType.SPAWNER){
