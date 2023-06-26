@@ -107,6 +107,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         super.registerGoals();
         //this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new EntityCrayfish.CrayfishMeleeAttackGoal(this, 1.2F, true));
+        //this is pretty much the same as UP's rexMeleeAttackGoal
         this.goalSelector.addGoal(3, new CustomRandomStrollGoal(this, 30, 1.0D, 100, 34));
         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 15.0F));
         this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)));
@@ -202,7 +203,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         this.entityData.set(ANIMATION_STATE, anim);
     }
 
-    /*public int getCombatState() {
+    public int getCombatState() {
 
         return this.entityData.get(COMBAT_STATE);
     }
@@ -220,7 +221,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     public void setEntityState(int anim) {
 
         this.entityData.set(ENTITY_STATE, anim);
-    }*/
+    }
 
     static class CrayfishMeleeAttackGoal extends Goal {
 
@@ -348,6 +349,8 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
             switch (animState) {
                 case 21:
+                    this.mob.lookAt(this.mob.getTarget(), 100000, 100000);
+                    this.mob.yBodyRot = this.mob.yHeadRot;
                     tickRightClawAttack();
                     break;
                 case 22:
@@ -417,7 +420,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         protected void checkForCloseRangeAttack (double distance, double meleeRange){
             if (distance <= meleeRange && this.ticksUntilNextAttack <= 0) {
                 int r = this.mob.getRandom().nextInt(2048);
-                if (r <= 600) {
+                if (r <= 400) {
                     this.mob.setAnimationState(21);
                 } else if (r <= 1000) {
                     this.mob.setAnimationState(22);
@@ -460,10 +463,10 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         }
 
         protected void tickRightClawAttack () {
-            if (animTime <= 3) {
+            /*if (animTime <= 3) {
                 this.mob.lookAt(this.mob.getTarget(), 100000, 100000);
                 this.mob.yBodyRot = this.mob.yHeadRot;
-            }
+            }*/
             animTime++;
             if(animTime==12) {
                 performRightClawAttack();
@@ -621,7 +624,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         }
         //sets how many ticks until the next attack
 
-        /*protected boolean isTimeToAttack () {
+        protected boolean isTimeToAttack () {
             return this.ticksUntilNextAttack <= 0;
         }
 
@@ -631,7 +634,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
         protected int getAttackInterval () {
             return 5;
-        }*/
+        }
 
         protected double getAttackReachSqr(LivingEntity entity) {
             return (double)(this.mob.getBbWidth() * 2.5F * this.mob.getBbWidth() * 1.8F + entity.getBbWidth());
@@ -720,11 +723,6 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         return this.factory;
     }
 
-    @Override
-    public boolean isOnFire() {
-        return false;
-    }
-
     public int getVariant() {
         return this.entityData.get(VARIANT);
     }
@@ -788,8 +786,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     }
 
 
-    /*
-    protected PathNavigation createNavigation(Level p_33348_) {
+    /*protected PathNavigation createNavigation(Level p_33348_) {
         return new RexNavigation(this, p_33348_);
         //used to use LargeEntityGroundNavigator
     }

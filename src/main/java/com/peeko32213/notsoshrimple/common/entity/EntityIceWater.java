@@ -215,8 +215,8 @@ public class EntityIceWater extends AbstractHurtingProjectile implements IAnimat
                     if (targetbox.intersects(hitboxbox)) {
                         victim.hurt(DamageSource.mobAttack(owner), damage);
                         if (victim instanceof LivingEntity) {
-                            victim.setIsInPowderSnow(true);
-                            victim.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 200, 2));
+                            victim.setTicksFrozen(400);
+                            //victim.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 200, 2));
                             //NOTE: THIS IS THE ICE PISS, THUS IT MUST INFLICT COLD
                         }
                         double dA = 0.2D * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));

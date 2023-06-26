@@ -20,6 +20,7 @@ public class MowziesPathfinder extends PathFinder {
 
     public MowziesPathfinder(NodeEvaluator pNodeEvaluator, int pMaxVisitedNodes) {
         super(pNodeEvaluator, pMaxVisitedNodes);
+        //code copied from Mowzie's Mobs, didn't help at all, marked for deletion
     }
     @Nullable
     @Override

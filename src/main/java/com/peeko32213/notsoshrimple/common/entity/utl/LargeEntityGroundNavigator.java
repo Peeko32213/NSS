@@ -22,6 +22,7 @@ public class LargeEntityGroundNavigator extends GroundPathNavigation {
     public LargeEntityGroundNavigator(Mob pMob, Level pLevel) {
         super(pMob, pLevel);
     }
+    //code copied from Mowzie's Mobs, didn't help at all, marked for deletion
     static final float EPSILON = 1.0E-8F;
 
     @Override
