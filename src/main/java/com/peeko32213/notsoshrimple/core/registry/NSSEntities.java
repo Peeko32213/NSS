@@ -20,7 +20,7 @@ public class NSSEntities {
             NotSoShrimple.MODID);
 
     public static final RegistryObject<EntityType<EntityCrayfish>> CRAYFISH = ENTITIES.register("crayfish",
-            () -> EntityType.Builder.of(EntityCrayfish::new, MobCategory.MONSTER).sized(3.5F, 2.5F)
+            () -> EntityType.Builder.of(EntityCrayfish::new, MobCategory.MONSTER).sized(3.4F, 2.5F)
                     .build(new ResourceLocation(NotSoShrimple.MODID, "crayfish").toString()));
 
     public static final RegistryObject<EntityType<EntityManeaterShell>> MANEATER = ENTITIES.register("maneater",

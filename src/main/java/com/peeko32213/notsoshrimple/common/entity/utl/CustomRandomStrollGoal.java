@@ -5,6 +5,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.entity.animal.Fox;
 import net.minecraft.world.level.PathNavigationRegion;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 public class CustomRandomStrollGoal extends RandomStrollGoal {
     protected final float probability;
+    //chance of doing something in percentages
     protected final int xzRange;
     protected final int yRange;
 
@@ -42,13 +44,14 @@ public class CustomRandomStrollGoal extends RandomStrollGoal {
                 }
             }
 
-            Vec3 lvt_1_1_ = this.getPosition();
-            if (lvt_1_1_ == null) {
+            Vec3 wannaGo = this.getPosition();
+            //System.out.println(wannaGo);
+            if (wannaGo == null) {
                 return false;
             } else {
-                this.wantedX = lvt_1_1_.x;
-                this.wantedY = lvt_1_1_.y;
-                this.wantedZ = lvt_1_1_.z;
+                this.wantedX = wannaGo.x;
+                this.wantedY = wannaGo.y;
+                this.wantedZ = wannaGo.z;
                 this.forceTrigger = false;
                 return true;
             }
@@ -60,6 +63,11 @@ public class CustomRandomStrollGoal extends RandomStrollGoal {
         this.probability = probabilityIn;
         this.xzRange = xzRange;
         this.yRange = yRange;
+    }
+
+    @Nullable
+    protected Vec3 getDestinationPos() {
+        return DefaultRandomPos.getPos(this.mob, xzRange, yRange);
     }
 
     @Nullable
