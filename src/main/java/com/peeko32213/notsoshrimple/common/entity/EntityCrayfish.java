@@ -41,6 +41,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.*;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
@@ -67,8 +68,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
     public int width = 4;
     public int biomeVariant;
-    //0 = swamp, 1 = ice, 2 = blood for biomeVariant
-    public boolean willItBreak = false;
+    //0 = swamp, 1 = ice, 2 = blood for biomeVariant;
 
 
     public EntityCrayfish(EntityType<? extends Monster> entityType, Level level) {
@@ -97,35 +97,34 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 .add(Attributes.ATTACK_DAMAGE, 10.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 10.5D)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.0D)
-                .add(Attributes.FOLLOW_RANGE, 500D);
+                .add(Attributes.FOLLOW_RANGE, 80D);
         //health nerfed
         //armour buffed
         //we don't need knockback and damage tbh
+        //follow range affect tickrate, thus nerfed
     }
 
 
 
     protected void registerGoals() {
         super.registerGoals();
-        //this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(1, new EntityCrayfish.CrayfishMeleeAttackGoal(this, 1.2F, true));
+        this.goalSelector.addGoal(1, new EntityCrayfish.CrayfishMeleeAttackGoal(this, 2F, true){
+            public boolean canUse() {
+                return !isBaby() && level.getDifficulty() != Difficulty.PEACEFUL && super.canUse();
+            }
+        });
         //this is pretty much the same as UP's rexMeleeAttackGoal
         this.goalSelector.addGoal(3, new CustomRandomStrollGoal(this, 30, 1.0D, 100, 34));
-        //this.goalSelector.addGoal(3, new RandomStrollGoal(this, 1.0));
         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 15.0F));
         this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, false, false, entity -> entity.getType().is(NSSTags.CRAYFISH_VICTIMS)));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
-        //this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         //perhaps instead of calculating the whole route each tick, only calculate the amount of blocks to be covered in a single tick and recalculate each tick?
     }
 
     public boolean canBreatheUnderwater() {
         return true;
-    }
-
-    public void travel(Vec3 vec3d) {
-        super.travel(vec3d);
     }
 
     @Override
@@ -168,9 +167,9 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     @Override
     public void aiStep() {
         super.aiStep();
-        if (this.horizontalCollision && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level, this)/* && this.isAggressive()*/) {
+        if (this.horizontalCollision && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level, this) && this.isSprinting()) {
             boolean flag = false;
-            AABB axisalignedbb = this.getBoundingBox().inflate(0.2D, 0.0D, 0.2D);
+            AABB axisalignedbb = this.getBoundingBox().inflate(0.2D);
             for (BlockPos blockpos : BlockPos.betweenClosed(Mth.floor(axisalignedbb.minX), Mth.floor(axisalignedbb.minY), Mth.floor(axisalignedbb.minZ), Mth.floor(axisalignedbb.maxX), Mth.floor(axisalignedbb.maxY), Mth.floor(axisalignedbb.maxZ))) {
                 BlockState blockstate = this.level.getBlockState(blockpos);
                 if (blockstate.is(NSSTags.CRAYFISH_BREAKABLES)) {
@@ -179,10 +178,6 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             }
         }
 
-    }
-
-    public int getMaxHeadYRot() {
-        return 45;
     }
 
     public boolean requiresCustomPersistence() {
@@ -275,15 +270,6 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 } else if (!livingentity.isAlive()) {
                     return false;
                 } else {
-                    if (canPenalize) {
-                        if (--this.ticksUntilNextPathRecalculation <= 0) {
-                            this.path = this.mob.getNavigation().createPath(livingentity, 0);
-                            this.ticksUntilNextPathRecalculation = 4 + this.mob.getRandom().nextInt(7);
-                            return this.path != null;
-                        } else {
-                            return true;
-                        }
-                    }
                     this.path = this.mob.getNavigation().createPath(livingentity, 0);
                     if (this.path != null) {
                         return true;
@@ -303,7 +289,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
             LivingEntity livingentity = this.mob.getTarget();
 
-            if (livingentity == null) {
+            if (livingentity == null || livingentity instanceof EntityCrayfish) {
                 return false;
             }
             else if (!livingentity.isAlive()) {
@@ -325,20 +311,19 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             this.ticksUntilNextAttack = 0;
             this.rangedAttackCD = 0;
             this.animTime = 0;
-            //this.mob.setSprinting(true);
             this.mob.setAnimationState(0);
         }
 
         public void stop() {
             LivingEntity livingentity = this.mob.getTarget();
-            if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingentity)) {
+            if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingentity) || livingentity instanceof EntityCrayfish) {
                 this.mob.setTarget(null);
             }
             this.mob.setAnimationState(0);
 
         }
 
-        public void tick() {
+        /*public void tick() {
             LivingEntity target = this.mob.getTarget();
             double distance = this.mob.distanceToSqr(target.getX(), target.getY(), target.getZ());
             int animState = this.mob.getAnimationState();
@@ -362,6 +347,30 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                     //break;
                 }
 
+            }
+        }*/
+
+        public void tick() {
+            LivingEntity target = this.mob.getTarget();
+            double distance = this.mob.distanceToSqr(target.getX(), target.getY(), target.getZ());
+            double reach = this.getAttackReachSqr(target);
+            int animState = this.mob.getAnimationState();
+            Vec3 aim = this.mob.getLookAngle();
+
+            switch (animState) {
+                case 21 -> tickRightClawAttack();
+                case 22 -> tickLeftClawAttack();
+                case 23 -> tickSlamAttack();
+                case 24 -> tickPiss();
+
+                default -> {
+                    this.ticksUntilNextPathRecalculation = Math.max(this.ticksUntilNextPathRecalculation - 1, 0);
+                    this.ticksUntilNextAttack = Math.max(this.ticksUntilNextPathRecalculation - 1, 0);
+                    this.rangedAttackCD = Math.max(this.rangedAttackCD - 1, 0);
+                    this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
+                    this.doMovement(target, distance);
+                    this.checkForCloseRangeAttack(distance, reach);
+                }
             }
         }
 
@@ -402,7 +411,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         }
 
 
-        protected void checkForCloseRangeAttack (double distance, double meleeRange){
+        protected void checkForCloseRangeAttack ( double distance, double meleeRange){
             if (distance <= meleeRange && this.ticksUntilNextAttack <= 0) {
                 int r = this.mob.getRandom().nextInt(2048);
                 if (r <= 400) {
@@ -413,7 +422,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                     this.mob.setAnimationState(23);
                 }
 
-            } else if (distance > meleeRange && this.ticksUntilNextAttack <= 0 && this.rangedAttackCD <= 0) {
+            } else if (this.ticksUntilNextAttack <= 0 && this.rangedAttackCD <= 0) {
                 this.mob.setAnimationState(24);
             }
         }
@@ -421,7 +430,8 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
         protected boolean getRangeCheck () {
 
-            return this.mob.distanceToSqr(this.mob.getTarget().getX(), this.mob.getTarget().getY(), this.mob.getTarget().getZ())
+            return
+                    this.mob.distanceToSqr(this.mob.getTarget().getX(), this.mob.getTarget().getY(), this.mob.getTarget().getZ())
                             <=
                             1.8F * this.getAttackReachSqr(this.mob.getTarget());
         }
@@ -535,7 +545,6 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             Vec3 tTempPos = tStartPos;
 
             for (int count = 0; count < 1; count++) {
-
                 double flatDist = Math.sqrt((this.mob.getX() - target.getX())*(this.mob.getX() - target.getX()) + (this.mob.getZ() - target.getZ())*(this.mob.getZ() - target.getZ()));
                 double tallDist = Math.sqrt(flatDist*flatDist + (this.mob.getY() + 2 - target.getY())*(this.mob.getY() + 2 - target.getY()));
                 //use urine.getwhatevercoordinate if this.mob.getwhatevercoordinate makes it worse
@@ -635,6 +644,10 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         }
     }
 
+    public boolean canBeCollidedWith() {
+        return true;
+    }
+    //Todo remove there?, they are never used
 
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
@@ -650,6 +663,12 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 (source.isProjectile() && !blowthrough) ||
                 (source.isFire() && this.biomeVariant == 2) ||
                 super.isInvulnerableTo(source);
+    }
+
+    @Override
+    public void kill() {
+        this.remove(RemovalReason.KILLED);
+        this.gameEvent(GameEvent.ENTITY_DIE);
     }
 
     protected SoundEvent getAmbientSound() {
@@ -779,7 +798,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     }
 
 
-    protected PathNavigation createNavigation(Level p_33348_) {
+    /*protected PathNavigation createNavigation(Level p_33348_) {
         return new RexNavigation(this, p_33348_);
         //used to use LargeEntityGroundNavigator
     }
@@ -799,6 +818,6 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         protected BlockPathTypes evaluateBlockPathType(BlockGetter p_33387_, boolean p_33388_, boolean p_33389_, BlockPos p_33390_, BlockPathTypes p_33391_) {
             return p_33391_ == BlockPathTypes.LEAVES ? BlockPathTypes.OPEN : super.evaluateBlockPathType(p_33387_, p_33388_, p_33389_, p_33390_, p_33391_);
         }
-    }
+    }*/
 
 }

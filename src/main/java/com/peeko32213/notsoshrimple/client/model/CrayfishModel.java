@@ -30,7 +30,7 @@ public class CrayfishModel extends AnimatedGeoModel<EntityCrayfish> {
 
     @Override
     public ResourceLocation getTextureResource(EntityCrayfish object) {
-        return TEXTURES.getOrDefault(object.getVariant(), TEXTURES.get(0));
+        return TEXTURES.get(0);
     }
 
     @Override

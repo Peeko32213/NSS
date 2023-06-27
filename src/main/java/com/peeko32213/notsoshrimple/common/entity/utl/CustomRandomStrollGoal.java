@@ -30,6 +30,12 @@ public class CustomRandomStrollGoal extends RandomStrollGoal {
         this(creature, chance, speedIn, 0.001F, xzRange, yRange);
     }
 
+    /*@Nullable
+    @Override
+    protected Vec3 getPosition() {
+        return DefaultRandomPos.getPos(this.mob, xzRange, yRange);
+    }*/
+
     public boolean canUse() {
         if (this.mob.isVehicle()) {
             return false;
@@ -44,14 +50,13 @@ public class CustomRandomStrollGoal extends RandomStrollGoal {
                 }
             }
 
-            Vec3 wannaGo = this.getPosition();
-            //System.out.println(wannaGo);
-            if (wannaGo == null) {
+            Vec3 lvt_1_1_ = this.getPosition();
+            if (lvt_1_1_ == null) {
                 return false;
             } else {
-                this.wantedX = wannaGo.x;
-                this.wantedY = wannaGo.y;
-                this.wantedZ = wannaGo.z;
+                this.wantedX = lvt_1_1_.x;
+                this.wantedY = lvt_1_1_.y;
+                this.wantedZ = lvt_1_1_.z;
                 this.forceTrigger = false;
                 return true;
             }
@@ -66,11 +71,6 @@ public class CustomRandomStrollGoal extends RandomStrollGoal {
     }
 
     @Nullable
-    protected Vec3 getDestinationPos() {
-        return DefaultRandomPos.getPos(this.mob, xzRange, yRange);
-    }
-
-    @Nullable
     protected Vec3 getPosition() {
         if (this.mob.isInWaterOrBubble()) {
             Vec3 vector3d = LandRandomPos.getPos(this.mob, xzRange, yRange);
@@ -79,5 +79,6 @@ public class CustomRandomStrollGoal extends RandomStrollGoal {
             return this.mob.getRandom().nextFloat() >= this.probability ? LandRandomPos.getPos(this.mob, xzRange, yRange) : super.getPosition();
         }
     }
+
 
 }

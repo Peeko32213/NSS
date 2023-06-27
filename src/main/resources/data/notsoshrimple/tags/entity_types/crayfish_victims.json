@@ -1,5 +1,6 @@
 {
   "values": [
+    "minecraft:player",
     "minecraft:villager",
     "minecraft:pillager",
     "minecraft:vindicator",
