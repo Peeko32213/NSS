@@ -200,9 +200,6 @@ public class EntityBloodWater extends AbstractHurtingProjectile implements IAnim
             ServerLevel world = (ServerLevel)owner.level;
             BlockPos center = new BlockPos(scaledPos);
             Block currentBlock = world.getBlockState(center).getBlock();
-            if (currentBlock.hasCollision == true && !(currentBlock instanceof LeavesBlock)){
-                this.remove(RemovalReason.DISCARDED);
-            }
 
             AABB checkZone = new AABB(center).inflate(boxRadius + pissspeed);
             //zone to check for a hit
@@ -230,6 +227,10 @@ public class EntityBloodWater extends AbstractHurtingProjectile implements IAnim
             }
             //harms anything it hits
 
+            if (currentBlock.hasCollision == true && !(currentBlock instanceof LeavesBlock)){
+                this.remove(RemovalReason.DISCARDED);
+                //removes on colliding a block
+            }
         }
     }
 
