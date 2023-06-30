@@ -120,9 +120,9 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         this.goalSelector.addGoal(3, new CustomRandomStrollGoal(this, 30, 1.0D, 100, 34));
         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 15.0F));
         this.targetSelector.addGoal(1, (new HurtByTargetGoal(this){
-//                    public boolean canUse() {
-//                        return !(this.mob.getLastHurtByMob() instanceof EntityCrayfish);
-//                    }
+                    public boolean canUse() {
+                        return (this.mob.getLastHurtByMob() instanceof EntityCrayfish);
+                    }
             }
         ));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, false, false, entity -> entity.getType().is(NSSTags.CRAYFISH_VICTIMS)));
@@ -167,7 +167,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         this.newPos = this.position();
         this.velocity = this.newPos.subtract(this.oldPos);
         this.directionlessSpeed = Math.abs(Math.sqrt((velocity.x * velocity.x) + (velocity.z * velocity.z) + (velocity.z * velocity.z)));
-        //System.out.println(this.animationSpeed);
+        System.out.println(this.directionlessSpeed);
         super.tick();
     }
 
@@ -262,7 +262,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
         Vec3 slamOffSet = new Vec3(0, 0, 4);
         Vec3 pokeOffSet = new Vec3(0, 0.25, 7);
-        Vec3 slashOffSet = new Vec3(2, -0.1, 6);
+        Vec3 slashOffSet = new Vec3(0, -0.3, 6);
         //the Y value is at the BOTTOM of the offset, and the hitbox is inflated up.
         //inflation acts on both sides of the thing.
 
@@ -377,7 +377,11 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 case 21 -> tickRightClawAttack();
                 case 22 -> tickLeftClawAttack();
                 case 23 -> tickSlamAttack();
-                case 24 -> tickPiss();
+                case 24 -> {
+                    this.mob.lookAt(this.mob.getTarget(), 100000, 100000);
+                    this.mob.yBodyRot = this.mob.yHeadRot;
+                    tickPiss();
+                }
 
                 default -> {
                     this.ticksUntilNextPathRecalculation = Math.max(this.ticksUntilNextPathRecalculation - 1, 0);
@@ -445,24 +449,10 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 }
 
                 else if (distance <= 50) {
-                    if (40 < r && r <= 75) {
+                    if (r <= 60) {
                         this.mob.setAnimationState(21);
                         //stab
-                    } else if (r <= 40) {
-                        this.mob.setAnimationState(22);
-                        //slash
-                    } else {
-                        this.mob.setAnimationState(23);
-                        //slam
-                    }
-                    //if target is closer than 50, then have a higher chance to stab than slash
-                    //40% chance for stab, 35% chance to slash, 25% chance to slam
-
-                } else if (distance <= 100) {
-                    if (r <= 40) {
-                        this.mob.setAnimationState(21);
-                        //stab
-                    } else if (40 < r && r <= 75) {
+                    } else if (60 < r && r <= 90) {
                         this.mob.setAnimationState(22);
                         //slash
                     } else {
@@ -470,7 +460,21 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                         //slam
                     }
                     //if target is closer than 50, then have a higher chance to slash than stab
-                    //40% chance for slash, 35% chance to stab, 25% chance to slam
+                    //60% chance for slash, 30% chance to stab, 10% chance to slam
+
+                } else if (distance <= 100) {
+                    if (50 < r && r <= 80) {
+                        this.mob.setAnimationState(21);
+                        //stab
+                    } else if (r <= 50) {
+                        this.mob.setAnimationState(22);
+                        //slash
+                    } else {
+                        this.mob.setAnimationState(23);
+                        //slam
+                    }
+                    //if target is closer than 50, then have a higher chance to slash than stab
+                    //50% chance for stab, 30% chance to slash, 20% chance to slam
 
                 }
                 //originally 400, 1000, 1400 for r
@@ -655,7 +659,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
             //this.mob.willItBreak = true;
             //HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),5.0f, 1.5f, mob, pos,  80.0F, -Math.PI/6, Math.PI/6, -1.0f, 3.0f);
-            PisslikeHitboxes.PivotedPolyHitCheck(this.mob, this.slamOffSet, 2f, 6f, 2f, (ServerLevel)this.mob.getLevel(), 15f, DamageSource.mobAttack(mob), 2f, true);
+            PisslikeHitboxes.PivotedPolyHitCheck(this.mob, this.slamOffSet, 2f, 4f, 2f, (ServerLevel)this.mob.getLevel(), 15f, DamageSource.mobAttack(mob), 2f, true);
             //THIS METHOD CAN ONLY BE RAN ON THE SERVERSIDE.
         }
 
@@ -675,7 +679,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
             //this.mob.willItBreak = false;
-            PisslikeHitboxes.PivotedPolyHitCheck(this.mob, this.pokeOffSet, 0.5f, 3f, 0.5f, (ServerLevel)this.mob.getLevel(), 10f, DamageSource.mobAttack(mob), 0.3f, false);
+            PisslikeHitboxes.PivotedPolyHitCheck(this.mob, this.pokeOffSet, 0.5f, 2f, 0.5f, (ServerLevel)this.mob.getLevel(), 10f, DamageSource.mobAttack(mob), 0.3f, false);
             //HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),5.0f, 1.0f, mob, pos,  6.0F, -Math.PI/2, Math.PI/2, -1.0f, 3.0f);
         }
 
@@ -746,6 +750,8 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
         int animState = this.getAnimationState();
+
+
         {
             switch (animState) {
 
@@ -771,13 +777,13 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
                 default:
                     if (!(event.getLimbSwingAmount() > -0.06F && event.getLimbSwingAmount() < 0.06F)) {
-                        event.getController().setAnimationSpeed(1.0);
+                        event.getController().setAnimationSpeed(1 + (this.directionlessSpeed/0.24));
                         event.getController().setAnimation(new AnimationBuilder().loop("animation.crayfish.walk"));
+                        //default speed is 0.24
 
                     } else {
-                        event.getController().setAnimationSpeed(1 + this.directionlessSpeed);
+                        event.getController().setAnimationSpeed(1.0);
                         event.getController().setAnimation(new AnimationBuilder().loop("animation.crayfish.idle"));
-                        //0.24 is the base move speed
                     }
                     break;
 
@@ -818,58 +824,58 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
         spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
-        int r = (this.getRandom().nextInt(100) + 1);
+        int rarityRoll = (this.getRandom().nextInt(100) + 1);
         //since it uses nextIntBetweenInclusive you just take the max and min texture values and put it in without changing anything
         //i.e. the blood selection in CrayfishModel ranges from 4 - 5, so you put that in
 
         int i;
         if(canSpawnBlood(worldIn, this.blockPosition())){
-            if (r <= 80) {
-                i = this.random.nextIntBetweenInclusive(10, 12);
-                System.out.println("stndblood");
-                //80% chance to get a standard crayfish
-            } else if (r <= 95) {
-                i = 13;
-                System.out.println("uncblood");
-                //15% chance to get an uncommon crayfish
-            } else {
+            if (rarityRoll >= 100) {
                 i = 14;
                 System.out.println("rareblood");
-                //5% chance to get a rare crayfish
+                //1% chance to get a rare crayfish
+            } else if (rarityRoll > 90) {
+                i = 13;
+                System.out.println("uncblood");
+                //9% chance to get an uncommon crayfish
+            } else {
+                i = this.random.nextIntBetweenInclusive(10, 12);
+                System.out.println("stndblood");
+                //90% chance to get a standard crayfish
             }
             this.biomeVariant = 2;
             //2 for blood
 
         } else if(canSpawnIce(worldIn, this.blockPosition())){
-            if (r <= 80) {
-                i = this.random.nextIntBetweenInclusive(5, 7);
-                System.out.println("stndice");
-                //80% chance to get a standard crayfish
-            } else if (r <= 95) {
-                i = 8;
-                System.out.println("uncice");
-                //15% chance to get an uncommon crayfish
-            } else {
+            if (rarityRoll >= 100) {
                 i = 9;
                 System.out.println("rareice");
-                //5% chance to get a rare crayfish
+                //1% chance to get a rare crayfish
+            } else if (rarityRoll > 90) {
+                i = 8;
+                System.out.println("uncice");
+                //9% chance to get an uncommon crayfish
+            } else {
+                i = this.random.nextIntBetweenInclusive(5, 7);
+                System.out.println("stndice");
+                //90% chance to get a standard crayfish
             }
             this.biomeVariant = 1;
             //1 for ice;
 
         } else {
-            if (r <= 80) {
-                i = this.random.nextIntBetweenInclusive(0, 2);
-                System.out.println("stndswamp");
-                //80% chance to get a standard crayfish
-            } else if (r <= 95) {
-                i = 3;
-                System.out.println("uncswamp");
-                //15% chance to get an uncommon crayfish
-            } else {
+            if (rarityRoll >= 100) {
                 i = 4;
                 System.out.println("rareswamp");
-                //5% chance to get a rare crayfish
+                //1% chance to get a rare crayfish
+            } else if (rarityRoll > 90) {
+                i = 3;
+                System.out.println("uncswamp");
+                //9% chance to get an uncommon crayfish
+            } else {
+                i = this.random.nextIntBetweenInclusive(0, 2);
+                System.out.println("stndswamp");
+                //90% chance to get a standard crayfish
             }
             this.biomeVariant = 0;
             //0 for swamp

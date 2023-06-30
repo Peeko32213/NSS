@@ -240,16 +240,15 @@ public class EntityBloodWater extends AbstractHurtingProjectile implements IAnim
 
     public void hitboxOutline (Vec3 pos, double rX, double rY, double rZ, ServerLevel world) {
         world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (pos.x + rX), (pos.y + rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.END_ROD, (pos.x + rX), (pos.y - rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (pos.x + rX), (pos.y - rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
         world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (pos.x + rX), (pos.y + rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.HAPPY_VILLAGER, (pos.x + rX), (pos.z - rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (pos.x + rX), (pos.z - rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
 
-        world.sendParticles(ParticleTypes.HAPPY_VILLAGER, (pos.x - rX), (pos.y + rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (pos.x - rX), (pos.y + rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
         world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (pos.x - rX), (pos.y - rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.END_ROD, (pos.x - rX), (pos.y + rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (pos.x - rX), (pos.y + rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
         world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (pos.x - rX), (pos.z - rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
     }
-
     public static AABB getAABB(double pX, double pY, double pZ, LivingEntity entity) {
         float f = entity.getBbWidth() / 2.0F;
         return new AABB(pX - (double)f, pY, pZ - (double)f, pX + (double)f, pY + (double)entity.getBbHeight(), pZ + (double)f);

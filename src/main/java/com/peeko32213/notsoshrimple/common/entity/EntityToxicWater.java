@@ -213,7 +213,7 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
             AABB checkZone = new AABB(center).inflate(boxRadius + pissspeed);
             //zone to check for a hit
             AABB hitboxbox = new AABB(center).inflate(boxRadius);
-            hitboxOutline(hitboxbox, world);
+            //hitboxOutline(hitboxbox, world);
             //actual hitbox
 
             List<LivingEntity> potentialVictims = world.getEntitiesOfClass(LivingEntity.class, checkZone);
@@ -248,27 +248,15 @@ public class EntityToxicWater extends AbstractHurtingProjectile implements IAnim
         return vector3d.x * vector3d.x + vector3d.z * vector3d.z;
     }
 
-    public void hitboxOutline (Vec3 pos, double rX, double rY, double rZ, ServerLevel world) {
-        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (pos.x + rX), (pos.y + rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.END_ROD, (pos.x + rX), (pos.y - rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (pos.x + rX), (pos.y + rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.HAPPY_VILLAGER, (pos.x + rX), (pos.z - rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-
-        world.sendParticles(ParticleTypes.HAPPY_VILLAGER, (pos.x - rX), (pos.y + rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (pos.x - rX), (pos.y - rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.END_ROD, (pos.x - rX), (pos.y + rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (pos.x - rX), (pos.z - rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-    }
-
     public static void hitboxOutline (AABB box, ServerLevel world) {
         world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (box.maxX), (box.maxY), (box.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.END_ROD, (box.maxX), (box.minY), (box.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (box.maxX), (box.minY), (box.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
         world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (box.maxX), (box.minY), (box.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.HAPPY_VILLAGER, (box.maxX), (box.maxY), (box.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (box.maxX), (box.maxY), (box.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
 
-        world.sendParticles(ParticleTypes.HAPPY_VILLAGER, (box.minX), (box.maxY), (box.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (box.minX), (box.maxY), (box.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
         world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (box.minX), (box.minY), (box.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.END_ROD, (box.minX), (box.minY), (box.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (box.minX), (box.minY), (box.maxZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
         world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (box.minX), (box.maxY), (box.minZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
     }
 

@@ -237,13 +237,13 @@ public class EntityIceWater extends AbstractHurtingProjectile implements IAnimat
 
     public void hitboxOutline (Vec3 pos, double rX, double rY, double rZ, ServerLevel world) {
         world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (pos.x + rX), (pos.y + rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.END_ROD, (pos.x + rX), (pos.y - rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (pos.x + rX), (pos.y - rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
         world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (pos.x + rX), (pos.y + rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.HAPPY_VILLAGER, (pos.x + rX), (pos.z - rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (pos.x + rX), (pos.z - rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
 
-        world.sendParticles(ParticleTypes.HAPPY_VILLAGER, (pos.x - rX), (pos.y + rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (pos.x - rX), (pos.y + rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
         world.sendParticles(NSSParticles.FOAM_STANDARD.get(), (pos.x - rX), (pos.y - rY), (pos.z + rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        world.sendParticles(ParticleTypes.END_ROD, (pos.x - rX), (pos.y + rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (pos.x - rX), (pos.y + rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
         world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (pos.x - rX), (pos.z - rY), (pos.z - rZ), 1, 0.0D, 0.0D, 0.0D, 0.0D);
     }
 
