@@ -68,6 +68,10 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     public double walkAnimSpeedMod;
+    public Vec3 oldPos;
+    public Vec3 newPos;
+    public Vec3 velocity;
+    public double directionlessSpeed;
     public int biomeVariant;
     //0 = swamp, 1 = ice, 2 = blood for biomeVariant;
 
@@ -75,7 +79,8 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     public EntityCrayfish(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
         this.maxUpStep = 1.0f;
-        this.walkAnimSpeedMod = 1.0f;
+        this.oldPos = this.position();
+        this.newPos = this.position();
     }
 
     /*@Override
@@ -99,7 +104,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 .add(Attributes.ATTACK_DAMAGE, 10.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 10.5D)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.0D)
-                .add(Attributes.FOLLOW_RANGE, 80D);
+                .add(Attributes.FOLLOW_RANGE, 70D);
         //health nerfed
         //armour buffed
         //we don't need knockback and damage tbh
@@ -156,17 +161,15 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         super.handleEntityEvent(pId);
     }
 
-    /*@Override
+    @Override
     public void tick() {
+        this.oldPos = this.newPos;
+        this.newPos = this.position();
+        this.velocity = this.newPos.subtract(this.oldPos);
+        this.directionlessSpeed = Math.abs(Math.sqrt((velocity.x * velocity.x) + (velocity.z * velocity.z) + (velocity.z * velocity.z)));
+        //System.out.println(this.animationSpeed);
         super.tick();
-        if (this.getTarget() != null) {
-            this.walkAnimSpeedMod = 2.0;
-            System.out.println("whuh");
-        } else {
-            this.walkAnimSpeedMod = 1.0;
-        }
-        System.out.println(this.walkAnimSpeedMod);
-    }*/
+    }
 
     @Override
     public void customServerAiStep() {
@@ -257,7 +260,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         //this is NOT IN BLOCKS. I DO NOT KNOW WHAT UNIT THIS IS.
         //update: this is in squared distance
 
-        Vec3 slamOffSet = new Vec3(0, -4, 4);
+        Vec3 slamOffSet = new Vec3(0, 0, 4);
         Vec3 pokeOffSet = new Vec3(0, 0.25, 7);
         Vec3 slashOffSet = new Vec3(2, -0.1, 6);
         //the Y value is at the BOTTOM of the offset, and the hitbox is inflated up.
@@ -589,7 +592,6 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.getLookControl().setLookAt(target.position());
             this.mob.yBodyRot = this.mob.yHeadRot;
-
             double pissspeed = 7;
             //MAKE SURE THIS IS THE SAME NUMBER AS EntityToxicWater's pissspeed
             double pissspeedforcalculation = pissspeed - 1;
@@ -700,9 +702,9 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         }
     }
 
-    public boolean canBeCollidedWith() {
+    /*public boolean canBeCollidedWith() {
         return true;
-    }
+    }*/
 
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
@@ -744,7 +746,6 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
         int animState = this.getAnimationState();
-        //System.out.println(walkAnimSpeedMod);
         {
             switch (animState) {
 
@@ -774,7 +775,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                         event.getController().setAnimation(new AnimationBuilder().loop("animation.crayfish.walk"));
 
                     } else {
-                        event.getController().setAnimationSpeed(this.walkAnimSpeedMod);
+                        event.getController().setAnimationSpeed(1 + this.directionlessSpeed);
                         event.getController().setAnimation(new AnimationBuilder().loop("animation.crayfish.idle"));
                         //0.24 is the base move speed
                     }
@@ -817,27 +818,65 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
         spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
-        //since it uses nextIntBetweenInclusive you just take the max and min texture range and put it in without changing anything
+        int r = (this.getRandom().nextInt(100) + 1);
+        //since it uses nextIntBetweenInclusive you just take the max and min texture values and put it in without changing anything
         //i.e. the blood selection in CrayfishModel ranges from 4 - 5, so you put that in
 
         int i;
         if(canSpawnBlood(worldIn, this.blockPosition())){
-            i = this.random.nextIntBetweenInclusive(4, 5);
+            if (r <= 80) {
+                i = this.random.nextIntBetweenInclusive(10, 12);
+                System.out.println("stndblood");
+                //80% chance to get a standard crayfish
+            } else if (r <= 95) {
+                i = 13;
+                System.out.println("uncblood");
+                //15% chance to get an uncommon crayfish
+            } else {
+                i = 14;
+                System.out.println("rareblood");
+                //5% chance to get a rare crayfish
+            }
             this.biomeVariant = 2;
             //2 for blood
 
         } else if(canSpawnIce(worldIn, this.blockPosition())){
-            i = this.random.nextIntBetweenInclusive(2, 3);
+            if (r <= 80) {
+                i = this.random.nextIntBetweenInclusive(5, 7);
+                System.out.println("stndice");
+                //80% chance to get a standard crayfish
+            } else if (r <= 95) {
+                i = 8;
+                System.out.println("uncice");
+                //15% chance to get an uncommon crayfish
+            } else {
+                i = 9;
+                System.out.println("rareice");
+                //5% chance to get a rare crayfish
+            }
             this.biomeVariant = 1;
             //1 for ice;
 
         } else {
-            i = this.random.nextIntBetweenInclusive(0, 1);
+            if (r <= 80) {
+                i = this.random.nextIntBetweenInclusive(0, 2);
+                System.out.println("stndswamp");
+                //80% chance to get a standard crayfish
+            } else if (r <= 95) {
+                i = 3;
+                System.out.println("uncswamp");
+                //15% chance to get an uncommon crayfish
+            } else {
+                i = 4;
+                System.out.println("rareswamp");
+                //5% chance to get a rare crayfish
+            }
             this.biomeVariant = 0;
             //0 for swamp
         }
 
         this.setVariant(i);
+        System.out.println(i);
         return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
@@ -858,7 +897,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     }
 
 
-    /*protected PathNavigation createNavigation(Level p_33348_) {
+    protected PathNavigation createNavigation(Level p_33348_) {
         return new RexNavigation(this, p_33348_);
         //used to use LargeEntityGroundNavigator
     }
@@ -878,6 +917,6 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         protected BlockPathTypes evaluateBlockPathType(BlockGetter p_33387_, boolean p_33388_, boolean p_33389_, BlockPos p_33390_, BlockPathTypes p_33391_) {
             return p_33391_ == BlockPathTypes.LEAVES ? BlockPathTypes.OPEN : super.evaluateBlockPathType(p_33387_, p_33388_, p_33389_, p_33390_, p_33391_);
         }
-    }*/
+    }
 
 }
