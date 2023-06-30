@@ -549,7 +549,7 @@ public class EntityCrayfish extends Animal implements IAnimatable{
     public boolean canBeCollidedWith() {
         return true;
     }
-    //Todo remove there?, they are never used
+
     protected void collideWithEntity(Entity entityIn) {
         entityIn.push(this);
     }
