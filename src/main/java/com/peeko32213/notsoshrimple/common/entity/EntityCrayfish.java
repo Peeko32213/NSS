@@ -67,6 +67,10 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     private static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(EntityCrayfish.class, EntityDataSerializers.INT);
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
+    @Override
+    public MobType getMobType() {
+        return MobType.ARTHROPOD;
+    }
     public double walkAnimSpeedMod;
     public Vec3 oldPos;
     public Vec3 newPos;

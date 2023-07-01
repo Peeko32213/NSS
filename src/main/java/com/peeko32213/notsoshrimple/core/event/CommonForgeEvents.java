@@ -60,19 +60,18 @@ public class CommonForgeEvents {
         if (source.getEntity() instanceof Player) {
             Player player = (Player) (source.getEntity());
             Item weapon = player.getMainHandItem().getItem();
-            System.out.println("passedwp");
+            //System.out.println("passedwp");
 
             if (weapon instanceof ItemSwampBuster && target instanceof Mob) {
                 Mob victim = ((Mob) target);
                 ItemSwampBuster shrimplifier = (ItemSwampBuster) weapon;
-                System.out.println("passedbusta");
+                //System.out.println("passedbusta");
 
                 if (victim.getMobType() == MobType.ARTHROPOD) {
-                    System.out.println(((Mob) target).getHealth());
-                    victim.hurt(DamageSource.playerAttack(player), (float) (event.getAmount()*shrimplifier.arthropodBonus - shrimplifier.getDamage()));
-                    System.out.println("passedpod");
-                    System.out.println("dmg " + (float) (event.getAmount()*shrimplifier.arthropodBonus - shrimplifier.getDamage()));
-                    System.out.println(((Mob) target).getHealth());
+                    //System.out.println("dmg " + event.getAmount() + (event.getAmount()*shrimplifier.arthropodBonus));
+                    event.setAmount((float) (event.getAmount() + (event.getAmount()*shrimplifier.arthropodBonus)));
+                    //System.out.println("passedpod");
+                    //ystem.out.println(((Mob) target).getHealth());
                 }
             }
         }

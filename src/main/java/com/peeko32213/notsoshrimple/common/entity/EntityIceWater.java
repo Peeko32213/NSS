@@ -66,8 +66,8 @@ public class EntityIceWater extends AbstractHurtingProjectile implements IAnimat
     public double boxRadius = 2.25;
     public Vec3 scanBox = new Vec3(50,50,50);
 
-    public EntityIceWater(EntityType<? extends Projectile> p_37248_, Level p_37249_) {
-        super((EntityType<? extends AbstractHurtingProjectile>) p_37248_, p_37249_);
+    public EntityIceWater(EntityType<? extends AbstractHurtingProjectile> p_37248_, Level p_37249_) {
+        super(p_37248_, p_37249_);
 
         this.entityData.define(DATA_PISS_STARTPOSX, 0F);
         this.entityData.define(DATA_PISS_STARTPOSY, 0F);

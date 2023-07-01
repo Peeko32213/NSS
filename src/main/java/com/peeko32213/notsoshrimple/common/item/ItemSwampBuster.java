@@ -48,7 +48,7 @@ import java.util.function.Consumer;
 public class ItemSwampBuster extends SwordItem implements IAnimatable{
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
-    public double arthropodBonus = 1.5;
+    public double arthropodBonus = 0.5;
 
     public ItemSwampBuster(Tier tier, int attackDamage, float attackSpeed) {
         super(tier, attackDamage, attackSpeed, new Properties()
@@ -56,7 +56,7 @@ public class ItemSwampBuster extends SwordItem implements IAnimatable{
                 .defaultDurability(tier.getUses())
                 .tab(NotSoShrimple.SHRIMPLE)
         );
-        //TODO: Clawblade cannot sweep. Clawblade deals bonus damage to arthropods. Clawblade is slower than an axe. Fully charged clawblade attacks on a block sends a shockwave around that block.
+        //TODO: Clawblade deals bonus damage to arthropods. Clawblade is slower than an axe. Fully charged clawblade attacks on a block sends a shockwave around that block.
         //TODO: Clawblade is repaired with more Calloused Claws.
 
     }
@@ -84,7 +84,7 @@ public class ItemSwampBuster extends SwordItem implements IAnimatable{
         if (entity instanceof Mob) {
             Mob victim = ((Mob) entity);
             if (victim.getMobType() == MobType.ARTHROPOD) {
-                LivingHurtEvent event = new LivingHurtEvent(victim, DamageSource.playerAttack(player), (float) (this.getDamage()*this.arthropodBonus) - this.getDamage());
+                //LivingHurtEvent event = new LivingHurtEvent(victim, DamageSource.playerAttack(player), (float) (this.getDamage()*this.arthropodBonus) - this.getDamage());
                 //System.out.println(event.getResult());
                 //System.out.println("thro pod");
             }
