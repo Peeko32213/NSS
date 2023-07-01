@@ -167,7 +167,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         this.newPos = this.position();
         this.velocity = this.newPos.subtract(this.oldPos);
         this.directionlessSpeed = Math.abs(Math.sqrt((velocity.x * velocity.x) + (velocity.z * velocity.z) + (velocity.z * velocity.z)));
-        System.out.println(this.directionlessSpeed);
+        //System.out.println(this.directionlessSpeed);
         super.tick();
     }
 
@@ -589,8 +589,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             }
         }
 
-        //TODO: replace piss particles, make blue and golds rare
-        //Also TODO: set a safe distance from the shrimp where you won't be shot, but it also can't hit you
+        //TODO: replace piss particles
 
         protected void piss(LivingEntity target) {
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
@@ -832,15 +831,15 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         if(canSpawnBlood(worldIn, this.blockPosition())){
             if (rarityRoll >= 100) {
                 i = 14;
-                System.out.println("rareblood");
+                //System.out.println("rareblood");
                 //1% chance to get a rare crayfish
             } else if (rarityRoll > 90) {
                 i = 13;
-                System.out.println("uncblood");
+                //System.out.println("uncblood");
                 //9% chance to get an uncommon crayfish
             } else {
                 i = this.random.nextIntBetweenInclusive(10, 12);
-                System.out.println("stndblood");
+                //System.out.println("stndblood");
                 //90% chance to get a standard crayfish
             }
             this.biomeVariant = 2;
@@ -849,15 +848,15 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         } else if(canSpawnIce(worldIn, this.blockPosition())){
             if (rarityRoll >= 100) {
                 i = 9;
-                System.out.println("rareice");
+                //System.out.println("rareice");
                 //1% chance to get a rare crayfish
             } else if (rarityRoll > 90) {
                 i = 8;
-                System.out.println("uncice");
+                //System.out.println("uncice");
                 //9% chance to get an uncommon crayfish
             } else {
                 i = this.random.nextIntBetweenInclusive(5, 7);
-                System.out.println("stndice");
+                //System.out.println("stndice");
                 //90% chance to get a standard crayfish
             }
             this.biomeVariant = 1;
@@ -866,15 +865,15 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         } else {
             if (rarityRoll >= 100) {
                 i = 4;
-                System.out.println("rareswamp");
+                //System.out.println("rareswamp");
                 //1% chance to get a rare crayfish
             } else if (rarityRoll > 90) {
                 i = 3;
-                System.out.println("uncswamp");
+                //System.out.println("uncswamp");
                 //9% chance to get an uncommon crayfish
             } else {
                 i = this.random.nextIntBetweenInclusive(0, 2);
-                System.out.println("stndswamp");
+                //System.out.println("stndswamp");
                 //90% chance to get a standard crayfish
             }
             this.biomeVariant = 0;
@@ -882,7 +881,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         }
 
         this.setVariant(i);
-        System.out.println(i);
+        //System.out.println(i);
         return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 

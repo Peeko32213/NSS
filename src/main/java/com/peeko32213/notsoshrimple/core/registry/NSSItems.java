@@ -29,7 +29,8 @@ public class NSSItems {
             () -> new Item(new Item.Properties().tab(NotSoShrimple.SHRIMPLE)));
 
     public static final RegistryObject<Item> SWAMP_BUSTER = ITEMS.register("swampbuster",
-            () -> new ItemSwampBuster(NSSItemTiers.SHRIMPLE, 5, -3.0F));
+            () -> new ItemSwampBuster(NSSItemTiers.SHRIMPLE, 11, -3.0F));
+    //speed is in -seconds
 
     public static final RegistryObject<Item> RAW_COTY = ITEMS.register("raw_prawn",
             () -> new Item(new Item.Properties().food(ItemModFood.RAW_PRAWN).tab(NotSoShrimple.SHRIMPLE)));

@@ -1,16 +1,25 @@
 package com.peeko32213.notsoshrimple.core.event;
 
 import com.peeko32213.notsoshrimple.NotSoShrimple;
+import com.peeko32213.notsoshrimple.common.item.ItemSwampBuster;
 import com.peeko32213.notsoshrimple.core.config.BiomeConfig;
 import com.peeko32213.notsoshrimple.core.config.NotSoShrimpleConfig;
 import com.peeko32213.notsoshrimple.core.config.util.SpawnBiomeData;
 import com.peeko32213.notsoshrimple.core.registry.NSSEntities;
+import com.peeko32213.notsoshrimple.core.registry.NSSItems;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraftforge.common.world.ModifiableBiomeInfo;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -41,6 +50,33 @@ public class CommonForgeEvents {
             result = false;
         }
         return result;
+    }
+
+    @SubscribeEvent
+    public static void onLivingHurtEvent (final LivingHurtEvent event) {
+        Entity target = event.getEntity();
+        DamageSource source = event.getSource();
+
+        if (source.getEntity() instanceof Player) {
+            Player player = (Player) (source.getEntity());
+            Item weapon = player.getMainHandItem().getItem();
+            System.out.println("passedwp");
+
+            if (weapon instanceof ItemSwampBuster && target instanceof Mob) {
+                Mob victim = ((Mob) target);
+                ItemSwampBuster shrimplifier = (ItemSwampBuster) weapon;
+                System.out.println("passedbusta");
+
+                if (victim.getMobType() == MobType.ARTHROPOD) {
+                    System.out.println(((Mob) target).getHealth());
+                    victim.hurt(DamageSource.playerAttack(player), (float) (event.getAmount()*shrimplifier.arthropodBonus - shrimplifier.getDamage()));
+                    System.out.println("passedpod");
+                    System.out.println("dmg " + (float) (event.getAmount()*shrimplifier.arthropodBonus - shrimplifier.getDamage()));
+                    System.out.println(((Mob) target).getHealth());
+                }
+            }
+        }
+
     }
 
 }

@@ -10,10 +10,12 @@ import com.peeko32213.notsoshrimple.core.registry.NSSPacketHub;
 import com.peeko32213.notsoshrimple.core.registry.NSSParticles;
 import net.minecraft.client.Minecraft;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -42,7 +44,6 @@ public class CommonModEvents {
     public static void registerParticleFactories (final RegisterParticleProvidersEvent event) {
         Minecraft.getInstance().particleEngine.register(NSSParticles.FOAM_STANDARD.get(), FoamStandardParticle.Provider::new);
     }
-
 
     public static Predicate<LivingEntity> buildPredicateFromTag(TagKey<EntityType<?>> entityTag){
         if(entityTag == null){
