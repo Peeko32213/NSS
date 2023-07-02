@@ -23,14 +23,8 @@ import java.util.List;
 public class PisslikeHitboxes {
     //Essentially, this makes the most basic hitbox system, where if the root of the player is within a certain radius to the hit point, it hits them.
 
-    public static void PivotedRadialHitCheck(PathfinderMob source, Vec3 boxOffset, double attackRadius, ServerLevel world, float damage, DamageSource damageSource, float knockback, boolean disableShield) {
+    public static void PivotedRadialHitCheck(LivingEntity source, Vec3 boxOffset, double attackRadius, ServerLevel world, float damage, DamageSource damageSource, float knockback, boolean disableShield) {
         //attackRadius is in blocks
-
-
-        Vec2 knockVec = MathHelpers.OrizontalAimVector(
-                MathHelpers.AimVector(new Vec3(-source.position().x, -source.position().y, -source.position().z),
-                        new Vec3(-source.getTarget().position().x, -source.getTarget().position().y, -source.getTarget().position().z)
-                ));
 
         Vec3 sourcePos = source.position();
         double entityAngle = (source.getYRot());
@@ -58,6 +52,11 @@ public class PisslikeHitboxes {
                     disableShield((Player)victim, victim.getMainHandItem(), victim.getOffhandItem(), source);
                 }
 
+                Vec2 knockVec = MathHelpers.OrizontalAimVector(
+                        MathHelpers.AimVector(new Vec3(-source.position().x, -source.position().y, -source.position().z),
+                                new Vec3(-victim.position().x, -victim.position().y, -victim.position().z)
+                        ));
+
                 victim.hurt(damageSource, damage);
                 victim.setLastHurtByMob(source);
 
@@ -67,14 +66,8 @@ public class PisslikeHitboxes {
         }
     }
 
-    public static void PivotedPolyHitCheck(PathfinderMob source, Vec3 boxOffset, double attackWidth, double attackHeight, double attackLength, ServerLevel world, float damage, DamageSource damageSource, float knockback, boolean disableShield) {
+    public static void PivotedPolyHitCheck(LivingEntity source, Vec3 boxOffset, double attackWidth, double attackHeight, double attackLength, ServerLevel world, float damage, DamageSource damageSource, float knockback, boolean disableShield) {
         //attackRadius is in blocks
-
-
-        Vec2 knockVec = MathHelpers.OrizontalAimVector(
-                MathHelpers.AimVector(new Vec3(-source.position().x, -source.position().y, -source.position().z),
-                        new Vec3(-source.getTarget().position().x, -source.getTarget().position().y, -source.getTarget().position().z)
-                ));
 
         Vec3 sourcePos = source.position();
         double entityAngle = (source.getYRot());
@@ -101,6 +94,12 @@ public class PisslikeHitboxes {
                     disableShield((Player)victim, victim.getMainHandItem(), victim.getOffhandItem(), source);
                 }
 
+                Vec2 knockVec = MathHelpers.OrizontalAimVector(
+                        MathHelpers.AimVector(new Vec3(-source.position().x, -source.position().y, -source.position().z),
+                                new Vec3(-victim.position().x, -victim.position().y, -victim.position().z)
+                        ));
+
+
                 victim.hurt(damageSource, damage);
                 victim.setLastHurtByMob(source);
 
@@ -110,7 +109,7 @@ public class PisslikeHitboxes {
         }
     }
 
-    public static void disableShield(Player pPlayer, ItemStack mainHand, ItemStack offHand, PathfinderMob source) {
+    public static void disableShield(Player pPlayer, ItemStack mainHand, ItemStack offHand, Entity source) {
         //System.out.println("Shatter " + (!mainHand.isEmpty() && mainHand.is(Items.SHIELD)));
 
         if (!mainHand.isEmpty() && mainHand.is(Items.SHIELD) && pPlayer.isBlocking()) {

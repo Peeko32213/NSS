@@ -4,10 +4,8 @@ import com.mojang.logging.LogUtils;
 import com.peeko32213.notsoshrimple.core.config.BiomeConfig;
 import com.peeko32213.notsoshrimple.core.config.ConfigHolder;
 import com.peeko32213.notsoshrimple.core.config.NotSoShrimpleConfig;
-import com.peeko32213.notsoshrimple.core.registry.NSSEntities;
-import com.peeko32213.notsoshrimple.core.registry.NSSItems;
-import com.peeko32213.notsoshrimple.core.registry.NSSParticles;
-import com.peeko32213.notsoshrimple.core.registry.NSSSounds;
+import com.peeko32213.notsoshrimple.core.recipes.SmithingStoneRecipe;
+import com.peeko32213.notsoshrimple.core.registry.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -40,7 +38,9 @@ import java.util.stream.Collectors;
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(NotSoShrimple.MODID)
 public class NotSoShrimple
+
 {
+
     public static final String MODID = "notsoshrimple";
     public static final List<Runnable> CALLBACKS = new ArrayList<>();
     public static final Logger LOGGER = LogManager.getLogger();
@@ -54,6 +54,8 @@ public class NotSoShrimple
         NSSItems.ITEMS.register(modEventBus);
         NSSEntities.ENTITIES.register(modEventBus);
         NSSParticles.SHRIMPARTICLES.register(modEventBus);
+        NSSRecipes.SERIALIZERS.register(modEventBus);
+        //MinecraftForge.EVENT_BUS.addListener(SmithingStoneRecipe::addAttributes);
 
         eventBus.register(this);
 

@@ -3,6 +3,9 @@
   "values": [
     "#minecraft:base_stone_overworld",
     "#minecraft:dirt",
+    "#minecraft:crimson_nylium",
+    "#minecraft:netherrack",
+    "#minecraft:nether_wart_block",
     "#forge:sand",
     "#forge:gravel",
     "#minecraft:terracotta"

@@ -7,8 +7,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import java.util.function.Supplier;
 
 public enum NSSItemTiers implements Tier {
-    SHRIMPLE(4, 1876, 8.0F, 3.0F, 2, () -> Ingredient.of(NSSItems.CLAW.get()))
-    ;
+    SHRIMPLE(0, 1876, 5.0F, 0.0F, 10, () -> Ingredient.of(NSSItems.CLAW.get()));
 
 
 

@@ -4,11 +4,15 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.peeko32213.notsoshrimple.NotSoShrimple;
 import com.peeko32213.notsoshrimple.client.render.SwampBusterRenderer;
+import com.peeko32213.notsoshrimple.common.entity.utl.MathHelpers;
+import com.peeko32213.notsoshrimple.common.entity.utl.PisslikeHitboxes;
 import com.peeko32213.notsoshrimple.core.event.CommonForgeEvents;
 import com.peeko32213.notsoshrimple.core.registry.NSSItemTiers;
+import com.peeko32213.notsoshrimple.core.registry.NSSItems;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -27,6 +31,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -45,51 +51,75 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.function.Consumer;
 
-public class ItemSwampBuster extends SwordItem implements IAnimatable{
+public class ItemClawblade extends SwordItem implements IAnimatable{
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
-    public double arthropodBonus = 0.5;
 
-    public ItemSwampBuster(Tier tier, int attackDamage, float attackSpeed) {
+    public Vec3 slamOffset = new Vec3(0, -2, 0);
+    public int slamDmg = 5;
+    public double arthropodBonus = 0.3;
+    public int animationState = 0;
+
+    public ItemClawblade(Tier tier, int attackDamage, float attackSpeed) {
         super(tier, attackDamage, attackSpeed, new Properties()
                 .stacksTo(1)
                 .defaultDurability(tier.getUses())
                 .tab(NotSoShrimple.SHRIMPLE)
         );
-        //TODO: Clawblade deals bonus damage to arthropods. Clawblade is slower than an axe. Fully charged clawblade attacks on a block sends a shockwave around that block.
-        //TODO: Clawblade is repaired with more Calloused Claws.
+        //TODO: Add particles to the slam with a standard distribution, maybe add poison?
 
     }
 
-    @Override
-    public boolean isFoil(ItemStack stack) {
-        return false;
-    }
+    public void switchAnimationState(int value) { this.animationState = value; };
 
     public Rarity getRarity(ItemStack pStack) {
         return Rarity.EPIC;
         //epic rarity on default
     }
 
-    @NotNull
+    public boolean canAttackBlock(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer) {
+        return false;
+        //stops it from randomly breaking shit
+    }
+
+    public boolean canDisableShield(ItemStack stack, ItemStack shield, LivingEntity entity, LivingEntity attacker)
+    {
+        return true;
+        //banana slamma
+    }
+
     public AABB getSweepHitBox(@NotNull ItemStack stack, @NotNull Player player, @NotNull Entity target)
     {
         return target.getBoundingBox().inflate(0.0D, 0.0D, 0.0D);
         //The weapon cannot sweep.
     }
 
-    @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity){
-
-        if (entity instanceof Mob) {
-            Mob victim = ((Mob) entity);
-            if (victim.getMobType() == MobType.ARTHROPOD) {
-                //LivingHurtEvent event = new LivingHurtEvent(victim, DamageSource.playerAttack(player), (float) (this.getDamage()*this.arthropodBonus) - this.getDamage());
-                //System.out.println(event.getResult());
-                //System.out.println("thro pod");
-            }
-        }
         super.onLeftClickEntity(stack, player, entity);
+
+        /*if (player.getMainHandItem().getItem() instanceof ItemClawblade && player.fallDistance > 0 && player.isCrouching() && !player.level.isClientSide() && !player.getCooldowns().isOnCooldown(NSSItems.GREAT_PRAWN_CLAWBLADE.get())) {
+            this.switchAnimationState(1);
+            //you have to be falling and crouching and have the weapon in your main hand to be slamming
+
+            if (entity instanceof LivingEntity) {
+                LivingEntity victim = (LivingEntity) entity;
+                Vec2 knockVec = MathHelpers.OrizontalAimVector(
+                        MathHelpers.AimVector(new Vec3(-player.position().x, -player.position().y, -player.position().z),
+                                new Vec3(-victim.position().x, -victim.position().y, -victim.position().z)
+                        ));
+                victim.knockback(1.5, knockVec.x, knockVec.y);
+            }
+            //knock the target back without the aoe if target is alive
+
+            PisslikeHitboxes.PivotedPolyHitCheck(player, slamOffset, 4.0, 2, 4.0, (ServerLevel) player.getLevel(), 5, DamageSource.playerAttack(player), 1.5f, false);
+            //creates aoe
+            stack.hurtAndBreak(50, player, (p_29910_) -> {
+                p_29910_.broadcastBreakEvent(player.getUsedItemHand());
+            });
+            //damages the sword by 50
+            player.getCooldowns().addCooldown(NSSItems.GREAT_PRAWN_CLAWBLADE.get(), 20*3);
+            //cooldown of 3 seconds
+        }*/
         return false;
     }
 
@@ -127,12 +157,18 @@ public class ItemSwampBuster extends SwordItem implements IAnimatable{
 
     @Override
     public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController(this, "controller",
-                0, this::predicate));
+            data.addAnimationController(new AnimationController(this, "controller",
+                    0, this::predicate));
     }
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        event.getController().setAnimation(new AnimationBuilder().loop("idle"));
+
+        switch(animationState) {
+            case 0:
+                event.getController().setAnimation(new AnimationBuilder().loop("idle"));
+            case 1:
+                event.getController().setAnimation(new AnimationBuilder().loop("idle"));
+        }
 
         return PlayState.CONTINUE;
     }

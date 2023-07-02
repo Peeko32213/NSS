@@ -1,0 +1,12 @@
+{
+  "type": "notsoshrimple:smithing_stone_recipe",
+  "base": {
+    "item": "minecraft:diamond_sword"
+  },
+  "addition": {
+    "item": "notsoshrimple:somber_stone"
+  },
+  "result": {
+    "item": "minecraft:diamond_sword"
+  }
+}
