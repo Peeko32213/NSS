@@ -12,6 +12,9 @@ public class NSSRecipes {
     public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS =
             DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, NotSoShrimple.MODID);
 
+    public static final RegistryObject<RecipeSerializer<SmithingStoneRecipe>> SOMBER_STONE_RECIPE =
+            SERIALIZERS.register("somber_stone_recipe", () -> new SmithingStoneRecipe.Serializer());
+
     public static final RegistryObject<RecipeSerializer<SmithingStoneRecipe>> SMITHING_STONE_RECIPE =
             SERIALIZERS.register("smithing_stone_recipe", () -> new SmithingStoneRecipe.Serializer());
 }

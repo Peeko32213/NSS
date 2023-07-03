@@ -27,6 +27,7 @@ public class SmithingStoneRecipe extends UpgradeRecipe {
     final Ingredient addition;
     final ItemStack product;
     private final ResourceLocation id;
+    private final UUID somberStoneBuffUUID = UUID.randomUUID();
     private final UUID smithingStoneBuffUUID = UUID.randomUUID();
 
     @Override
@@ -61,26 +62,48 @@ public class SmithingStoneRecipe extends UpgradeRecipe {
     @Override
     public ItemStack assemble(Container pInv) {
         ItemStack itemstack = this.product.copy();
+        System.out.println("original durability " + itemstack.getItem().maxDamage);
 
         if(addition.test(NSSItems.SOMBER_STONE.get().getDefaultInstance())) {
-
             double baseDmg = pInv.getItem(0).getAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_DAMAGE).stream().toList().get(0).getAmount();
-            AttributeModifier old = new AttributeModifier(smithingStoneBuffUUID, "smithing_stone_dmg_mod", baseDmg, AttributeModifier.Operation.ADDITION);
+            AttributeModifier old = new AttributeModifier(somberStoneBuffUUID, "somber_stone_dmg_mod", baseDmg, AttributeModifier.Operation.ADDITION);
+
             if (itemstack.getAttributeModifiers(EquipmentSlot.MAINHAND).containsEntry(Attributes.ATTACK_DAMAGE, old)) {
                 itemstack.getAttributeModifiers(EquipmentSlot.MAINHAND).remove(Attributes.ATTACK_DAMAGE, old);
                 System.out.println("removed");
+                //remove the old attributemodifier to prevent stacking
             }
-            AttributeModifier dmgModifier = new AttributeModifier(smithingStoneBuffUUID, "smithing_stone_dmg_mod", baseDmg + 1, AttributeModifier.Operation.ADDITION);
+
+            AttributeModifier dmgModifier = new AttributeModifier(somberStoneBuffUUID, "somber_stone_dmg_mod", baseDmg + 1, AttributeModifier.Operation.ADDITION);
             itemstack.addAttributeModifier(Attributes.ATTACK_DAMAGE, dmgModifier, EquipmentSlot.MAINHAND);
-            //add a new AttributeModifier each time the weapon is reinforced
+            //add a new AttributeModifier each time the weapon is refined that increases its damage
         }
 
+        if(addition.test(NSSItems.SMITHING_STONE.get().getDefaultInstance())) {
+            CompoundTag stackTags = itemstack.getOrCreateTag();
+            System.out.println("old tags " + stackTags);
+
+            if (stackTags.getInt("smithing_stone_durability_bonus") != 0) {
+                int originalValue = stackTags.getInt("smithing_stone_durability_bonus");
+                stackTags.putInt("smithing_stone_durability_bonus", originalValue + 5);
+                System.out.println("originally " + originalValue);
+
+            } else {
+                stackTags.putInt("smithing_stone_durability_bonus", 5);
+            }
+
+            itemstack.setTag(stackTags.copy());
+            //change the item's max damage taken each time the weapon is reinforced by 5, after all total runs the weapon has an extra 30 durability.
+        }
+
+        System.out.println("now tags " + itemstack.getOrCreateTag());
+        System.out.println("now durability " + itemstack.getTag().getInt("smithing_stone_durability_bonus"));
         return itemstack;
     }
 
     public static class Serializer implements RecipeSerializer<SmithingStoneRecipe> {
         //forgor Serializer.INSTANCE?
-        public static final ResourceLocation ID = new ResourceLocation(NotSoShrimple.MODID, "smithing_stone_recipe");
+        //public static final ResourceLocation ID = new ResourceLocation(NotSoShrimple.MODID, "smithing_stone_recipe");
 
         public SmithingStoneRecipe fromJson(ResourceLocation pRecipeId, JsonObject pJson) {
             Ingredient base = Ingredient.fromJson(GsonHelper.getAsJsonObject(pJson, "base"));
