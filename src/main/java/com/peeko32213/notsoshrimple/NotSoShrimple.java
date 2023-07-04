@@ -55,6 +55,7 @@ public class NotSoShrimple
         NSSEntities.ENTITIES.register(modEventBus);
         NSSParticles.SHRIMPARTICLES.register(modEventBus);
         NSSRecipes.SERIALIZERS.register(modEventBus);
+        NSSAttributes.ATTRIBUTEREGISTER.register(modEventBus);
         //MinecraftForge.EVENT_BUS.addListener(SmithingStoneRecipe::addAttributes);
 
         eventBus.register(this);

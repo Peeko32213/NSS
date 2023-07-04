@@ -70,7 +70,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     public MobType getMobType() {
         return MobType.ARTHROPOD;
     }
-    public double walkAnimSpeedMod;
+    public double oldSpeedMod;
     public Vec3 oldPos;
     public Vec3 newPos;
     public Vec3 velocity;
@@ -166,6 +166,13 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
     @Override
     public void tick() {
+
+        /*loat speed = (float) (this.getMoveControl().getSpeedModifier() * this.getAttributeValue(Attributes.MOVEMENT_SPEED));
+        if (this.isInWater()) {
+            speed = speed * (1/this.getWaterSlowDown());
+        }
+        this.setSpeed(supposedd);*/
+
         this.oldPos = this.newPos;
         this.newPos = this.position();
         this.velocity = this.newPos.subtract(this.oldPos);
@@ -175,7 +182,14 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     }
 
     @Override
+    protected float getWaterSlowDown() {
+        return 1.0f;
+        //shrimps are not slowed by water
+    }
+
+    @Override
     public void customServerAiStep() {
+
         if (this.getMoveControl().hasWanted()) {
             this.setSprinting(this.getMoveControl().getSpeedModifier() >= 1.5D);
         } else {

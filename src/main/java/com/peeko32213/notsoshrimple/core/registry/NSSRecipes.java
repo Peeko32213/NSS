@@ -2,6 +2,9 @@ package com.peeko32213.notsoshrimple.core.registry;
 
 import com.peeko32213.notsoshrimple.NotSoShrimple;
 import com.peeko32213.notsoshrimple.core.recipes.SmithingStoneRecipe;
+import net.minecraft.core.Registry;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.registries.DeferredRegister;
@@ -17,4 +20,5 @@ public class NSSRecipes {
 
     public static final RegistryObject<RecipeSerializer<SmithingStoneRecipe>> SMITHING_STONE_RECIPE =
             SERIALIZERS.register("smithing_stone_recipe", () -> new SmithingStoneRecipe.Serializer());
+
 }

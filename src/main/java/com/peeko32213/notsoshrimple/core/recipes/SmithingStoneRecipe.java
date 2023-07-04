@@ -2,6 +2,7 @@ package com.peeko32213.notsoshrimple.core.recipes;
 
 import com.google.gson.JsonObject;
 import com.peeko32213.notsoshrimple.NotSoShrimple;
+import com.peeko32213.notsoshrimple.core.registry.NSSAttributes;
 import com.peeko32213.notsoshrimple.core.registry.NSSItems;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -23,12 +24,14 @@ import java.util.UUID;
 
 public class SmithingStoneRecipe extends UpgradeRecipe {
 
+
+    //final ItemStack actualFirstItem = this.(0);
     final Ingredient base;
     final Ingredient addition;
     final ItemStack product;
     private final ResourceLocation id;
-    private final UUID somberStoneBuffUUID = UUID.randomUUID();
-    private final UUID smithingStoneBuffUUID = UUID.randomUUID();
+    public final UUID somberStoneBuffUUID = UUID.randomUUID();
+    public final UUID smithingStoneBuffUUID = UUID.randomUUID();
 
     @Override
     public boolean canCraftInDimensions(int pWidth, int pHeight) {
@@ -62,7 +65,8 @@ public class SmithingStoneRecipe extends UpgradeRecipe {
     @Override
     public ItemStack assemble(Container pInv) {
         ItemStack itemstack = this.product.copy();
-        System.out.println("original durability " + itemstack.getItem().maxDamage);
+        System.out.println("original durability " + pInv.getItem(0).getAttributeModifiers(EquipmentSlot.MAINHAND).get(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY).stream().toList().get(0).getAmount());
+        //the statement pInv.getItem(0) gives you the item in the first ingredient slot in its entirety. Use it for compat.
 
         if(addition.test(NSSItems.SOMBER_STONE.get().getDefaultInstance())) {
             double baseDmg = pInv.getItem(0).getAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_DAMAGE).stream().toList().get(0).getAmount();
@@ -78,12 +82,25 @@ public class SmithingStoneRecipe extends UpgradeRecipe {
             itemstack.addAttributeModifier(Attributes.ATTACK_DAMAGE, dmgModifier, EquipmentSlot.MAINHAND);
             //add a new AttributeModifier each time the weapon is refined that increases its damage
         }
+        //somber stuff that already works
 
         if(addition.test(NSSItems.SMITHING_STONE.get().getDefaultInstance())) {
-            CompoundTag stackTags = itemstack.getOrCreateTag();
+            double baseExtraD = pInv.getItem(0).getAttributeModifiers(EquipmentSlot.MAINHAND).get(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY).stream().toList().get(0).getAmount();
+            AttributeModifier old = new AttributeModifier(smithingStoneBuffUUID, "smithing_stone_durability_bonus", baseExtraD, AttributeModifier.Operation.ADDITION);
+
+            if (itemstack.getAttributeModifiers(EquipmentSlot.MAINHAND).containsEntry(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY, old)) {
+                itemstack.getAttributeModifiers(EquipmentSlot.MAINHAND).remove(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY, old);
+                System.out.println("removed durab");
+                //remove the old attributemodifier to prevent stacking
+            }
+
+            AttributeModifier dmgModifier = new AttributeModifier(smithingStoneBuffUUID, "smithing_stone_durability_bonus", baseExtraD + 30, AttributeModifier.Operation.ADDITION);
+            itemstack.addAttributeModifier(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY, dmgModifier, EquipmentSlot.MAINHAND);
+            System.out.println("added new durability");
+            /*CompoundTag stackTags = itemstack.getOrCreateTag();
             System.out.println("old tags " + stackTags);
 
-            if (stackTags.getInt("smithing_stone_durability_bonus") != 0) {
+            if (stackTags.contains("smithing_stone_durability_bonus")) {
                 int originalValue = stackTags.getInt("smithing_stone_durability_bonus");
                 stackTags.putInt("smithing_stone_durability_bonus", originalValue + 5);
                 System.out.println("originally " + originalValue);
@@ -92,12 +109,12 @@ public class SmithingStoneRecipe extends UpgradeRecipe {
                 stackTags.putInt("smithing_stone_durability_bonus", 5);
             }
 
-            itemstack.setTag(stackTags.copy());
-            //change the item's max damage taken each time the weapon is reinforced by 5, after all total runs the weapon has an extra 30 durability.
+            itemstack.setTag(stackTags.copy());*/
+            //modifies this new attribute to contain the extra healthbar
         }
 
-        System.out.println("now tags " + itemstack.getOrCreateTag());
-        System.out.println("now durability " + itemstack.getTag().getInt("smithing_stone_durability_bonus"));
+        System.out.println("now attributemods " + itemstack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY));
+        System.out.println("now durability " + pInv.getItem(0).getAttributeModifiers(EquipmentSlot.MAINHAND).get(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY).stream().toList().get(0).getAmount());
         return itemstack;
     }
 

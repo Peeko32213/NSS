@@ -1,11 +1,15 @@
 package com.peeko32213.notsoshrimple.core.mixins;
 
+import com.peeko32213.notsoshrimple.core.registry.NSSAttributes;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -18,6 +22,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 //A mixin to ItemStack
@@ -58,10 +63,35 @@ public abstract class MixinItemStack{
     )
     public void NSS_hurt(int pAmount, RandomSource pRandom, ServerPlayer pUser, CallbackInfoReturnable<Boolean> cir) {
         ItemStack itemStack = (ItemStack)(Object)this;
-        CompoundTag stackTags = itemStack.getOrCreateTag();
+        //CompoundTag stackTags = itemStack.getOrCreateTag();
         System.out.println("yeahitworks");
 
         if (itemStack.isDamageableItem()) {
+            if (itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND).containsKey(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY)) {
+
+                AttributeModifier old = itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY).stream().toList().get(0);
+                int baseHealthBuff = (int) old.getAmount();
+
+                if (baseHealthBuff >= pAmount) {
+                    int newAmount = baseHealthBuff - pAmount;
+                    pAmount = 0;
+
+                    itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND).remove(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY, old);
+
+                    AttributeModifier dmgModifier = new AttributeModifier(UUID.fromString("generic.smithingStoneBuffUUID"), "smithing_stone_durability_bonus", newAmount, AttributeModifier.Operation.ADDITION);
+                    itemStack.addAttributeModifier(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY, dmgModifier, EquipmentSlot.MAINHAND);
+                    //subtract pAmount from baseHealthBuff by way of removing smithing_stone_durability_bonus and restoring a new value
+
+                } else {
+                    int newAmount = pAmount - baseHealthBuff;
+                    itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND).remove(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY, old);
+                    //subtract baseHealthBuff from pAmount, remove the smithing_stone_durability_bonus without restoring it
+                }
+            }
+        }
+
+
+        /*if (itemStack.isDamageableItem()) {
             if (stackTags.contains("smithing_stone_durability_bonus")) {
                 int baseHealthBuff = stackTags.getInt("smithing_stone_durability_bonus");
 
@@ -73,7 +103,7 @@ public abstract class MixinItemStack{
                     pAmount = leftoverDmg;
                 }
             }
-        }
+        }*/
 
     }
 
