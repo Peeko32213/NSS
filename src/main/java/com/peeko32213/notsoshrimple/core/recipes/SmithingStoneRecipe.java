@@ -104,12 +104,12 @@ public class SmithingStoneRecipe extends UpgradeRecipe {
 
             if (itemTags.contains("SmithingDurabilityBuff")) {
                 int currentDmgBuff = itemTags.getInt("SmithingDurabilityBuff");
-                itemTags.putInt("SmithingDurabilityBuff", currentDmgBuff + 30);
+                itemTags.putInt("SmithingDurabilityBuff", currentDmgBuff + 10);
                 //if the buff already exists increase it
 
             } else {
-                itemTags.putInt("SmithingDurabilityBuff", 30);
-                //otherwise add the buff
+                itemTags.putInt("SmithingDurabilityBuff", 10);
+                //otherwise add the buff(10 durability per stone)
             }
 
             itemstack.setTag(itemTags.copy());

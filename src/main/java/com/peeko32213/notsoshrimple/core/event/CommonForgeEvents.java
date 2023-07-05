@@ -10,7 +10,10 @@ import com.peeko32213.notsoshrimple.core.recipes.SmithingStoneRecipe;
 import com.peeko32213.notsoshrimple.core.registry.NSSAttributes;
 import com.peeko32213.notsoshrimple.core.registry.NSSEntities;
 import com.peeko32213.notsoshrimple.core.registry.NSSItems;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -28,6 +31,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.world.ModifiableBiomeInfo;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -131,13 +135,29 @@ public class CommonForgeEvents {
             //adds damage modifier from somber stone damage buff
         }
 
-        if(itemStack.getTag().contains("SmithingDurabilityBuff") && event.getSlotType() == EquipmentSlot.MAINHAND){
+        /*if(itemStack.getTag().contains("SmithingDurabilityBuff") && event.getSlotType() == EquipmentSlot.MAINHAND){
             int dmgModAmount = event.getItemStack().getTag().getInt("SmithingDurabilityBuff");
             AttributeModifier damageModifier = new AttributeModifier(smithingStoneBuffUUID, "Smithing Stone Durability Modifier", dmgModAmount, AttributeModifier.Operation.ADDITION);
             event.addModifier(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY.get(), damageModifier);
             //adds durability modifier from smithing stone damage buff
-        }
+        }*/
 
+    }
+
+    @SubscribeEvent
+    public static void extraToolTip(ItemTooltipEvent event){
+        if(event.getEntity().getLevel().isClientSide) return;
+        ItemStack stack = event.getItemStack();
+
+        if(stack.hasTag()){
+            if(stack.getOrCreateTag().contains("SmithingDurabilityBuff")){
+                int extraDurability = stack.getOrCreateTag().getInt("SmithingDurabilityBuff");
+                MutableComponent component = Component.literal(String.valueOf(extraDurability)).withStyle(ChatFormatting.BLUE);
+
+                event.getToolTip().add(Component.translatable("durability", component).withStyle(ChatFormatting.AQUA));
+                System.out.println("component " + component);
+            }
+        }
     }
 
 }
