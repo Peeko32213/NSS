@@ -22,14 +22,14 @@ import java.util.function.Supplier;
 public class NSSAttributes {
     public static final DeferredRegister<Attribute> ATTRIBUTEREGISTER = DeferredRegister.create(ForgeRegistries.ATTRIBUTES, NotSoShrimple.MODID);
 
-    public static RegistryObject<Attribute> SMITHING_STONE_EXTRA_DURABILITY (String name, Supplier<Attribute> attribute) {
+    public static final RegistryObject<Attribute> SMITHING_STONE_EXTRA_DURABILITY = register("generic.smithing_stone_extra_durability", () -> new RangedAttribute("attribute.name.generic.smithing_stone_extra_durability", 0.0D, 0.0D, Double.MAX_VALUE).setSyncable(true));
+
+    //getter for the actual attribute instead of the RegistryObject
+
+    //public static final RegistryObject<RangedAttribute> SMITHING_STONE_EXTRA_DURABILITY = ATTRIBUTEREGISTER.register("generic.smithing_stone_extra_durability",
+    //        (new RangedAttribute("attribute.name.generic.smithing_stone_extra_durability", 0.0D, 0.0D, Double.MAX_VALUE)).setSyncable(true));
+
+    private static <T extends Attribute> RegistryObject<T> register(String name, Supplier<T> attribute) {
         return ATTRIBUTEREGISTER.register(name, attribute);
     }
-
-    //public static final RegistryObject<Attribute> SMITHING_STONE_EXTRA_DURABILITY = ATTRIBUTEREGISTER.register("generic.smithing_stone_extra_durability",
-    //        (new Attribute("attribute.name.generic.smithing_stone_extra_durability", 0.0D, 0.0D, Double.MAX_VALUE)).setSyncable(true));
-
-    //private static RangedAttribute register(String pId, Attribute pAttribute) {
-    //    return ATTRIBUTEREGISTER.register("generic.smithing_stone_extra_durability", new RangedAttribute("attribute.name.generic.smithing_stone_extra_durability", 0.0D, 0.0D, Double.MAX_VALUE));
-    //}
 }

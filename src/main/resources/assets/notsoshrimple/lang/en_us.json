@@ -17,9 +17,11 @@
   "notsoshrimple.sound.subtitle.crayfish_idle": "Dreadful chattering",
   "notsoshrimple.sound.subtitle.crayfish_attack": "Heavy claw swipe",
   "notsoshrimple.sound.subtitle.crayfish_hurt": "Pling",
-  "notsoshrimple.sound.subtitle.crayfish_death": "Mournful chattering",
+  "notsoshrimple.sound.subtitle.crayfish_death": "Clattering shriek",
   "notsoshrimple.sound.subtitle.crayfish_scuttle": "Menacing scuttling",
   "notsoshrimple.sound.subtitle.crayfish_scuttling_0": "Horrid scuttling",
-  "notsoshrimple.sound.subtitle.crayfish_scuttling_1": "Oppressive scuttling"
+  "notsoshrimple.sound.subtitle.crayfish_scuttling_1": "Oppressive scuttling",
+
+  "notsoshrimple.attribute.subtitle.generic.smithing_stone_extra_durability": "Extra Durability"
 
 }

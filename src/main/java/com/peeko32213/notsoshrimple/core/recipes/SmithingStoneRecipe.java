@@ -4,7 +4,9 @@ import com.google.gson.JsonObject;
 import com.peeko32213.notsoshrimple.NotSoShrimple;
 import com.peeko32213.notsoshrimple.core.registry.NSSAttributes;
 import com.peeko32213.notsoshrimple.core.registry.NSSItems;
+import com.peeko32213.notsoshrimple.core.registry.NSSTags;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.*;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -12,14 +14,13 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SmithingTableBlock;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
 
+import java.util.List;
 import java.util.UUID;
 
 public class SmithingStoneRecipe extends UpgradeRecipe {
@@ -30,10 +31,7 @@ public class SmithingStoneRecipe extends UpgradeRecipe {
     final Ingredient addition;
     final ItemStack product;
     private final ResourceLocation id;
-    public final UUID somberStoneBuffUUID = UUID.randomUUID();
-    public final UUID smithingStoneBuffUUID = UUID.randomUUID();
 
-    @Override
     public boolean canCraftInDimensions(int pWidth, int pHeight) {
         return pWidth * pHeight >= 2;
     }
@@ -42,13 +40,25 @@ public class SmithingStoneRecipe extends UpgradeRecipe {
         return this.id;
     }
 
-    @Override
     public ItemStack getResultItem() {
         return this.product.copy();
     }
 
     public RecipeType<?> getType() {
         return RecipeType.SMITHING;
+    }
+
+    @Override
+    public boolean matches(Container pInv, Level pLevel) {
+        Item toBeSmithed = pInv.getItem(0).getItem();
+
+        if (pInv.getItem(0).is(NSSTags.SMITHINGWHITELIST)) {
+            return true;
+            //whitelist
+        }
+
+        return (toBeSmithed instanceof TieredItem || toBeSmithed instanceof ShieldItem || toBeSmithed instanceof ProjectileWeaponItem || toBeSmithed instanceof ElytraItem || toBeSmithed instanceof TridentItem) && this.addition.test(pInv.getItem(1)) && !pInv.getItem(0).is(NSSTags.SMITHINGBLACKLIST);
+        //conditions for smithing
     }
 
     public SmithingStoneRecipe(ResourceLocation pId, Ingredient pBase, Ingredient pAddition, ItemStack pResult) {
@@ -64,57 +74,47 @@ public class SmithingStoneRecipe extends UpgradeRecipe {
 
     @Override
     public ItemStack assemble(Container pInv) {
-        ItemStack itemstack = this.product.copy();
-        System.out.println("original durability " + pInv.getItem(0).getAttributeModifiers(EquipmentSlot.MAINHAND).get(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY).stream().toList().get(0).getAmount());
+        //ItemStack itemstack = this.product.copy();
+        ItemStack itemstack = pInv.getItem(0).copy();
+        System.out.println("addition " + this.addition.getItems()[0]);
         //the statement pInv.getItem(0) gives you the item in the first ingredient slot in its entirety. Use it for compat.
 
         if(addition.test(NSSItems.SOMBER_STONE.get().getDefaultInstance())) {
-            double baseDmg = pInv.getItem(0).getAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_DAMAGE).stream().toList().get(0).getAmount();
-            AttributeModifier old = new AttributeModifier(somberStoneBuffUUID, "somber_stone_dmg_mod", baseDmg, AttributeModifier.Operation.ADDITION);
+            CompoundTag itemTags = itemstack.getOrCreateTag().copy();
+            //current item tags
 
-            if (itemstack.getAttributeModifiers(EquipmentSlot.MAINHAND).containsEntry(Attributes.ATTACK_DAMAGE, old)) {
-                itemstack.getAttributeModifiers(EquipmentSlot.MAINHAND).remove(Attributes.ATTACK_DAMAGE, old);
-                System.out.println("removed");
-                //remove the old attributemodifier to prevent stacking
-            }
-
-            AttributeModifier dmgModifier = new AttributeModifier(somberStoneBuffUUID, "somber_stone_dmg_mod", baseDmg + 1, AttributeModifier.Operation.ADDITION);
-            itemstack.addAttributeModifier(Attributes.ATTACK_DAMAGE, dmgModifier, EquipmentSlot.MAINHAND);
-            //add a new AttributeModifier each time the weapon is refined that increases its damage
-        }
-        //somber stuff that already works
-
-        if(addition.test(NSSItems.SMITHING_STONE.get().getDefaultInstance())) {
-            double baseExtraD = pInv.getItem(0).getAttributeModifiers(EquipmentSlot.MAINHAND).get(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY).stream().toList().get(0).getAmount();
-            AttributeModifier old = new AttributeModifier(smithingStoneBuffUUID, "smithing_stone_durability_bonus", baseExtraD, AttributeModifier.Operation.ADDITION);
-
-            if (itemstack.getAttributeModifiers(EquipmentSlot.MAINHAND).containsEntry(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY, old)) {
-                itemstack.getAttributeModifiers(EquipmentSlot.MAINHAND).remove(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY, old);
-                System.out.println("removed durab");
-                //remove the old attributemodifier to prevent stacking
-            }
-
-            AttributeModifier dmgModifier = new AttributeModifier(smithingStoneBuffUUID, "smithing_stone_durability_bonus", baseExtraD + 30, AttributeModifier.Operation.ADDITION);
-            itemstack.addAttributeModifier(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY, dmgModifier, EquipmentSlot.MAINHAND);
-            System.out.println("added new durability");
-            /*CompoundTag stackTags = itemstack.getOrCreateTag();
-            System.out.println("old tags " + stackTags);
-
-            if (stackTags.contains("smithing_stone_durability_bonus")) {
-                int originalValue = stackTags.getInt("smithing_stone_durability_bonus");
-                stackTags.putInt("smithing_stone_durability_bonus", originalValue + 5);
-                System.out.println("originally " + originalValue);
+            if (itemTags.contains("SomberDamageBuff")) {
+                int currentDmgBuff = itemTags.getInt("SomberDamageBuff");
+                itemTags.putInt("SomberDamageBuff", currentDmgBuff + 1);
+                //if the buff already exists increase it
 
             } else {
-                stackTags.putInt("smithing_stone_durability_bonus", 5);
+                //otherwise add the buff
+                itemTags.putInt("SomberDamageBuff", 1);
             }
 
-            itemstack.setTag(stackTags.copy());*/
+            itemstack.setTag(itemTags.copy());
+            //adds the buff
+        }
+        //somber stuff
+
+        if(addition.test(NSSItems.SMITHING_STONE.get().getDefaultInstance())) {
+            System.out.println("smith");
+            CompoundTag itemTags = itemstack.getOrCreateTag().copy();
+
+            if (itemTags.contains("SmithingDurabilityBuff")) {
+                int currentDmgBuff = itemTags.getInt("SmithingDurabilityBuff");
+                itemTags.putInt("SmithingDurabilityBuff", currentDmgBuff + 30);
+                //if the buff already exists increase it
+
+            } else {
+                itemTags.putInt("SmithingDurabilityBuff", 30);
+                //otherwise add the buff
+            }
+
+            itemstack.setTag(itemTags.copy());
             //modifies this new attribute to contain the extra healthbar
         }
-
-        System.out.println("now attributemods " + itemstack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY));
-        System.out.println("now durability " + pInv.getItem(0).getAttributeModifiers(EquipmentSlot.MAINHAND).get(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY).stream().toList().get(0).getAmount());
         return itemstack;
     }
 

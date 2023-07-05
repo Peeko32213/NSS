@@ -5,6 +5,8 @@ import com.peeko32213.notsoshrimple.common.item.ItemClawblade;
 import com.peeko32213.notsoshrimple.common.item.ItemModFood;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -38,10 +40,10 @@ public class NSSItems {
             () -> new Item(new Item.Properties().food(ItemModFood.COOKED_PRAWN).tab(NotSoShrimple.SHRIMPLE)));
 
     public static final RegistryObject<Item> SMITHING_STONE = ITEMS.register("smithing_stone",
-            () -> new Item(new Item.Properties().tab(NotSoShrimple.SHRIMPLE)));
+            () -> new Item(new Item.Properties().tab(NotSoShrimple.SHRIMPLE).rarity(Rarity.RARE)));
 
     public static final RegistryObject<Item> SOMBER_STONE = ITEMS.register("somber_stone",
-            () -> new Item(new Item.Properties().tab(NotSoShrimple.SHRIMPLE)));
+            () -> new Item(new Item.Properties().tab(NotSoShrimple.SHRIMPLE).rarity(Rarity.EPIC)));
 
 
 }

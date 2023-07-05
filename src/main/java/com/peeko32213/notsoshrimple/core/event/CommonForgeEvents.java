@@ -7,6 +7,7 @@ import com.peeko32213.notsoshrimple.core.config.BiomeConfig;
 import com.peeko32213.notsoshrimple.core.config.NotSoShrimpleConfig;
 import com.peeko32213.notsoshrimple.core.config.util.SpawnBiomeData;
 import com.peeko32213.notsoshrimple.core.recipes.SmithingStoneRecipe;
+import com.peeko32213.notsoshrimple.core.registry.NSSAttributes;
 import com.peeko32213.notsoshrimple.core.registry.NSSEntities;
 import com.peeko32213.notsoshrimple.core.registry.NSSItems;
 import net.minecraft.core.Holder;
@@ -38,6 +39,8 @@ import java.util.UUID;
 @Mod.EventBusSubscriber(modid = NotSoShrimple.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 
 public class CommonForgeEvents {
+    public static UUID somberStoneBuffUUID = UUID.fromString("682b06fd-7224-453d-b737-f6d80accf74a");
+    public static UUID smithingStoneBuffUUID = UUID.fromString("0641bc77-29c6-49e9-99fd-6e6c759391f6");
 
     public static void addBiomeSpawns(Holder<Biome> biome, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
 
@@ -66,13 +69,13 @@ public class CommonForgeEvents {
     public static void onLivingHurtEvent (final LivingHurtEvent event) {
         Entity target = event.getEntity();
         DamageSource source = event.getSource();
-        System.out.println("damage " + event.getAmount());
+        //System.out.println("damage " + event.getAmount());
 
         if (source.getEntity() instanceof Player) {
             Player player = (Player) (source.getEntity());
             Item weapon = player.getMainHandItem().getItem();
-            System.out.println("item mods " + player.getMainHandItem().getAttributeModifiers(EquipmentSlot.MAINHAND));
-            System.out.println("item " + player.getMainHandItem());
+            //System.out.println("item mods " + player.getMainHandItem().getAttributeModifiers(EquipmentSlot.MAINHAND));
+            //System.out.println("item " + player.getMainHandItem());
 
             if (weapon instanceof ItemClawblade && target instanceof Mob) {
                 Mob victim = ((Mob) target);
@@ -116,17 +119,26 @@ public class CommonForgeEvents {
         }
     }
 
-    /*@SubscribeEvent
+    @SubscribeEvent
     public static void addAttributes(ItemAttributeModifierEvent event){
         ItemStack itemStack = event.getItemStack();
         if(!itemStack.hasTag()) return;
-        if(itemStack.getTag().contains("smithing_stone_dmg_mod")){
-            int addDamageTo = event.getItemStack().getTag().getInt("smithing_stone_dmg_mod");
-            AttributeModifier damageModifier = new AttributeModifier(UUID.randomUUID(), "SSDmgMod", addDamageTo, AttributeModifier.Operation.ADDITION);
+
+        if(itemStack.getTag().contains("SomberDamageBuff") && event.getSlotType() == EquipmentSlot.MAINHAND){
+            int dmgModAmount = event.getItemStack().getTag().getInt("SomberDamageBuff");
+            AttributeModifier damageModifier = new AttributeModifier(somberStoneBuffUUID, "Somber Stone Damage Modifier", dmgModAmount, AttributeModifier.Operation.ADDITION);
             event.addModifier(Attributes.ATTACK_DAMAGE, damageModifier);
+            //adds damage modifier from somber stone damage buff
         }
 
-    }*/
+        if(itemStack.getTag().contains("SmithingDurabilityBuff") && event.getSlotType() == EquipmentSlot.MAINHAND){
+            int dmgModAmount = event.getItemStack().getTag().getInt("SmithingDurabilityBuff");
+            AttributeModifier damageModifier = new AttributeModifier(smithingStoneBuffUUID, "Smithing Stone Durability Modifier", dmgModAmount, AttributeModifier.Operation.ADDITION);
+            event.addModifier(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY.get(), damageModifier);
+            //adds durability modifier from smithing stone damage buff
+        }
+
+    }
 
 }
 

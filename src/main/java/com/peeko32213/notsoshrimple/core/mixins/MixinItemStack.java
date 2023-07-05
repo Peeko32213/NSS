@@ -22,6 +22,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -67,9 +68,12 @@ public abstract class MixinItemStack{
         System.out.println("yeahitworks");
 
         if (itemStack.isDamageableItem()) {
-            if (itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND).containsKey(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY)) {
+            List<AttributeModifier> bonusDurabilityList = itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY.get()).stream().toList();
+            if (!bonusDurabilityList.isEmpty()) {
 
-                AttributeModifier old = itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY).stream().toList().get(0);
+                AttributeModifier old = bonusDurabilityList.get(0);
+                //the old smithing stone modifier, before the method is ran
+
                 int baseHealthBuff = (int) old.getAmount();
 
                 if (baseHealthBuff >= pAmount) {
@@ -79,7 +83,7 @@ public abstract class MixinItemStack{
                     itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND).remove(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY, old);
 
                     AttributeModifier dmgModifier = new AttributeModifier(UUID.fromString("generic.smithingStoneBuffUUID"), "smithing_stone_durability_bonus", newAmount, AttributeModifier.Operation.ADDITION);
-                    itemStack.addAttributeModifier(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY, dmgModifier, EquipmentSlot.MAINHAND);
+                    itemStack.addAttributeModifier(NSSAttributes.SMITHING_STONE_EXTRA_DURABILITY.get(), dmgModifier, EquipmentSlot.MAINHAND);
                     //subtract pAmount from baseHealthBuff by way of removing smithing_stone_durability_bonus and restoring a new value
 
                 } else {
