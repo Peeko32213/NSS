@@ -106,14 +106,14 @@ public class MixinItemStack{
 
                 if (pAmounttobeModified >= currentDurabilityBuff) {
                     itemTags.putInt("SmithingDurabilityBuff", 0);
-                    System.out.println(0);
+                    //System.out.println(0);
                     itemstack.setTag(itemTags);
                     pAmounttobeModified = pAmounttobeModified - currentDurabilityBuff;
 
                     //if the amount is more than the buff, subtract the buff from the amount and set buff to 0
                 } else {
                     itemTags.putInt("SmithingDurabilityBuff", currentDurabilityBuff - pAmounttobeModified);
-                    System.out.println(currentDurabilityBuff - pAmounttobeModified);
+                    //System.out.println(currentDurabilityBuff - pAmounttobeModified);
                     itemstack.setTag(itemTags);
                     pAmounttobeModified = 0;
                     //if the amount is less than the buff, just subtract the amount from the buff and return since pAmount is 0
@@ -123,9 +123,6 @@ public class MixinItemStack{
             //otherwise just pass it on
 
         }
-
-        System.out.println("amountcopy" + amountCopy);
-        System.out.println("amount" + pAmounttobeModified);
 
         return pAmounttobeModified;
     }

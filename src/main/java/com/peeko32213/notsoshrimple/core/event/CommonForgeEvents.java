@@ -155,7 +155,7 @@ public class CommonForgeEvents {
                 MutableComponent component = Component.literal(String.valueOf(extraDurability)).withStyle(ChatFormatting.BLUE);
 
                 event.getToolTip().add(Component.translatable("durability", component).withStyle(ChatFormatting.AQUA));
-                System.out.println("component " + component);
+                //System.out.println("component " + component);
             }
         }
     }
