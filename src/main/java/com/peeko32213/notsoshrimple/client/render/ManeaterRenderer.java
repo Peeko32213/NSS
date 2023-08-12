@@ -2,7 +2,7 @@ package com.peeko32213.notsoshrimple.client.render;
 
 
 import com.peeko32213.notsoshrimple.client.model.ManeaterModel;
-import com.peeko32213.notsoshrimple.common.entity.mobs.EntityManeaterShell;
+import com.peeko32213.notsoshrimple.common.entity.EntityManeaterShell;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 

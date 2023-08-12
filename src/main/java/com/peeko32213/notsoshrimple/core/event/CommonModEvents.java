@@ -3,7 +3,7 @@ package com.peeko32213.notsoshrimple.core.event;
 import com.google.common.base.Predicates;
 import com.peeko32213.notsoshrimple.NotSoShrimple;
 import com.peeko32213.notsoshrimple.common.entity.EntityCrayfish;
-import com.peeko32213.notsoshrimple.common.entity.mobs.EntityManeaterShell;
+import com.peeko32213.notsoshrimple.common.entity.EntityManeaterShell;
 import com.peeko32213.notsoshrimple.common.particles.FoamStandardParticle;
 import com.peeko32213.notsoshrimple.core.recipes.SmithingStoneRecipe;
 import com.peeko32213.notsoshrimple.core.registry.NSSEntities;

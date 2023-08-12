@@ -23,7 +23,14 @@ import java.util.List;
 public class PisslikeHitboxes {
     //Essentially, this makes the most basic hitbox system, where if the root of the player is within a certain radius to the hit point, it hits them.
 
-    public static void PivotedRadialHitCheck(LivingEntity source, Vec3 boxOffset, double attackRadius, ServerLevel world, float damage, DamageSource damageSource, float knockback, boolean disableShield) {
+    public static void PivotedRadialHitCheck(LivingEntity source,
+                                             Vec3 boxOffset,
+                                             double attackRadius,
+                                             ServerLevel world,
+                                             float damage,
+                                             DamageSource damageSource,
+                                             double knockback,
+                                             boolean disableShield) {
         //attackRadius is in blocks
 
         Vec3 sourcePos = source.position();
@@ -66,7 +73,16 @@ public class PisslikeHitboxes {
         }
     }
 
-    public static void PivotedPolyHitCheck(LivingEntity source, Vec3 boxOffset, double attackWidth, double attackHeight, double attackLength, ServerLevel world, float damage, DamageSource damageSource, float knockback, boolean disableShield) {
+    public static void PivotedPolyHitCheck(LivingEntity source,
+                                           Vec3 boxOffset,
+                                           double attackWidth,
+                                           double attackHeight,
+                                           double attackLength,
+                                           ServerLevel world,
+                                           float damage,
+                                           DamageSource damageSource,
+                                           double knockback,
+                                           boolean disableShield) {
         //attackRadius is in blocks
 
         Vec3 sourcePos = source.position();

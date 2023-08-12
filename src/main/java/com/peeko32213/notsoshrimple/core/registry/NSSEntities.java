@@ -2,7 +2,7 @@ package com.peeko32213.notsoshrimple.core.registry;
 
 import com.peeko32213.notsoshrimple.NotSoShrimple;
 import com.peeko32213.notsoshrimple.common.entity.*;
-import com.peeko32213.notsoshrimple.common.entity.mobs.EntityManeaterShell;
+import com.peeko32213.notsoshrimple.common.entity.EntityManeaterShell;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
@@ -24,7 +24,7 @@ public class NSSEntities {
                     .build(new ResourceLocation(NotSoShrimple.MODID, "crayfish").toString()));
 
     public static final RegistryObject<EntityType<EntityManeaterShell>> MANEATER = ENTITIES.register("maneater",
-            () -> EntityType.Builder.of(EntityManeaterShell::new, MobCategory.MONSTER).sized(5.0F, 6.5F)
+            () -> EntityType.Builder.of(EntityManeaterShell::new, MobCategory.MONSTER).sized(2.5F, 3.0F)
                     .build(new ResourceLocation(NotSoShrimple.MODID, "maneater").toString()));
 
     public static final RegistryObject<EntityType<EntityToxicWater>> TOXICWATER = ENTITIES.register("toxicwater",

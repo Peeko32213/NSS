@@ -9,6 +9,9 @@
     "#minecraft:logs",
     "#minecraft:wooden_stairs",
     "#minecraft:wooden_slabs",
-    "#minecraft:wool"
+    "#minecraft:wool",
+    "#minecraft:glass",
+    "#minecraft:warped_wart_block",
+    "#minecraft:nether_wart_block"
   ]
 }
