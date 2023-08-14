@@ -42,6 +42,13 @@ public class CommonModEvents {
 
     }
 
+    /*@SubscribeEvent
+    public static void restrictSpawning (SpawnPlacementRegisterEvent event) {
+        event.put(NSSEntities.CRAYFISH.get(), EntityCrayfish.createAttributes().build());
+        event.put(NSSEntities.MANEATER.get(), EntityManeaterShell.createAttributes().build());
+
+    }*/
+
     @SubscribeEvent
     public static void registerParticleFactories (final RegisterParticleProvidersEvent event) {
         Minecraft.getInstance().particleEngine.register(NSSParticles.FOAM_STANDARD.get(), FoamStandardParticle.Provider::new);

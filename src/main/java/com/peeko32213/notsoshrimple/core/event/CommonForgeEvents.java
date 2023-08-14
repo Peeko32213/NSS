@@ -1,6 +1,8 @@
 package com.peeko32213.notsoshrimple.core.event;
 
 import com.peeko32213.notsoshrimple.NotSoShrimple;
+import com.peeko32213.notsoshrimple.common.entity.EntityCrayfish;
+import com.peeko32213.notsoshrimple.common.entity.EntityManeaterShell;
 import com.peeko32213.notsoshrimple.common.entity.utl.PisslikeHitboxes;
 import com.peeko32213.notsoshrimple.common.item.ItemClawblade;
 import com.peeko32213.notsoshrimple.core.config.BiomeConfig;

@@ -45,6 +45,7 @@ public class EntityManeaterShell extends Monster implements IAnimatable, SemiAqu
     private static final EntityDataAccessor<Integer> ANIMATION_STATE = SynchedEntityData.defineId(EntityManeaterShell.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> COMBAT_STATE = SynchedEntityData.defineId(EntityManeaterShell.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> ENTITY_STATE = SynchedEntityData.defineId(EntityManeaterShell.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(EntityCrayfish.class, EntityDataSerializers.INT);
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     public Vec3 oldPos;
@@ -131,10 +132,24 @@ public class EntityManeaterShell extends Monster implements IAnimatable, SemiAqu
     @Override
     public void defineSynchedData() {
         super.defineSynchedData();
+        this.entityData.define(VARIANT, 0);
         this.entityData.define(ANIMATION_STATE, 0);
         this.entityData.define(COMBAT_STATE, 0);
         this.entityData.define(ENTITY_STATE, 0);
     }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        setVariant(compound.getInt("Variant"));
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putInt("Variant", getVariant());
+    }
+
 
     @Override
     public void handleEntityEvent(byte pId) {
@@ -300,8 +315,9 @@ public class EntityManeaterShell extends Monster implements IAnimatable, SemiAqu
 
             if (livingentity == null) {
                 return false;
-            }
-            else if (!livingentity.isAlive()) {
+            } else if (this.mob.distanceToSqr(livingentity) >= 70){
+                return false;
+            } else if (!livingentity.isAlive()) {
                 return false;
             } else if (!this.followingTargetEvenIfNotSeen) {
                 return !this.mob.getNavigation().isDone();
@@ -513,7 +529,7 @@ public class EntityManeaterShell extends Monster implements IAnimatable, SemiAqu
                 //Only start moving after tick 8(after it's charged up).
 
                 PisslikeHitboxes.PivotedPolyHitCheck(this.mob, this.chargeOffSet, 1.2, 3, 1.2, (ServerLevel) this.mob.getLevel(), 14,
-                        DamageSource.mobAttack(this.mob), 2, false);
+                        DamageSource.mobAttack(this.mob), 4, false);
                 //keep hitting as long as it's moving
             }
 
@@ -670,71 +686,48 @@ public class EntityManeaterShell extends Monster implements IAnimatable, SemiAqu
         return this.factory;
     }
 
+    public int getVariant() {
+        return this.entityData.get(VARIANT);
+    }
+
+    private void setVariant(int variant) {
+        this.entityData.set(VARIANT, variant);
+    }
+
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
         spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
-        /*int rarityRoll = (this.getRandom().nextInt(100) + 1);
+        int rarityRoll = (this.getRandom().nextInt(100) + 1);
         //since it uses nextIntBetweenInclusive you just take the max and min texture values and put it in without changing anything
         //i.e. the blood selection in CrayfishModel ranges from 4 - 5, so you put that in
 
         int i;
-        if(canSpawnBlood(worldIn, this.blockPosition())){
-            if (rarityRoll >= 100) {
-                i = 14;
-                //System.out.println("rareblood");
-                //1% chance to get a rare crayfish
-            } else if (rarityRoll > 90) {
-                i = 13;
-                //System.out.println("uncblood");
-                //9% chance to get an uncommon crayfish
-            } else {
-                i = this.random.nextIntBetweenInclusive(10, 12);
-                //System.out.println("stndblood");
-                //90% chance to get a standard crayfish
-            }
-            this.biomeVariant = 2;
-            //2 for blood
-
-        } else if(canSpawnIce(worldIn, this.blockPosition())){
-            if (rarityRoll >= 100) {
-                i = 9;
-                //System.out.println("rareice");
-                //1% chance to get a rare crayfish
-            } else if (rarityRoll > 90) {
-                i = 8;
-                //System.out.println("uncice");
-                //9% chance to get an uncommon crayfish
-            } else {
-                i = this.random.nextIntBetweenInclusive(5, 7);
-                //System.out.println("stndice");
-                //90% chance to get a standard crayfish
-            }
-            this.biomeVariant = 1;
-            //1 for ice;
-
+        if (rarityRoll > 90) {
+            i = 9;
+        } else if (rarityRoll > 80 && rarityRoll <= 90) {
+            i = 8;
+        } else if (rarityRoll > 70 && rarityRoll <= 80) {
+            i = 7;
+        } else if (rarityRoll > 60 && rarityRoll <= 70) {
+            i = 6;
+        } else if (rarityRoll > 50 && rarityRoll <= 60) {
+            i = 5;
+        } else if (rarityRoll > 40 && rarityRoll <= 50) {
+            i = 4;
+        } else if (rarityRoll > 30 && rarityRoll <= 40) {
+            i = 3;
+        } else if (rarityRoll > 20 && rarityRoll <= 30) {
+            i = 2;
+        } else if (rarityRoll > 10 && rarityRoll <= 20) {
+            i = 1;
         } else {
-            if (rarityRoll >= 100) {
-                i = 4;
-                //System.out.println("rareswamp");
-                //1% chance to get a rare crayfish
-            } else if (rarityRoll > 90) {
-                i = 3;
-                //System.out.println("uncswamp");
-                //9% chance to get an uncommon crayfish
-            } else {
-                i = this.random.nextIntBetweenInclusive(0, 2);
-                //System.out.println("stndswamp");
-                //90% chance to get a standard crayfish
-            }
-            this.biomeVariant = 0;
-            //0 for swamp
+            i = 0;
         }
 
-        this.setVariant(i);*/
-        //System.out.println(i);
+        this.setVariant(i);
         return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
-        //TODO: add variants, add drop table, implement proper spawning(spawns around shipwrecks and swamp huts)
+        //TODO: add drop table, implement proper spawning(spawns around shipwrecks and swamp huts)
     }
 
 

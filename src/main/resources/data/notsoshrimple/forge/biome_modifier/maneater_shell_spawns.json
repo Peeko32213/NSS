@@ -1,0 +1,17 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": [
+    "minecraft:ocean",
+    "minecraft:cold_ocean",
+    "minecraft:frozen_ocean",
+    "minecraft:deep_ocean",
+    "minecraft:deep_cold_ocean",
+    "minecraft:deep_frozen_ocean"
+  ],
+  "spawners": {
+    "type": "notsoshrimple:maneater",
+    "weight": 1000,
+    "minCount": 1,
+    "maxCount": 5
+  }
+}
