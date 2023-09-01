@@ -1,0 +1,12 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": [
+    "minecraft:swamp"
+  ],
+  "spawners": {
+    "type": "notsoshrimple:crayfish",
+    "weight": 75,
+    "minCount": 1,
+    "maxCount": 3
+  }
+}

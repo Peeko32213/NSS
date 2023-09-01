@@ -44,7 +44,7 @@ public class MathHelpers {
     public static boolean checkSurfaceWaterMobSpawnRules(EntityType<? extends PathfinderMob> entityType, LevelAccessor level, MobSpawnType mobSpawnType, BlockPos pos, RandomSource rand) {
         int seaLevel = level.getSeaLevel();
         int belowSeaLevel = seaLevel - 2;
-        return pos.getY() >= belowSeaLevel && pos.getY() <= seaLevel && level.getFluidState(pos.below()).is(FluidTags.WATER) && level.getBlockState(pos.above()).is(Blocks.WATER);
+        return pos.getY() >= belowSeaLevel && pos.getY() <= seaLevel && level.getFluidState(pos.below()).is(FluidTags.WATER);
     }
 
 

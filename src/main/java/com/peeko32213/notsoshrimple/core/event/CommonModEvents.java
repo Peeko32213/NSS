@@ -17,7 +17,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
-import net.minecraftforge.common.MinecraftForge;
+//import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -33,6 +33,7 @@ public class CommonModEvents {
     public static void commonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             SpawnPlacements.register(NSSEntities.MANEATER.get(), SpawnPlacements.Type.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EntityManeaterShell::canSpawn);
+            SpawnPlacements.register(NSSEntities.CRAYFISH.get(), SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.WORLD_SURFACE, EntityCrayfish::canSpawn);
         });
         event.enqueueWork(NSSPacketHub::init);
     }
@@ -48,7 +49,6 @@ public class CommonModEvents {
     public static void restrictSpawning (SpawnPlacementRegisterEvent event) {
         event.put(NSSEntities.CRAYFISH.get(), EntityCrayfish.createAttributes().build());
         event.put(NSSEntities.MANEATER.get(), EntityManeaterShell.createAttributes().build());
-
     }*/
 
     @SubscribeEvent

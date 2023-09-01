@@ -10,8 +10,8 @@ import net.minecraftforge.common.world.ModifiableBiomeInfo;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-public class NSSMobSpawnBiomeModifier implements BiomeModifier {
-    private static final RegistryObject<Codec<? extends BiomeModifier>> SERIALIZER = RegistryObject.create(new ResourceLocation(NotSoShrimple.MODID, "nss_mob_spawns"), ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, NotSoShrimple.MODID);
+public abstract class NSSMobSpawnBiomeModifier implements BiomeModifier {
+    /*private static final RegistryObject<Codec<? extends BiomeModifier>> SERIALIZER = RegistryObject.create(new ResourceLocation(NotSoShrimple.MODID, "nss_mob_spawns"), ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, NotSoShrimple.MODID);
 
     public NSSMobSpawnBiomeModifier() {
     }
@@ -28,5 +28,5 @@ public class NSSMobSpawnBiomeModifier implements BiomeModifier {
 
     public static Codec<NSSMobSpawnBiomeModifier> makeCodec() {
         return Codec.unit(NSSMobSpawnBiomeModifier::new);
-    }
+    }*/
 }
