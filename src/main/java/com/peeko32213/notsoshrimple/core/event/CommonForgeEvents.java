@@ -13,6 +13,7 @@ import com.peeko32213.notsoshrimple.core.registry.NSSAttributes;
 import com.peeko32213.notsoshrimple.core.registry.NSSEntities;
 import com.peeko32213.notsoshrimple.core.registry.NSSItems;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -162,6 +163,10 @@ public class CommonForgeEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void catchItemUse(PlayerInteractEvent.RightClickItem event){
+
+    }
 }
 
 

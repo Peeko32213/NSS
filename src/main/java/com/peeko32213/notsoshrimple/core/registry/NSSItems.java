@@ -3,8 +3,10 @@ package com.peeko32213.notsoshrimple.core.registry;
 import com.peeko32213.notsoshrimple.NotSoShrimple;
 import com.peeko32213.notsoshrimple.common.item.ItemClawblade;
 import com.peeko32213.notsoshrimple.common.item.ItemModFood;
+import com.peeko32213.notsoshrimple.common.item.ItemPurgingStone;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.MilkBucketItem;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.common.ForgeSpawnEggItem;
@@ -45,5 +47,7 @@ public class NSSItems {
     public static final RegistryObject<Item> SOMBER_STONE = ITEMS.register("somber_stone",
             () -> new Item(new Item.Properties().tab(NotSoShrimple.SHRIMPLE).rarity(Rarity.EPIC)));
 
+    public static final RegistryObject<ItemPurgingStone> PURGING_STONE = ITEMS.register("purging_stone",
+            () -> new ItemPurgingStone(new ItemPurgingStone.Properties().tab(NotSoShrimple.SHRIMPLE).rarity(Rarity.UNCOMMON)));
 
 }

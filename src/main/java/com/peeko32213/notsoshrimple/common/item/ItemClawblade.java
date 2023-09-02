@@ -97,7 +97,7 @@ public class ItemClawblade extends SwordItem implements IAnimatable{
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity){
         super.onLeftClickEntity(stack, player, entity);
 
-        /*if (player.getMainHandItem().getItem() instanceof ItemClawblade && player.fallDistance > 0 && player.isCrouching() && !player.level.isClientSide() && !player.getCooldowns().isOnCooldown(NSSItems.GREAT_PRAWN_CLAWBLADE.get())) {
+        if (player.getMainHandItem().getItem() instanceof ItemClawblade && player.fallDistance > 0 && player.isCrouching() && !player.level.isClientSide() && !player.getCooldowns().isOnCooldown(NSSItems.GREAT_PRAWN_CLAWBLADE.get())) {
             this.switchAnimationState(1);
             //you have to be falling and crouching and have the weapon in your main hand to be slamming
 
@@ -119,7 +119,7 @@ public class ItemClawblade extends SwordItem implements IAnimatable{
             //damages the sword by 50
             player.getCooldowns().addCooldown(NSSItems.GREAT_PRAWN_CLAWBLADE.get(), 20*3);
             //cooldown of 3 seconds
-        }*/
+        }
         return false;
     }
 

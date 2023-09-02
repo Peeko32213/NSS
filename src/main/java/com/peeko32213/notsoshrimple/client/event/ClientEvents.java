@@ -6,6 +6,7 @@ import com.peeko32213.notsoshrimple.client.render.ManeaterRenderer;
 import com.peeko32213.notsoshrimple.client.render.IceWaterRenderer;
 import com.peeko32213.notsoshrimple.client.render.ToxicWaterRenderer;
 import com.peeko32213.notsoshrimple.core.registry.NSSEntities;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,7 +19,6 @@ public final class ClientEvents {
 
     @SubscribeEvent
     public static void onClientSetup(final FMLClientSetupEvent event) {
-
     }
 
 

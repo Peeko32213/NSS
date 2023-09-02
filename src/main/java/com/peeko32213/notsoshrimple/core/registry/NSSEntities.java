@@ -24,7 +24,7 @@ public class NSSEntities {
                     .build(new ResourceLocation(NotSoShrimple.MODID, "crayfish").toString()));
 
     public static final RegistryObject<EntityType<EntityManeaterShell>> MANEATER = ENTITIES.register("maneater",
-            () -> EntityType.Builder.of(EntityManeaterShell::new, MobCategory.WATER_CREATURE).sized(2.5F, 3.0F)
+            () -> EntityType.Builder.of(EntityManeaterShell::new, MobCategory.MONSTER).sized(2.5F, 3.0F)
                     .build(new ResourceLocation(NotSoShrimple.MODID, "maneater").toString()));
 
     public static final RegistryObject<EntityType<EntityToxicWater>> TOXICWATER = ENTITIES.register("toxicwater",

@@ -13,6 +13,6 @@
     "weight": 75,
     "minCount": 1,
     "maxCount": 5,
-    "category": "water_creature"
+    "category": "monster"
   }
 }
