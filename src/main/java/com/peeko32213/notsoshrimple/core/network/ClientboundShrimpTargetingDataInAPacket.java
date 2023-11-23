@@ -13,7 +13,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 public class ClientboundShrimpTargetingDataInAPacket {
-    public final Vec3 startPos;
+    //part of legacy packets infrastructure
+    /*public final Vec3 startPos;
     public final Vec3 deltaPos;
     public final int timer;
     public final int pissID;
@@ -46,5 +47,5 @@ public class ClientboundShrimpTargetingDataInAPacket {
 
         context.get().setPacketHandled(true);
         return success.get();
-    }
+    }*/
 }

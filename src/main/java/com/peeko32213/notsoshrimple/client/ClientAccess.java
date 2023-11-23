@@ -9,7 +9,8 @@ import net.minecraft.world.phys.Vec3;
 
 @SuppressWarnings("resource")
 public class ClientAccess {
-    public static boolean sendDatatoPiss(Vec3 startPosFromShrimp, Vec3 deltaPosFromShrimp, int timerFromShrimp, int id) {
+    //Part of the legacy packets infrastructure
+    /*public static boolean sendDatatoPiss(Vec3 startPosFromShrimp, Vec3 deltaPosFromShrimp, int timerFromShrimp, int id) {
         final Entity toxicWater = Minecraft.getInstance().level.getEntity(id);
         if (toxicWater instanceof final EntityToxicWater urine) {
             urine.startPos = startPosFromShrimp;
@@ -19,5 +20,5 @@ public class ClientAccess {
         }
 
         return false;
-    }
+    }*/
 }

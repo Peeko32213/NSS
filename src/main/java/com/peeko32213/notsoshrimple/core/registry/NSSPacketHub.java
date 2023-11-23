@@ -10,7 +10,8 @@ import com.peeko32213.notsoshrimple.core.network.ClientboundShrimpTargetingDataI
 import static org.antlr.runtime.debug.DebugEventListener.PROTOCOL_VERSION;
 
 public final class NSSPacketHub {
-    private NSSPacketHub() {
+    //part of legacy packets infrastructure
+    /*private NSSPacketHub() {
     }
 
     public static final String PROTOCOL_VERSION = "1";
@@ -25,5 +26,5 @@ public final class NSSPacketHub {
                 .decoder(ClientboundShrimpTargetingDataInAPacket::new)
                 .consumerMainThread(ClientboundShrimpTargetingDataInAPacket::handle).add();
 
-    }
+    }*/
 }

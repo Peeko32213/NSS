@@ -16,6 +16,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 //import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -35,7 +36,7 @@ public class CommonModEvents {
             SpawnPlacements.register(NSSEntities.MANEATER.get(), SpawnPlacements.Type.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EntityManeaterShell::canSpawn);
             SpawnPlacements.register(NSSEntities.CRAYFISH.get(), SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.WORLD_SURFACE, EntityCrayfish::canSpawn);
         });
-        event.enqueueWork(NSSPacketHub::init);
+//        event.enqueueWork(NSSPacketHub::init);
     }
 
     @SubscribeEvent
@@ -51,10 +52,10 @@ public class CommonModEvents {
         event.put(NSSEntities.MANEATER.get(), EntityManeaterShell.createAttributes().build());
     }*/
 
-    @SubscribeEvent
+    /*@SubscribeEvent
     public static void registerParticleFactories (final RegisterParticleProvidersEvent event) {
         Minecraft.getInstance().particleEngine.register(NSSParticles.FOAM_STANDARD.get(), FoamStandardParticle.Provider::new);
-    }
+    }*/
 
     public static Predicate<LivingEntity> buildPredicateFromTag(TagKey<EntityType<?>> entityTag){
         if(entityTag == null){

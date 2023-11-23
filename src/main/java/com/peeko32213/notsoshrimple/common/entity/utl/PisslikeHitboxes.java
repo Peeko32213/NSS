@@ -46,7 +46,7 @@ public class PisslikeHitboxes {
 
         BlockPos finalPos = new BlockPos(rotatedPos);
         AABB Hitbox = new AABB(finalPos).inflate(attackRadius);
-        hitboxOutline(Hitbox, world);
+        //hitboxOutline(Hitbox, world);
         world.sendParticles(ParticleTypes.EXPLOSION, rotatedPos.x,rotatedPos.y,rotatedPos.z, 1, 0, 0, 0, 0);
         List<LivingEntity> victims = new ArrayList<>(world.getEntitiesOfClass(LivingEntity.class, Hitbox));
 
@@ -97,7 +97,7 @@ public class PisslikeHitboxes {
 
         BlockPos finalPos = new BlockPos(rotatedPos);
         AABB Hitbox = new AABB(finalPos).inflate(attackWidth, attackHeight, attackLength);
-        hitboxOutline(Hitbox, world);
+        //hitboxOutline(Hitbox, world);
         world.sendParticles(ParticleTypes.EXPLOSION, rotatedPos.x, rotatedPos.y, rotatedPos.z, 1, 0, 0, 0, 0);
         List<LivingEntity> victims = new ArrayList<>(world.getEntitiesOfClass(LivingEntity.class, Hitbox));
 

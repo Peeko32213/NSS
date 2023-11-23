@@ -1,5 +1,7 @@
 package com.peeko32213.notsoshrimple.common.item;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.Game;
 import net.minecraft.client.Minecraft;
@@ -20,6 +22,8 @@ import net.minecraft.world.level.block.SoundType;
 import java.util.Collection;
 import java.util.Iterator;
 
+import static com.google.common.collect.Iterators.size;
+
 public class ItemPurgingStone extends Item {
     public ItemPurgingStone(Item.Properties pProperties) {
         super(pProperties);
@@ -37,16 +41,68 @@ public class ItemPurgingStone extends Item {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
-        return ItemUtils.startUsingInstantly(pLevel, pPlayer, pHand);
+        boolean removedAny = false;
+        Iterator<MobEffectInstance> allStatus = pPlayer.getActiveEffects().iterator();
+
+        if (!pLevel.isClientSide && allStatus != null) {
+            while (allStatus.hasNext()) {
+                MobEffectInstance effect = allStatus.next();
+                //iterates through all the effect instances and removes anything that's considered negative
+
+                if (!effect.getEffect().isBeneficial()) {
+                    //removes the status
+                    //pLevel.broadcastEntityEvent(pPlayer, (byte)35);
+                    pPlayer.onEffectRemoved(effect);
+                    allStatus.remove();
+                    removedAny = true;
+
+                    CriteriaTriggers.CONSUME_ITEM.trigger((ServerPlayer) pPlayer, pPlayer.getItemInHand(pHand));
+                    pPlayer.awardStat(Stats.ITEM_USED.get(this));
+                    pPlayer.getItemInHand(pHand).shrink(1);
+                    //consumes the item if it has removed negative
+                    break;
+                }
+            }
+        }
+
+        if (pLevel.isClientSide && allStatus != null) {
+
+            while (allStatus.hasNext()) {
+                MobEffectInstance effect = allStatus.next();
+
+                if (!effect.getEffect().isBeneficial()) {
+                    pPlayer.onEffectRemoved(effect);
+                    allStatus.remove();
+                    removedAny = true;
+                    break;
+                }
+            }
+            //Fakes removing all status effects to trick the client into playing the sound
+
+            if (removedAny == true) {
+                Minecraft.getInstance().gameRenderer.displayItemActivation(pPlayer.getItemInHand(pHand));
+                pPlayer.playSound(SoundEvents.BASALT_BREAK, 1.0F, 1.0F);
+                //plays animation and sound if the player has negative effects
+            }
+        }
+
+
+        if (removedAny == true) {
+            return ItemUtils.startUsingInstantly(pLevel, pPlayer, pHand);
+        } else {
+            return InteractionResultHolder.fail(pPlayer.getMainHandItem());
+        }
+
     }
 
-    @Override
+    /*=@Override
     public ItemStack finishUsingItem(ItemStack itemStack, Level pLevel, LivingEntity pEntityLiving) {
-        Iterator<MobEffectInstance> allStatus = pEntityLiving.getActiveEffects().iterator();
         boolean removedAny = false;
         //boolean to check if any statuses exist
 
         if (!pLevel.isClientSide) {
+            Iterator<MobEffectInstance> allStatus = pEntityLiving.getActiveEffects().iterator();
+
             while (allStatus.hasNext()) {
                 MobEffectInstance effect = allStatus.next();
                 //iterates through all the effect instances and removes anything that's considered negative
@@ -71,6 +127,6 @@ public class ItemPurgingStone extends Item {
         }
 
         return itemStack;
-    }
+    }*/
 
 }
