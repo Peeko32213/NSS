@@ -43,8 +43,10 @@ public class ItemPurgingStone extends Item {
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
         boolean removedAny = false;
         Iterator<MobEffectInstance> allStatus = pPlayer.getActiveEffects().iterator();
+        ItemStack itemStack = pPlayer.getItemInHand(pHand);
 
-        if (!pLevel.isClientSide && allStatus != null) {
+        if (!pLevel.isClientSide) {
+
             while (allStatus.hasNext()) {
                 MobEffectInstance effect = allStatus.next();
                 //iterates through all the effect instances and removes anything that's considered negative
@@ -54,16 +56,22 @@ public class ItemPurgingStone extends Item {
                     //pLevel.broadcastEntityEvent(pPlayer, (byte)35);
                     pPlayer.onEffectRemoved(effect);
                     allStatus.remove();
-                    removedAny = true;
 
-                    CriteriaTriggers.CONSUME_ITEM.trigger((ServerPlayer) pPlayer, pPlayer.getItemInHand(pHand));
-                    pPlayer.awardStat(Stats.ITEM_USED.get(this));
-                    pPlayer.getItemInHand(pHand).shrink(1);
-                    //consumes the item if it has removed negative
+                    if (!pLevel.isClientSide) {
+                        if (pPlayer instanceof ServerPlayer serverplayer) {
+                            CriteriaTriggers.CONSUME_ITEM.trigger(serverplayer, itemStack);
+                            serverplayer.awardStat(Stats.ITEM_USED.get(this));
+                            pPlayer.getItemInHand(pHand).shrink(1);
+                            //consumes the item if it has removed negative
+                        }
+                    }
+
                     break;
                 }
             }
+
         }
+        //serverside, actually uses the item
 
         if (pLevel.isClientSide && allStatus != null) {
 
@@ -71,13 +79,11 @@ public class ItemPurgingStone extends Item {
                 MobEffectInstance effect = allStatus.next();
 
                 if (!effect.getEffect().isBeneficial()) {
-                    pPlayer.onEffectRemoved(effect);
-                    allStatus.remove();
                     removedAny = true;
                     break;
                 }
             }
-            //Fakes removing all status effects to trick the client into playing the sound
+            //Fakes removing all status effects to trick the client into playing the sound and animation, DOES NOT ACTUALLY MODIFY STATUS
 
             if (removedAny == true) {
                 Minecraft.getInstance().gameRenderer.displayItemActivation(pPlayer.getItemInHand(pHand));
@@ -85,6 +91,7 @@ public class ItemPurgingStone extends Item {
                 //plays animation and sound if the player has negative effects
             }
         }
+        //clientside
 
 
         if (removedAny == true) {
@@ -92,41 +99,8 @@ public class ItemPurgingStone extends Item {
         } else {
             return InteractionResultHolder.fail(pPlayer.getMainHandItem());
         }
+        //return
 
     }
-
-    /*=@Override
-    public ItemStack finishUsingItem(ItemStack itemStack, Level pLevel, LivingEntity pEntityLiving) {
-        boolean removedAny = false;
-        //boolean to check if any statuses exist
-
-        if (!pLevel.isClientSide) {
-            Iterator<MobEffectInstance> allStatus = pEntityLiving.getActiveEffects().iterator();
-
-            while (allStatus.hasNext()) {
-                MobEffectInstance effect = allStatus.next();
-                //iterates through all the effect instances and removes anything that's considered negative
-                if (!effect.getEffect().isBeneficial()) {
-                    //removes the status
-                    pEntityLiving.onEffectRemoved(effect);
-                    allStatus.remove();
-                    removedAny = true;
-                }
-            }
-
-            if (pEntityLiving instanceof ServerPlayer serverplayer && removedAny == true) {
-                Minecraft.getInstance().gameRenderer.displayItemActivation(itemStack);
-                pEntityLiving.playSound(SoundEvents.AMETHYST_BLOCK_BREAK, 1.0F, 1.0F);
-                //plays animation and sound
-
-                CriteriaTriggers.CONSUME_ITEM.trigger(serverplayer, itemStack);
-                serverplayer.awardStat(Stats.ITEM_USED.get(this));
-                itemStack.shrink(1);
-                //consumes the item if it has removed negative
-            }
-        }
-
-        return itemStack;
-    }*/
 
 }
