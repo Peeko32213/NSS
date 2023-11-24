@@ -14,9 +14,10 @@ import net.minecraft.world.level.block.Block;
 public class NSSTags {
 
     public static final TagKey<Block> CRAYFISH_BREAKABLES = registerBlockTag("crayfish_breakables");
-    public static final TagKey<Block> CRAYFISH_SPAWNS = registerBlockTag("crayfish_spawns");
+    //public static final TagKey<Block> CRAYFISH_SPAWNS = registerBlockTag("crayfish_spawns");
     public static final TagKey<Biome> SPAWNS_ICE_CRAYFISH = registerBiomeTag("ice_crayfish_biomes");
     public static final TagKey<Biome> SPAWNS_BLOOD_CRAYFISH = registerBiomeTag("blood_crayfish_biomes");
+    public static final TagKey<Biome> MANEATERSPAWNS = registerBiomeTag("maneater_spawn_biomes");
     public static final TagKey<Item> SMITHINGBLACKLIST = registerItemTag("smithing_blacklist");
     public static final TagKey<Item> SMITHINGWHITELIST = registerItemTag("smithing_whitelist");
 

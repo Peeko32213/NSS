@@ -1,6 +1,8 @@
 package com.peeko32213.notsoshrimple.common.entity;
 
 import com.peeko32213.notsoshrimple.common.entity.utl.*;
+import com.peeko32213.notsoshrimple.core.config.NotSoShrimpleConfig;
+import com.peeko32213.notsoshrimple.core.registry.NSSEntities;
 import com.peeko32213.notsoshrimple.core.registry.NSSSounds;
 import com.peeko32213.notsoshrimple.core.registry.NSSTags;
 import net.minecraft.advancements.critereon.LocationPredicate;
@@ -11,6 +13,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -23,10 +26,13 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.TropicalFish;
+import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.level.*;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -35,6 +41,7 @@ import net.minecraft.world.level.pathfinder.*;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.data.ForgeBiomeTagsProvider;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -59,6 +66,17 @@ public class EntityManeaterShell extends Monster implements IAnimatable, SemiAqu
     public Vec3 newPos;
     public Vec3 velocity;
     public double directionlessSpeed;
+
+//    public MobType getMobType() {
+//        return MobType.WATER;
+//    }
+    //may be needed later
+
+    public boolean checkSpawnObstruction(LevelReader pLevel) {
+        return pLevel.isUnobstructed(this);
+    }
+    //necessary for water spawning
+
 
     public EntityManeaterShell(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
@@ -104,6 +122,7 @@ public class EntityManeaterShell extends Monster implements IAnimatable, SemiAqu
 
     @Override
     public void tick() {
+        //System.out.println("yesIexist");
 
         this.oldPos = this.newPos;
         this.newPos = this.position();
@@ -732,29 +751,32 @@ public class EntityManeaterShell extends Monster implements IAnimatable, SemiAqu
             i = 0;
         }
 
+        if(reason == MobSpawnType.STRUCTURE){
+            this.restrictTo(this.blockPosition(), 15);
+        }
+
         this.setVariant(i);
         return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
-        //TODO: add drop table, implement proper spawning(spawns around shipwrecks and swamp huts)
+        //TODO: implement proper spawning(spawns around shipwrecks and swamp huts)
     }
 
-    public static boolean canSpawn(EntityType<EntityManeaterShell> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos position, RandomSource random) {
-        //checks if a potential blockpos is eligible to spawn a mob
-        boolean rules = MathHelpers.checkSurfaceWaterMobSpawnRules(entityType, level, spawnType, position, random);
+    public static boolean canSpawn(EntityType<EntityManeaterShell> type, ServerLevelAccessor levelAccessor, MobSpawnType p_32352_, BlockPos pos, RandomSource random) {
 
-        //System.out.println("isinstructure" + MathHelpers.isInStructure((ServerLevel) level, position, BuiltinStructures.SHIPWRECK));
-        System.out.println("rules" + rules);
-        System.out.println(position);
-        System.out.println("");
+        Boolean biomeRight = ((LevelAccessor)levelAccessor).getBiome(pos).is(NSSTags.MANEATERSPAWNS);
 
-        return (//random.nextInt(100) + 1) >= 50
-                //&& (MathHelpers.isInStructure((ServerLevel) level, position, BuiltinStructures.SHIPWRECK));
-                rules);
-
-        //50% chance of spawning to reduce rates
-        //Can only spawn in shipwrecks
-        //Spawns like any mob
+        if (!levelAccessor.getFluidState(pos.below()).is(FluidTags.WATER)) {
+            return false;
+        } else {
+            System.out.println(biomeRight);
+            System.out.println(levelAccessor.getBiome(pos));
+            System.out.println(NSSTags.MANEATERSPAWNS);
+            return levelAccessor.getDifficulty() != Difficulty.PEACEFUL && levelAccessor.getFluidState(pos).is(FluidTags.WATER) && biomeRight == true;
+        }
     }
 
+    public boolean checkSpawnRules(LevelAccessor worldIn, MobSpawnType spawnReasonIn) {
+        return NSSEntities.rollSpawn(NotSoShrimpleConfig.maneaterRolls, this.getRandom(), spawnReasonIn);
+    }
 
     public void checkDespawn() {
         if (this.level.getDifficulty() == Difficulty.PEACEFUL && this.shouldDespawnInPeaceful()) {

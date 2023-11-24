@@ -1,0 +1,11 @@
+{
+  "type": "notsoshrimple:add_spawn",
+  "category": "monster",
+  "spawn": {
+    "type": "notsoshrimple:maneater",
+    "minCount": 2,
+    "maxCount": 5,
+    "weight": 90
+  },
+  "structures": "minecraft:shipwreck"
+}

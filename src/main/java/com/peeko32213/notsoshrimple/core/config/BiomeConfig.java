@@ -15,6 +15,7 @@ import java.util.Map;
 
 public class BiomeConfig {
     public static Pair<String, SpawnBiomeData> crayfish = Pair.of("notsoshrimple:crayfish_spawns", DefaultBiomes.SWAMP);
+    public static Pair<String, SpawnBiomeData> maneater = Pair.of("notsoshrimple:maneater_spawns", DefaultBiomes.COLDOCEAN);
 
 
 

@@ -1,16 +1,22 @@
 package com.peeko32213.notsoshrimple;
 
 import com.mojang.logging.LogUtils;
+import com.peeko32213.notsoshrimple.common.entity.EntityCrayfish;
+import com.peeko32213.notsoshrimple.common.entity.EntityManeaterShell;
 import com.peeko32213.notsoshrimple.core.config.BiomeConfig;
 import com.peeko32213.notsoshrimple.core.config.ConfigHolder;
 import com.peeko32213.notsoshrimple.core.config.NotSoShrimpleConfig;
 import com.peeko32213.notsoshrimple.core.recipes.SmithingStoneRecipe;
 import com.peeko32213.notsoshrimple.core.registry.*;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -56,6 +62,8 @@ public class NotSoShrimple
         NSSParticles.SHRIMPARTICLES.register(modEventBus);
         NSSRecipes.SERIALIZERS.register(modEventBus);
         NSSAttributes.ATTRIBUTEREGISTER.register(modEventBus);
+        NSSWorldRegistry.STRUCTURE_MODIFIERS.register(modEventBus);
+        NSSWorldRegistry.StructureModifierReg.register();
         //MinecraftForge.EVENT_BUS.addListener(SmithingStoneRecipe::addAttributes);
 
         eventBus.register(this);
@@ -76,6 +84,10 @@ public class NotSoShrimple
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
+            SpawnPlacements.register(NSSEntities.MANEATER.get(), SpawnPlacements.Type.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EntityManeaterShell::canSpawn);
+            //SpawnPlacements.register(NSSEntities.CRAYFISH.get(), SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EntityCrayfish::canSpawn);
+            //crayfish confirmed to work
+            //shells run on a separate system
         });
     }
 

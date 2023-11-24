@@ -50,13 +50,17 @@ public class CommonForgeEvents {
     public static UUID somberStoneBuffUUID = UUID.fromString("682b06fd-7224-453d-b737-f6d80accf74a");
     public static UUID smithingStoneBuffUUID = UUID.fromString("0641bc77-29c6-49e9-99fd-6e6c759391f6");
 
-    public static void addBiomeSpawns(Holder<Biome> biome, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
+    /*public static void addBiomeSpawns(Holder<Biome> biome, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
 
         if (testBiome(BiomeConfig.crayfish, biome) && NotSoShrimpleConfig.crayfishSpawnWeight > 0) {
             builder.getMobSpawnSettings().getSpawner(MobCategory.CREATURE).add(new MobSpawnSettings.SpawnerData(NSSEntities.CRAYFISH.get(), NotSoShrimpleConfig.crayfishSpawnWeight, 1, 2));
         }
 
-    }
+        if (testBiome(BiomeConfig.crayfish, biome) && NotSoShrimpleConfig.maneaterWeight > 0) {
+            builder.getMobSpawnSettings().getSpawner(MobCategory.CREATURE).add(new MobSpawnSettings.SpawnerData(NSSEntities.MANEATER.get(), NotSoShrimpleConfig.maneaterWeight, 1, 2));
+        }
+
+    }*/
 
     private static ResourceLocation getBiomeName(Holder<Biome> biome) {
         return biome.unwrap().map((resourceKey) -> resourceKey.location(), (noKey) -> null);

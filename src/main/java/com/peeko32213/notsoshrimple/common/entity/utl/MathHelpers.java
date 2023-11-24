@@ -41,6 +41,7 @@ public class MathHelpers {
         return LocationPredicate.inStructure(structure).matches(serverLevel, pos.getX(), pos.getY(), pos.getZ());
     }
 
+
     public static boolean checkSurfaceWaterMobSpawnRules(EntityType<? extends PathfinderMob> entityType, LevelAccessor level, MobSpawnType mobSpawnType, BlockPos pos, RandomSource rand) {
         int seaLevel = level.getSeaLevel();
         int belowSeaLevel = seaLevel - 2;
