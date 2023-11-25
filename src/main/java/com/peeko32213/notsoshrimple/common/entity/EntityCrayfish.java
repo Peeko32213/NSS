@@ -676,7 +676,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
             //this.mob.willItBreak = true;
             //HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),5.0f, 1.5f, mob, pos,  80.0F, -Math.PI/6, Math.PI/6, -1.0f, 3.0f);
-            //ServerLevel serverLevel = ((ServerLevel) this.mob.getLevel());
+            ServerLevel serverLevel = ((ServerLevel) this.mob.getLevel());
             PisslikeHitboxes.PivotedPolyHitCheck(this.mob, this.slamOffSet, 2f, 4f, 2f, (serverLevel), 15f, DamageSource.mobAttack(mob), 2f, true);
 
             //double d0 = this.mob.random.nextGaussian() * 0.125D;
