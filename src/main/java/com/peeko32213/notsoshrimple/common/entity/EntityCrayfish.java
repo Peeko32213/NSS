@@ -254,6 +254,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     }
 
     static class CrayfishMeleeAttackGoal extends Goal {
+        //max attack cooldown is 20 ticks
 
         protected final EntityCrayfish mob;
         private final double speedModifier;
@@ -273,15 +274,17 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         private double targetOldX;
         private double targetOldY;
         private double targetOldZ;
-        private int meleeRange = 100;
+        private int meleeRange = 75;
         //the range(blocks) in which the shrimp would stay in melee mode. Adjust until perfect.
         //this is NOT IN BLOCKS. I DO NOT KNOW WHAT UNIT THIS IS.
         //update: this is in squared distance
 
         Vec3 slamOffSet = new Vec3(0, 0, 4);
-        Vec3 pokeOffSet = new Vec3(0, 0.25, 7);
-        Vec3 slashOffSet = new Vec3(0, -0.3, 6);
+        Vec3 pokeOffSet = new Vec3(0, 0.25, 5);
+        Vec3 slashOffSet = new Vec3(0, -0.3, 2);
+        Vec3 pissOffSet = new Vec3(0, 2, 2);
         //the Y value is at the BOTTOM of the offset, and the hitbox is inflated up.
+        //the Z value dictates forwards/backwards.
         //inflation acts on both sides of the thing.
 
 
@@ -449,7 +452,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         }
 
 
-        protected void checkForCloseRangeAttack ( double distance, double meleeRange){
+        protected void checkForCloseRangeAttack ( double distance, double meleeRange){//TODO: LAST LEFT HERE
             if (distance <= meleeRange && this.ticksUntilNextAttack <= 0) {
                 int r = (this.mob.getRandom().nextInt(100) + 1);
 
@@ -467,18 +470,18 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 }
 
                 else if (distance <= 50) {
-                    if (r <= 60) {
+                    if (r <= 70) {
                         this.mob.setAnimationState(21);
                         //stab
-                    } else if (60 < r && r <= 90) {
+                    } else if (70 < r && r <= 90) {
                         this.mob.setAnimationState(22);
                         //slash
-                    } else {
+                    } else { //if r > 90
                         this.mob.setAnimationState(23);
                         //slam
                     }
                     //if target is closer than 50, then have a higher chance to slash than stab
-                    //60% chance for slash, 30% chance to stab, 10% chance to slam
+                    //70% chance for slash, 20% chance to stab, 10% chance to slam
 
                 } else if (distance <= 100) {
                     if (50 < r && r <= 80) {
@@ -528,7 +531,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 animTime=0;
 
                 this.mob.setAnimationState(0);
-                this.resetAttackCooldown();
+                this.resetAttackCooldown(15);
                 this.ticksUntilNextPathRecalculation = 0;
 
             }
@@ -555,7 +558,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             if(animTime>=12) {
                 animTime=0;
                 this.mob.setAnimationState(0);
-                this.resetAttackCooldown();
+                this.resetAttackCooldown(5);
                 this.ticksUntilNextPathRecalculation = 0;
             }
 
@@ -576,7 +579,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             if(animTime>=24) {
                 animTime=0;
                 this.mob.setAnimationState(0);
-                this.resetAttackCooldown();
+                this.resetAttackCooldown(20);
                 this.ticksUntilNextPathRecalculation = 0;
             }
         }
@@ -601,9 +604,9 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             if(animTime>=18) {
                 animTime=0;
                 this.mob.setAnimationState(0);
-                this.resetAttackCooldown();
+                this.resetAttackCooldown(mob.random.nextInt(1, 21));
                 this.ticksUntilNextPathRecalculation = 0;
-                this.rangedAttackCD = this.mob.getRandom().nextInt(100);;
+                this.rangedAttackCD = this.mob.getRandom().nextInt(200);;
             }
         }
 
@@ -661,6 +664,8 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 this.mob.level.addFreshEntity(urine);
             }
 
+            PisslikeHitboxes.PivotedPolyHitCheck(this.mob, this.pissOffSet, 2f, 1.5f, 2f, (ServerLevel)this.mob.getLevel(), 10f, DamageSource.mobAttack(mob), 2f, true);
+
             this.mob.lookAt(target, 100000, 100000);
             this.mob.yBodyRot = this.mob.yHeadRot;
             //LightningBolt marker = EntityType.LIGHTNING_BOLT.create(this.mob.level);
@@ -677,26 +682,10 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             //this.mob.willItBreak = true;
             //HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),5.0f, 1.5f, mob, pos,  80.0F, -Math.PI/6, Math.PI/6, -1.0f, 3.0f);
             ServerLevel serverLevel = ((ServerLevel) this.mob.getLevel());
-            PisslikeHitboxes.PivotedPolyHitCheck(this.mob, this.slamOffSet, 2f, 4f, 2f, (serverLevel), 15f, DamageSource.mobAttack(mob), 2f, true);
+            PisslikeHitboxes.PivotedPolyHitCheck(this.mob, this.slamOffSet, 3f, 3f, 3f, (ServerLevel)this.mob.getLevel(), 15f, DamageSource.mobAttack(mob), 2f, true);
 
-            //double d0 = this.mob.random.nextGaussian() * 0.125D;
-            //double d1 = this.mob.random.nextGaussian() * 0.125D;
-            //double d2 = this.mob.random.nextGaussian() * 0.125D;
-
-            //serverLevel.sendParticles(ParticleTypes.EXPLOSION, slamOffSet.x, slamOffSet.y, slamOffSet.z, 1, 0, 1, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.EXPLOSION, slamOffSet.x + d0, slamOffSet.y + d1, slamOffSet.z + d2, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.EXPLOSION, slamOffSet.x + d1, slamOffSet.y + d2, slamOffSet.z + d0, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.EXPLOSION, slamOffSet.x + d2, slamOffSet.y + d0, slamOffSet.z + d1, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.EXPLOSION, slamOffSet.x + d0, slamOffSet.y + d2, slamOffSet.z + d1, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.EXPLOSION, slamOffSet.x + d1, slamOffSet.y + d0, slamOffSet.z + d2, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.EXPLOSION, slamOffSet.x + d2, slamOffSet.y + d1, slamOffSet.z + d0, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, slamOffSet.x + d0, slamOffSet.y + d1, slamOffSet.z + d2, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, slamOffSet.x + d1, slamOffSet.y + d2, slamOffSet.z + d0, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, slamOffSet.x + d2, slamOffSet.y + d0, slamOffSet.z + d1, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, slamOffSet.x + d0, slamOffSet.y + d2, slamOffSet.z + d1, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, slamOffSet.x + d1, slamOffSet.y + d0, slamOffSet.z + d2, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, slamOffSet.x + d2, slamOffSet.y + d1, slamOffSet.z + d0, 1, 0, 0, 0, 0);
-            //THIS METHOD CAN ONLY BE RAN ON THE SERVERSIDE.
+            //TODO: Send a packet for slam particles
+            //THIS METHOD IS ONLY RAN ON THE SERVERSIDE.
         }
 
 
@@ -706,27 +695,11 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(0));
             this.mob.playSound(NSSSounds.CRAYFISH_ATTACK.get(), 0.5F, 0.5F);
             //this.mob.willItBreak = false;
-            PisslikeHitboxes.PivotedPolyHitCheck(this.mob, this.slashOffSet, 6f, 1f, 6f, (ServerLevel)this.mob.getLevel(), 10f, DamageSource.mobAttack(mob), 3f, false);
+            PisslikeHitboxes.PivotedPolyHitCheck(this.mob, this.slashOffSet, 5.5f, 1f, 5.5f, (ServerLevel)this.mob.getLevel(), 10f, DamageSource.mobAttack(mob), 3f, false);
             //HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),5.0f, 1.0f, mob, pos,  6.0F, -Math.PI/2, Math.PI/2, -1.0f, 3.0f);
 
-            //ServerLevel serverLevel = ((ServerLevel) this.mob.getLevel());
-            //double d0 = this.mob.random.nextGaussian() * 0.125D;
-            //double d1 = this.mob.random.nextGaussian() * 0.125D;
-            //double d2 = this.mob.random.nextGaussian() * 0.125D;
-
-            //serverLevel.sendParticles(ParticleTypes.EXPLOSION, slamOffSet.x, slamOffSet.y, slamOffSet.z, 1, 0, 1, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.EXPLOSION, slamOffSet.x + d0, slamOffSet.y + d1, slamOffSet.z + d2, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.EXPLOSION, slamOffSet.x + d1, slamOffSet.y + d2, slamOffSet.z + d0, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.EXPLOSION, slamOffSet.x + d2, slamOffSet.y + d0, slamOffSet.z + d1, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.EXPLOSION, slamOffSet.x + d0, slamOffSet.y + d2, slamOffSet.z + d1, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.EXPLOSION, slamOffSet.x + d1, slamOffSet.y + d0, slamOffSet.z + d2, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.EXPLOSION, slamOffSet.x + d2, slamOffSet.y + d1, slamOffSet.z + d0, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, slamOffSet.x + d0, slamOffSet.y + d1, slamOffSet.z + d2, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, slamOffSet.x + d1, slamOffSet.y + d2, slamOffSet.z + d0, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, slamOffSet.x + d2, slamOffSet.y + d0, slamOffSet.z + d1, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, slamOffSet.x + d0, slamOffSet.y + d2, slamOffSet.z + d1, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, slamOffSet.x + d1, slamOffSet.y + d0, slamOffSet.z + d2, 1, 0, 0, 0, 0);
-            //serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, slamOffSet.x + d2, slamOffSet.y + d1, slamOffSet.z + d0, 1, 0, 0, 0, 0);
+            //TODO: Send a packet for slam particles
+            //THIS METHOD IS ONLY RAN ON THE SERVERSIDE.
         }
 
         protected void performRightClawAttack () {
@@ -736,13 +709,14 @@ public class EntityCrayfish extends Monster implements IAnimatable {
             //this.mob.willItBreak = false;
             PisslikeHitboxes.PivotedPolyHitCheck(this.mob, this.pokeOffSet, 0.5f, 2f, 0.5f, (ServerLevel)this.mob.getLevel(), 10f, DamageSource.mobAttack(mob), 0.3f, false);
             //HitboxHelper.LargeAttack(DamageSource.mobAttack(mob),5.0f, 1.0f, mob, pos,  6.0F, -Math.PI/2, Math.PI/2, -1.0f, 3.0f);
-            //ServerLevel serverLevel = ((ServerLevel) this.mob.getLevel());
-            //serverLevel.sendParticles(ParticleTypes.EXPLOSION, slamOffSet.x, slamOffSet.y, slamOffSet.z, 1, 0, 0, 0, 0);
+
+            //TODO: Send a packet for slam particles
+            //THIS METHOD IS ONLY RAN ON THE SERVERSIDE.
         }
 
 
-        protected void resetAttackCooldown () {
-            this.ticksUntilNextAttack = 20;
+        protected void resetAttackCooldown ( int CD ) {
+            this.ticksUntilNextAttack = CD;
         }
         //sets how many ticks until the next attack
 
