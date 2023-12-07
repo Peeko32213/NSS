@@ -33,7 +33,7 @@ public class NSSItems {
             () -> new Item(new Item.Properties().tab(NotSoShrimple.SHRIMPLE)));
 
     public static final RegistryObject<Item> GREAT_PRAWN_CLAWBLADE = ITEMS.register("swampbuster",
-            () -> new ItemClawblade(NSSItemTiers.SHRIMPLE, 14, -3.0F));
+            () -> new ItemClawblade(new Item.Properties().defaultDurability(1876)));
 
     public static final RegistryObject<Item> RAW_PRAWN = ITEMS.register("raw_prawn",
             () -> new Item(new Item.Properties().food(ItemModFood.RAW_PRAWN).tab(NotSoShrimple.SHRIMPLE)));

@@ -51,7 +51,7 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.function.Consumer;
 
-public class ItemClawblade extends SwordItem implements IAnimatable{
+public class ItemClawblade extends Item implements IAnimatable{
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
 
@@ -59,15 +59,23 @@ public class ItemClawblade extends SwordItem implements IAnimatable{
     public int slamDmg = 5;
     public double arthropodBonus = 0.3;
     public int animationState = 0;
+    private final Multimap<Attribute, AttributeModifier> defaultModifiers;
 
-    public ItemClawblade(Tier tier, int attackDamage, float attackSpeed) {
-        super(tier, attackDamage, attackSpeed, new Properties()
+    public ItemClawblade(Item.Properties properties) {
+        super(new Properties()
                 .stacksTo(1)
-                .defaultDurability(tier.getUses())
                 .tab(NotSoShrimple.SHRIMPLE)
         );
+        ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
+        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", 14.0D, AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", (double) -3.75F, AttributeModifier.Operation.ADDITION));
+        this.defaultModifiers = builder.build();
         //TODO: Add particles to the slam with a standard distribution, maybe add poison?
 
+    }
+
+    public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
+        return equipmentSlot == EquipmentSlot.MAINHAND ? this.defaultModifiers : super.getDefaultAttributeModifiers(equipmentSlot);
     }
 
     public void switchAnimationState(int value) { this.animationState = value; };
@@ -120,7 +128,22 @@ public class ItemClawblade extends SwordItem implements IAnimatable{
             player.getCooldowns().addCooldown(NSSItems.GREAT_PRAWN_CLAWBLADE.get(), 20*3);
             //cooldown of 3 seconds
         }
-        return false;
+
+        return player.getAttackStrengthScale(0) < 0 || player.attackAnim != 0;
+        //determines whether the player deals damage based on attack bar charge
+        //both set to zero to allow the player to attack at any charge
+    }
+
+    public boolean hurtEnemy(ItemStack stack, LivingEntity hurtEntity, LivingEntity player) {
+        super.hurtEnemy(stack, hurtEntity, player);
+
+        Vec2 knockVec = MathHelpers.OrizontalAimVector(
+                MathHelpers.AimVector(new Vec3(-player.position().x, -player.position().y, -player.position().z),
+                        new Vec3(-hurtEntity.position().x, -hurtEntity.position().y, -hurtEntity.position().z)
+                ));
+        hurtEntity.knockback(1.5, knockVec.x, knockVec.y);
+
+        return true;
     }
 
     /*@Override
@@ -176,5 +199,27 @@ public class ItemClawblade extends SwordItem implements IAnimatable{
     @Override
     public AnimationFactory getFactory() {
         return this.factory;
+    }
+
+    @Override
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
+        if (entity instanceof Player player) {
+            if (player.getAttackStrengthScale(0) < 1 && player.attackAnim > 0) {
+                return true;
+            } else {
+                player.swingTime = -1;
+            }
+        }
+        return false;
+    }
+
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int i, boolean held) {
+        if (entity instanceof Player player && held) {
+            if (player.getAttackStrengthScale(0) < 0 && player.attackAnim > 0) {
+                player.swingTime -= 0.1;
+                //actually modifies the player's attack bar charge and determines if the item is fully charged
+                //both set to zero to allow the player to attack at any charge
+            }
+        }
     }
 }
