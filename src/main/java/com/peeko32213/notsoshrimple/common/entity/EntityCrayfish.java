@@ -101,8 +101,8 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 200.0D)
-                .add(Attributes.ARMOR, 20.0D)
+                .add(Attributes.MAX_HEALTH, 400.0D)
+                .add(Attributes.ARMOR, 40.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.24D)
                 //0.29 fits the animation, remember to slow it
                 .add(Attributes.ATTACK_DAMAGE, 10.0D)

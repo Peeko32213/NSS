@@ -2,6 +2,7 @@ package com.peeko32213.notsoshrimple.core.recipes;
 
 import com.google.gson.JsonObject;
 import com.peeko32213.notsoshrimple.NotSoShrimple;
+import com.peeko32213.notsoshrimple.core.config.NotSoShrimpleConfig;
 import com.peeko32213.notsoshrimple.core.registry.NSSAttributes;
 import com.peeko32213.notsoshrimple.core.registry.NSSItems;
 import com.peeko32213.notsoshrimple.core.registry.NSSTags;
@@ -51,10 +52,22 @@ public class SmithingStoneRecipe extends UpgradeRecipe {
     @Override
     public boolean matches(Container pInv, Level pLevel) {
         Item toBeSmithed = pInv.getItem(0).getItem();
+        ItemStack stack = pInv.getItem(0);
+        CompoundTag itemTags = stack.getOrCreateTag().copy();
 
         if (pInv.getItem(0).is(NSSTags.SMITHINGWHITELIST)) {
             return true;
             //whitelist
+        }
+
+        if(addition.test(NSSItems.SOMBER_STONE.get().getDefaultInstance()) && (itemTags.getInt("SomberDamageBuff") >= NotSoShrimpleConfig.somberCap || NotSoShrimpleConfig.somberCap == -1)) {
+                return false;
+                //check somber cap
+        }
+
+        else if(addition.test(NSSItems.SMITHING_STONE.get().getDefaultInstance()) && (itemTags.getInt("SmithingDurabilityBuff") >= NotSoShrimpleConfig.smithingCap || NotSoShrimpleConfig.smithingCap == -1)) {
+                return false;
+                //check smithing cap
         }
 
         return (toBeSmithed instanceof TieredItem || toBeSmithed instanceof ShieldItem || toBeSmithed instanceof ProjectileWeaponItem || toBeSmithed instanceof ElytraItem || toBeSmithed instanceof TridentItem) && this.addition.test(pInv.getItem(1)) && !pInv.getItem(0).is(NSSTags.SMITHINGBLACKLIST);
@@ -76,7 +89,7 @@ public class SmithingStoneRecipe extends UpgradeRecipe {
     public ItemStack assemble(Container pInv) {
         //ItemStack itemstack = this.product.copy();
         ItemStack itemstack = pInv.getItem(0).copy();
-        System.out.println("addition " + this.addition.getItems()[0]);
+        //System.out.println("addition " + this.addition.getItems()[0]);
         //the statement pInv.getItem(0) gives you the item in the first ingredient slot in its entirety. Use it for compat.
 
         if(addition.test(NSSItems.SOMBER_STONE.get().getDefaultInstance())) {
@@ -99,7 +112,7 @@ public class SmithingStoneRecipe extends UpgradeRecipe {
         //somber stuff
 
         if(addition.test(NSSItems.SMITHING_STONE.get().getDefaultInstance())) {
-            System.out.println("smith");
+            //System.out.println("smith");
             CompoundTag itemTags = itemstack.getOrCreateTag().copy();
 
             if (itemTags.contains("SmithingDurabilityBuff")) {

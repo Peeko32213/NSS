@@ -13,6 +13,8 @@ public class NotSoShrimpleConfig {
     public static int crayfishSpawnRolls = 1;
     public static int maneaterWeight = 80;
     public static int maneaterRolls = 1;
+    public static int somberCap = 5;
+    public static int smithingCap = 5;
 
     public static void bake(ModConfig config) {
         try {
@@ -20,6 +22,8 @@ public class NotSoShrimpleConfig {
             crayfishSpawnRolls = ConfigHolder.COMMON.crayfishSpawnRolls.get();
             maneaterWeight = ConfigHolder.COMMON.maneaterWeight.get();
             maneaterRolls = ConfigHolder.COMMON.maneaterRolls.get();
+            somberCap = ConfigHolder.COMMON.somberCap.get();
+            smithingCap = ConfigHolder.COMMON.smithingCap.get();
 
         } catch (Exception e) {
             NotSoShrimple.LOGGER.warn("An exception was caused trying to load the config for Not So Shrimple.");
