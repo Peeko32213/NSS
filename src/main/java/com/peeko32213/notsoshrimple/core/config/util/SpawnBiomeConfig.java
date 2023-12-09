@@ -15,7 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class SpawnBiomeConfig {
-    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(SpawnBiomeData.class, new SpawnBiomeData.Deserializer()).create();
+    /*public static final Gson GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(SpawnBiomeData.class, new SpawnBiomeData.Deserializer()).create();
     private final ResourceLocation fileName;
 
     private SpawnBiomeConfig(ResourceLocation fileName) {
@@ -61,5 +61,5 @@ public class SpawnBiomeConfig {
         SpawnBiomeData configData = getOrCreateConfigFile(getConfigDirFile(), fileName.getPath(), defaultConfigData, new TypeToken<SpawnBiomeData>() {
         }.getType());
         return configData;
-    }
+    }*/
 }

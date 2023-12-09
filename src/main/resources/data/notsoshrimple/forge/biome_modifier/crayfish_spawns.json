@@ -16,8 +16,8 @@
   ],
   "spawners": {
     "type": "notsoshrimple:crayfish",
-    "weight": 5,
-    "minCount": 1,
-    "maxCount": 3
+    "weight": 1,
+    "minCount": -3,
+    "maxCount": 2
   }
 }

@@ -1,6 +1,7 @@
 package com.peeko32213.notsoshrimple.core.config.util;
 
 public enum BiomeEntryType {
+    /*
     REGISTRY_NAME(false), BIOME_TAG(false), BIOME_DICT(true), BIOME_CATEGORY(true);
 
     private boolean depreciated;
@@ -11,6 +12,6 @@ public enum BiomeEntryType {
 
     public boolean isDepreciated() {
         return depreciated;
-    }
+    }*/
 
 }

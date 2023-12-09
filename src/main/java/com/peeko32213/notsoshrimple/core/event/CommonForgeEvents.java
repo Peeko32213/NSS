@@ -66,7 +66,7 @@ public class CommonForgeEvents {
         return biome.unwrap().map((resourceKey) -> resourceKey.location(), (noKey) -> null);
     }
 
-    public static boolean testBiome(Pair<String, SpawnBiomeData> entry, Holder<Biome> biome) {
+    /*public static boolean testBiome(Pair<String, SpawnBiomeData> entry, Holder<Biome> biome) {
         boolean result = false;
         try {
             result = BiomeConfig.test(entry, biome, getBiomeName(biome));
@@ -75,7 +75,7 @@ public class CommonForgeEvents {
             result = false;
         }
         return result;
-    }
+    }*/
 
     @SubscribeEvent
     public static void onLivingHurtEvent (final LivingHurtEvent event) {

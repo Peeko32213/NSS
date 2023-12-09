@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class SpawnBiomeData {
 
-    private List<List<SpawnBiomeEntry>> biomes = new ArrayList<>();
+    /*private List<List<SpawnBiomeEntry>> biomes = new ArrayList<>();
 
     public SpawnBiomeData() {
     }
@@ -103,5 +103,5 @@ public class SpawnBiomeData {
             }
         }
 
-    }
+    }*/
 }

@@ -64,6 +64,7 @@ public class NotSoShrimple
         NSSAttributes.ATTRIBUTEREGISTER.register(modEventBus);
         NSSWorldRegistry.STRUCTURE_MODIFIERS.register(modEventBus);
         NSSWorldRegistry.StructureModifierReg.register();
+        NSSLootModifiers.register(modEventBus);
         //MinecraftForge.EVENT_BUS.addListener(SmithingStoneRecipe::addAttributes);
 
         eventBus.register(this);
@@ -79,13 +80,13 @@ public class NotSoShrimple
         if (config.getSpec() == ConfigHolder.COMMON_SPEC) {
             NotSoShrimpleConfig.bake(config);
         }
-        BiomeConfig.init();
+        //BiomeConfig.init();
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             SpawnPlacements.register(NSSEntities.MANEATER.get(), SpawnPlacements.Type.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EntityManeaterShell::canSpawn);
-            //SpawnPlacements.register(NSSEntities.CRAYFISH.get(), SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EntityCrayfish::canSpawn);
+            SpawnPlacements.register(NSSEntities.CRAYFISH.get(), SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EntityCrayfish::canSpawn);
             //crayfish confirmed to work
             //shells run on a separate system
         });

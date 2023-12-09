@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BiomeConfig {
-    public static Pair<String, SpawnBiomeData> crayfish = Pair.of("notsoshrimple:crayfish_spawns", DefaultBiomes.SWAMP);
+    /*public static Pair<String, SpawnBiomeData> crayfish = Pair.of("notsoshrimple:crayfish_spawns", DefaultBiomes.SWAMP);
     public static Pair<String, SpawnBiomeData> maneater = Pair.of("notsoshrimple:maneater_spawns", DefaultBiomes.COLDOCEAN);
 
 
@@ -48,6 +48,6 @@ public class BiomeConfig {
 
     public static boolean test(Pair<String, SpawnBiomeData> spawns, Holder<Biome> biome) {
         return test(spawns, biome, ForgeRegistries.BIOMES.getKey(biome.value()));
-    }
+    }*/
 
 }

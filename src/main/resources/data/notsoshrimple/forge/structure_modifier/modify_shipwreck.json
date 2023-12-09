@@ -5,7 +5,7 @@
     "type": "notsoshrimple:maneater",
     "minCount": 2,
     "maxCount": 5,
-    "weight": 90
+    "weight": 30
   },
   "structures": "minecraft:shipwreck"
 }

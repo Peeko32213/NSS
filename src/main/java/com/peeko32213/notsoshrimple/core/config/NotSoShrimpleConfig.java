@@ -9,9 +9,9 @@ import static com.peeko32213.notsoshrimple.NotSoShrimple.MODID;
 @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 
 public class NotSoShrimpleConfig {
-    public static int crayfishSpawnWeight = 20;
+    public static int crayfishSpawnWeight = 1;
     public static int crayfishSpawnRolls = 1;
-    public static int maneaterWeight = 20;
+    public static int maneaterWeight = 10;
     public static int maneaterRolls = 1;
     public static int somberCap = 5;
     public static int smithingCap = 5;
