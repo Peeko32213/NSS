@@ -64,7 +64,7 @@ public class NotSoShrimple
         NSSAttributes.ATTRIBUTEREGISTER.register(modEventBus);
         NSSWorldRegistry.STRUCTURE_MODIFIERS.register(modEventBus);
         NSSWorldRegistry.StructureModifierReg.register();
-        NSSLootModifiers.register(modEventBus);
+        NSSLootModifiers.LOOT_MODIFIERS.register(modEventBus);
         //MinecraftForge.EVENT_BUS.addListener(SmithingStoneRecipe::addAttributes);
 
         eventBus.register(this);

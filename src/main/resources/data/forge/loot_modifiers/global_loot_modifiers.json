@@ -1,6 +1,19 @@
 {
   "replace": false,
   "entries": [
-    "notsoshrimple:smithing_stone_mod"
+    "notsoshrimple:smithing_stone_to_pyramid",
+    "notsoshrimple:smithing_stone_to_shipwreck_supply",
+    "notsoshrimple:smithing_stone_to_jungle_temples",
+    "notsoshrimple:smithing_stone_to_mineshaft",
+    "notsoshrimple:smithing_stone_to_stronghold_corridor",
+    "notsoshrimple:smithing_stone_to_stronghold_crossing",
+    "notsoshrimple:smithing_stone_to_village_toolsmith",
+    "notsoshrimple:smithing_stone_to_village_weapons",
+    "notsoshrimple:smithing_stone_to_spawn_chest",
+    "notsoshrimple:smithing_stone_to_bastion_other",
+    "notsoshrimple:smithing_stone_to_simple_dungeon",
+    "notsoshrimple:somber_stone_to_bastion_treasure",
+    "notsoshrimple:somber_stone_to_deep_dark",
+    "notsoshrimple:somber_stone_to_end_city"
   ]
 }
