@@ -20,7 +20,7 @@ public class NSSEntities {
             NotSoShrimple.MODID);
 
     public static final RegistryObject<EntityType<EntityCrayfish>> CRAYFISH = ENTITIES.register("crayfish",
-            () -> EntityType.Builder.of(EntityCrayfish::new, MobCategory.MONSTER).sized(3.4F, 2.5F)
+            () -> EntityType.Builder.of(EntityCrayfish::new, MobCategory.MONSTER).sized(3.4F, 2.5F).canSpawnFarFromPlayer()
                     .build(new ResourceLocation(NotSoShrimple.MODID, "crayfish").toString()));
 
     public static final RegistryObject<EntityType<EntityManeaterShell>> MANEATER = ENTITIES.register("maneater",
@@ -28,14 +28,14 @@ public class NSSEntities {
                     .build(new ResourceLocation(NotSoShrimple.MODID, "maneater").toString()));
 
     public static final RegistryObject<EntityType<EntityToxicWater>> TOXICWATER = ENTITIES.register("toxicwater",
-            () -> EntityType.Builder.of(EntityToxicWater::new, MobCategory.MISC).sized(0f, 0f)
+            () -> EntityType.Builder.of(EntityToxicWater::new, MobCategory.MISC).sized(0f, 0f).noSummon()
                     .build(new ResourceLocation(NotSoShrimple.MODID, "toxicwater").toString()));
 
     public static final RegistryObject<EntityType<EntityIceWater>> ICEWATER = ENTITIES.register("icewater",
-            () -> EntityType.Builder.of(EntityIceWater::new, MobCategory.MISC).sized(5.0F, 6.5F)
+            () -> EntityType.Builder.of(EntityIceWater::new, MobCategory.MISC).sized(5.0F, 6.5F).noSummon()
                     .build(new ResourceLocation(NotSoShrimple.MODID, "icewater").toString()));
     public static final RegistryObject<EntityType<EntityBloodWater>> BLOODWATER = ENTITIES.register("bloodwater",
-            () -> EntityType.Builder.of(EntityBloodWater::new, MobCategory.MISC).sized(5.0F, 6.5F)
+            () -> EntityType.Builder.of(EntityBloodWater::new, MobCategory.MISC).sized(5.0F, 6.5F).noSummon()
                     .build(new ResourceLocation(NotSoShrimple.MODID, "bloodwater").toString()));
 
     public static boolean rollSpawn(int rolls, RandomSource random, MobSpawnType reason){

@@ -11,10 +11,10 @@ import static com.peeko32213.notsoshrimple.NotSoShrimple.MODID;
 public class NotSoShrimpleConfig {
     public static int crayfishSpawnWeight = 1;
     public static int crayfishSpawnRolls = 1;
-    public static int maneaterWeight = 10;
+    public static int maneaterWeight = 5;
     public static int maneaterRolls = 1;
-    public static int somberCap = 5;
-    public static int smithingCap = 5;
+    public static int somberCap = -1;
+    public static int smithingCap = -1;
 
     public static void bake(ModConfig config) {
         try {

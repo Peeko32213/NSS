@@ -1,10 +1,7 @@
 package com.peeko32213.notsoshrimple.client.event;
 
 import com.peeko32213.notsoshrimple.NotSoShrimple;
-import com.peeko32213.notsoshrimple.client.render.CrayfishRenderer;
-import com.peeko32213.notsoshrimple.client.render.ManeaterRenderer;
-import com.peeko32213.notsoshrimple.client.render.IceWaterRenderer;
-import com.peeko32213.notsoshrimple.client.render.ToxicWaterRenderer;
+import com.peeko32213.notsoshrimple.client.render.*;
 import com.peeko32213.notsoshrimple.common.particles.FoamStandardParticle;
 import com.peeko32213.notsoshrimple.core.registry.NSSEntities;
 import com.peeko32213.notsoshrimple.core.registry.NSSParticles;
@@ -31,6 +28,7 @@ public final class ClientEvents {
         event.registerEntityRenderer(NSSEntities.CRAYFISH.get(), CrayfishRenderer::new);
         event.registerEntityRenderer(NSSEntities.MANEATER.get(), ManeaterRenderer::new);
         event.registerEntityRenderer(NSSEntities.ICEWATER.get(), IceWaterRenderer::new);
+        event.registerEntityRenderer(NSSEntities.BLOODWATER.get(), BloodWaterRenderer::new);
         event.registerEntityRenderer(NSSEntities.TOXICWATER.get(), ToxicWaterRenderer::new);
     }
 

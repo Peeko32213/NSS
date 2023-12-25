@@ -608,6 +608,11 @@ public class EntityManeaterShell extends Monster implements IAnimatable, SemiAqu
     }
 
     @Override
+    public boolean isPushedByFluid() {
+        return false;
+    }
+
+    @Override
     public boolean isInvulnerableTo(DamageSource source) {
 
         if (source.getDirectEntity() instanceof AbstractArrow) {
@@ -627,6 +632,7 @@ public class EntityManeaterShell extends Monster implements IAnimatable, SemiAqu
                 source == DamageSource.IN_WALL ||
                 source == DamageSource.FALLING_BLOCK ||
                 source == DamageSource.CACTUS ||
+                source == DamageSource.ANVIL ||
                 super.isInvulnerableTo(source);
     }
 

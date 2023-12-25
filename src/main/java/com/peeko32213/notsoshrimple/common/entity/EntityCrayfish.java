@@ -18,6 +18,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -123,14 +124,14 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         //this is pretty much the same as UP's rexMeleeAttackGoal
         this.goalSelector.addGoal(3, new CustomRandomStrollGoal(this, 30, 1.0D, 100, 34));
         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 15.0F));
-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this){
-                    public boolean canUse() {
-                        return (this.mob.getLastHurtByMob() instanceof EntityCrayfish);
-                    }
-            }
+        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this)//{
+        //            public boolean canUse() {
+        //                return (this.mob.getLastHurtByMob() instanceof EntityCrayfish);
+        //            }
+        //    }
         ));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, false, false, entity -> entity.getType().is(NSSTags.CRAYFISH_VICTIMS)));
-        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
+        this.targetSelector.addGoal(0, new NearestAttackableTargetGoal<>(this, Player.class, true));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         //perhaps instead of calculating the whole route each tick, only calculate the amount of blocks to be covered in a single tick and recalculate each tick?
     }
@@ -639,7 +640,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
 
             Vec3 finalTargetPos = tTempPos.add(0,target.getEyeHeight()*0.5,0);
 
-            if (this.mob.biomeVariant == 2){
+            if (this.mob.getVariant() <= 14 && 10 <= this.mob.getVariant()){
                 EntityBloodWater urine = new EntityBloodWater(NSSEntities.BLOODWATER.get(), this.mob.level);
                 urine.setOwner(this.mob);
                 urine.setInvisible(true);
@@ -647,7 +648,7 @@ public class EntityCrayfish extends Monster implements IAnimatable {
                 urine.setTargetPos(finalTargetPos);
                 this.mob.level.addFreshEntity(urine);
 
-            } else if (this.mob.biomeVariant == 1){
+            } else if (this.mob.getVariant() <= 9 && 5 <= this.mob.getVariant()){
                 EntityIceWater urine = new EntityIceWater(NSSEntities.ICEWATER.get(), this.mob.level);
                 urine.setOwner(this.mob);
                 urine.setInvisible(true);
@@ -740,6 +741,19 @@ public class EntityCrayfish extends Monster implements IAnimatable {
     /*public boolean canBeCollidedWith() {
         return true;
     }*/
+    @Override
+    public boolean isPushedByFluid() {
+        return false;
+    }
+
+    protected float getDamageAfterArmorAbsorb(DamageSource pDamageSource, float pDamageAmount) {
+        pDamageAmount = super.getDamageAfterArmorAbsorb(pDamageSource, pDamageAmount);
+        if (pDamageSource == DamageSource.HOT_FLOOR || pDamageSource == DamageSource.LAVA || pDamageSource == DamageSource.IN_FIRE || pDamageSource == DamageSource.ON_FIRE || pDamageSource.isFire()) {
+            pDamageAmount = (float) (0.25*pDamageAmount);
+        }
+
+        return pDamageAmount;
+    }
 
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
@@ -752,8 +766,12 @@ public class EntityCrayfish extends Monster implements IAnimatable {
         return source == DamageSource.FALL ||
                 source == DamageSource.IN_WALL ||
                 source == DamageSource.CACTUS ||
+                source == DamageSource.STALAGMITE ||
                 (source.isProjectile() && !blowthrough) ||
-                (source.isFire() && this.biomeVariant == 2) ||
+                (source == DamageSource.IN_FIRE && this.getVariant() == 2) ||
+                (source == DamageSource.LAVA && this.getVariant() == 2) ||
+                (source == DamageSource.HOT_FLOOR && this.getVariant() == 2) ||
+                (source.isFire() && this.getVariant() == 2) ||
                 super.isInvulnerableTo(source);
     }
 

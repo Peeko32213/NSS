@@ -178,7 +178,7 @@ public class EntityBloodWater extends AbstractHurtingProjectile implements IAnim
             Vec3 scaledPos = startPos.add(normalDeltaPos.scale((double)timer*pissspeed));
             //startPos is fine, the process that makes scaledPos broke it
 
-            this.level.addParticle(NSSParticles.FOAM_STANDARD.get(), (scaledPos.x), (scaledPos.y), (scaledPos.z), 0.0D, 0.0D, 0.0D);
+            this.level.addParticle(ParticleTypes.SMOKE, (scaledPos.x), (scaledPos.y), (scaledPos.z), 0.0D, 0.0D, 0.0D);
             //completely normal particle
 
             for (int p = 0; p < 6 * (1 + Math.sqrt(0.001 * timer)); ++p) {
