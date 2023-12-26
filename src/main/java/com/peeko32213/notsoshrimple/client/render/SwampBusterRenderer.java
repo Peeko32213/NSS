@@ -8,4 +8,5 @@ public class SwampBusterRenderer extends GeoItemRenderer<ItemClawblade> {
     public SwampBusterRenderer() {
         super(new SwampBusterModel());
     }
+
 }
